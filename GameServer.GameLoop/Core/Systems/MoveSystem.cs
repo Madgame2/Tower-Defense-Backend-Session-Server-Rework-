@@ -8,7 +8,7 @@ namespace GameServer.GameLoop.Core.Systems
 {
     internal class MoveSystem : ITickable
     {
-        public void Tick(float delta, GameRoom world)
+        public async Task Tick(float delta, GameRoom world)
         {
             var players = world.AllPlayers;
             foreach (var player in players) { 

@@ -1,4 +1,5 @@
-﻿using GameServer.Domain.Player;
+﻿using GameServer.Domain.ColliderSystem.Enum;
+using GameServer.Domain.Player;
 using GameServer.Domain.Sessions.Events;
 using GameServer.Domain.Sessions.Events.Stateshandler;
 using GameServer.Domain.Sessions.StateMachine;
@@ -88,6 +89,14 @@ namespace GameServer.Application.Sessions.States
                 var playerPosition = new Vector3(0, y, 0);
 
                 var playerobj = new Player(player, playerPosition);
+
+                playerobj.Size = new Vector3(10, 20, 10);
+
+                playerobj.Colider.Type = ColliderType.Capsule;
+                playerobj.Colider.Height = 20;
+                playerobj.Colider.Radius = 5;
+
+                playerobj.Pivot = new Vector3(0, -1, 0);
 
                 world.RegPlayer(playerobj);
             }

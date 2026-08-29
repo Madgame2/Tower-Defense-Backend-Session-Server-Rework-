@@ -7,6 +7,6 @@ namespace GameServer.GameLoop.Core.Simultaion.Steps.Interfaces
 {
     public interface ITickable
     {
-        void Tick(float delta, GameRoom world);
+        Task Tick(float delta, GameRoom world);
     }
 }

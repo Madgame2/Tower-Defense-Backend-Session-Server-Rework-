@@ -1,5 +1,6 @@
 ﻿using GameServer.GameLoop.Core.Simultaion.Meta.Base;
 using GameServer.GameLoop.Core.Systems;
+using GameServer.GameLoop.Core.Systems.ResolveSystems;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,6 +12,7 @@ namespace GameServer.GameLoop.Core
         public override void Configure()
         {
             Register<MoveSystem>();
+            Register<VertivalResolveSystem>();
 
             RegisterNetwork<StateBroadcastSystem>();
         }
