@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<DecorationRules version="1.0">
+	<Global>
+		
+	</Global>
+	<Biomes>
+		<Biome type="GREEN_MEADOWS">
+			<Decorations>
+				<Decoration type="GRASS" frequency="1.0">
+					<SpawnRules>
+						<Rule type="ALL_CELLS" />
+					</SpawnRules>
+					<Constraints>
+
+					</Constraints>
+				</Decoration>
+			</Decorations>
+		</Biome>
+		<Biome type="STONE_AREA">
+
+		</Biome>
+	</Biomes>
+</DecorationRules>

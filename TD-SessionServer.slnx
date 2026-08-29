@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="GameServer.Application/GameServer.Application.csproj" />
+  <Project Path="GameServer.Contracts/GameServer.Contracts.csproj" />
+  <Project Path="GameServer.Domain/GameServer.Domain.csproj" />
+  <Project Path="GameServer.GameLoop/GameServer.GameLoop.csproj" />
+  <Project Path="GameServer.Infrastructure/GameServer.Infrastructure.csproj" />
+  <Project Path="WebApplication1/GameServer.csproj" />
+</Solution>
