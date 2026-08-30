@@ -6,7 +6,7 @@ using System.Text;
 
 namespace GameServer.GameLoop.Core.Systems
 {
-    internal class MoveSystem : ITickable
+    internal class ApplyPlayerMoveInputSystem : ITickable
     {
         public async Task Tick(float delta, GameRoom world)
         {
@@ -15,7 +15,10 @@ namespace GameServer.GameLoop.Core.Systems
 
                 var playerInput = player.InputBuffer.FetchNextInput();
 
-                player.Position += playerInput.MoveDirection* player.Speed * delta;
+                player.Velocity.X = playerInput.MoveDirection.X * player.Speed;
+                player.Velocity.Z = playerInput.MoveDirection.Z * player.Speed;
+
+                //player.Position += playerInput.MoveDirection* player.Speed * delta;
             }
         }
     }

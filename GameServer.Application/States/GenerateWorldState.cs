@@ -90,11 +90,11 @@ namespace GameServer.Application.Sessions.States
 
                 var playerobj = new Player(player, playerPosition);
 
-                playerobj.Size = new Vector3(10, 20, 10);
+                playerobj.Size = new Vector3(1, 2, 1);
 
                 playerobj.Colider.Type = ColliderType.Capsule;
-                playerobj.Colider.Height = 20;
-                playerobj.Colider.Radius = 5;
+                playerobj.Colider.Height = 2;
+                playerobj.Colider.Radius = 0.5f;
 
                 playerobj.Pivot = new Vector3(0, -1, 0);
 

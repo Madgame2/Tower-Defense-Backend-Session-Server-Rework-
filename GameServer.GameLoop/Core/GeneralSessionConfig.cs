@@ -11,7 +11,9 @@ namespace GameServer.GameLoop.Core
     {
         public override void Configure()
         {
-            Register<MoveSystem>();
+            Register<ApplyPlayerMoveInputSystem>();
+            Register<GravitySystem>();
+            Register<VelocityToPositionSystem>();
             Register<VertivalResolveSystem>();
 
             RegisterNetwork<StateBroadcastSystem>();
