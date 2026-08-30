@@ -34,7 +34,7 @@ namespace GameServer.Domain.SessionWorld.ChunksService.ChunkStorage
 
         public void Save(Chank chunk)
         {
-            _chunks.TryAdd(chunk.Pivot, new ChunkCacheItem(chunk));
+            _chunks.TryAdd(chunk.Position, new ChunkCacheItem(chunk));
         }
 
         public void CleanupOldChunks()

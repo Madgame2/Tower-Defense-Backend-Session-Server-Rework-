@@ -51,11 +51,20 @@ namespace GameServer.Domain.SessionWorld.Generators
 
         private void DefineLandscape(Chank chank)
         {
+            int baseSize = _chunksSettings.ChunkSize;
+            float chunkWorldOriginX = chank.Position.X * baseSize;
+            float chunkWorldOriginY = chank.Position.Y * baseSize;
+
+            Vector2 pivotOffset = chank.Pivot * baseSize;
+
             for (var x = 0; x < chank.Size+1; x++)
             {
                 for (var y = 0; y < chank.Size+1; y++)
                 {
-                    float height = _landscapeRoot.Evaluate(x, y);
+                    float worldX = chunkWorldOriginX + x - pivotOffset.X;
+                    float worldY = chunkWorldOriginY + y - pivotOffset.Y;
+
+                    var height = _landscapeRoot.Evaluate(worldX, worldY);
                     chank.SetlandscapeHeight(x, y, height);
                 }
             }
