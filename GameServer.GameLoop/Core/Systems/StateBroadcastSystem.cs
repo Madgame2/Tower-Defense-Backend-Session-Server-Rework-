@@ -25,30 +25,28 @@ namespace GameServer.GameLoop.Core.Systems
         public void NetworkTick(float delta, uint serverTick, GameRoom world)
         {
             var players = world.AllPlayers;
+            if (players.Length == 0) return;
 
             byte[] buffer = ArrayPool<byte>.Shared.Rent(1024);
-
-            foreach (var player in players)
+            try
             {
-                if (!_connectedClinetStorage.TryGet(player.Id, out var clientConnection))
-                    continue;
+                int length = PlayerStateSnapshotWriter.WriteSnapshot(buffer, serverTick, players);
 
-                if (clientConnection.ConnectionEndPoint == null) continue;
+                ReadOnlyMemory<byte> packetData = new ReadOnlyMemory<byte>(buffer, 0, length);
 
-                var paket = new PlayerStateSnapshot(player.Id, serverTick, player.Position);
-
-                try
+                foreach (var player in players)
                 {
-                    int length = paket.Serialize(buffer.AsSpan());
+                    if (!_connectedClinetStorage.TryGet(player.Id, out var clientConnection))
+                        continue;
 
-                    _ = _udpSender.SendAsync(clientConnection.ConnectionEndPoint, new ReadOnlyMemory<byte>(buffer, 0, length));
+                    if (clientConnection.ConnectionEndPoint == null) continue;
 
+                    _udpSender.SendAsync(clientConnection.ConnectionEndPoint, packetData);
                 }
-                finally
-                {
-                    ArrayPool<byte>.Shared.Return(buffer);
-
-                }
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
             }
         }
     }

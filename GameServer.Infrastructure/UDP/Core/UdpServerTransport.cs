@@ -51,6 +51,10 @@ namespace GameServer.Infrastructure.UDP.Core
             {
                 await _socket.SendToAsync(new ReadOnlyMemory<byte>(buffer, 0, length), SocketFlags.None, endPoint);
             }
+            catch (ObjectDisposedException)
+            {
+
+            }
             finally
             {
                 ArrayPool<byte>.Shared.Return(buffer);
@@ -76,7 +80,7 @@ namespace GameServer.Infrastructure.UDP.Core
             {
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    var result = await _socket.ReceiveFromAsync(buffer, SocketFlags.None, remoteEndPoint);
+                    var result = await _socket.ReceiveFromAsync(buffer, SocketFlags.None, remoteEndPoint, stoppingToken);
 
                     var actualSenderEndPoint = result.RemoteEndPoint;
                     ReadOnlySpan<byte> receivedData = new ReadOnlySpan<byte>(buffer, 0, result.ReceivedBytes);
@@ -87,6 +91,10 @@ namespace GameServer.Infrastructure.UDP.Core
             catch (OperationCanceledException)
             {
                 _logger.LogInformation("UDP-сервер останавливается.");
+            }
+            catch (SocketException ex) when (ex.SocketErrorCode == SocketError.OperationAborted || ex.ErrorCode == 995)
+            {
+                _logger.LogInformation("UDP-сервер успешно остановлен.");
             }
             catch (Exception ex)
             {
@@ -100,7 +108,14 @@ namespace GameServer.Infrastructure.UDP.Core
 
         public override Task StopAsync(CancellationToken cancellationToken)
         {
-            _socket?.Dispose();
+            try
+            {
+                _socket?.Dispose();
+            }
+            catch
+            {
+            }
+
             return base.StopAsync(cancellationToken);
         }
 

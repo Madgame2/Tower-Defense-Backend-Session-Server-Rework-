@@ -11,6 +11,7 @@ namespace GameServer.Domain.Player
     public class Player
     {
         public string Id { get; private set; }
+        public uint ObjectId {  get; set; }
         public Vector3 Velocity;
         public Vector3 Position {  get; set; }
         public float Speed { get; private set; } = 1f;
@@ -34,6 +35,11 @@ namespace GameServer.Domain.Player
         {
             Id = id;
             Position = position;
+
+            Span<byte> buffer = stackalloc byte[4];
+            Random.Shared.NextBytes(buffer);
+
+            ObjectId = BitConverter.ToUInt32(buffer);
         }
     }
 }

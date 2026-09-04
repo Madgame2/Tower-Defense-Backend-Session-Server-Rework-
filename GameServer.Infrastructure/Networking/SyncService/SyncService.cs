@@ -100,6 +100,7 @@ namespace GameServer.Infrastructure.Networking.SyncService
                 var new_playerDto = new Contracts.PlayerMetaDatas.PlayaerMetaDataDTO
                 {
                     PlayerId = player.Id,
+                    ObjectId = player.ObjectId,
                     Position = player.Position,
                     IsPlaying = player.Id == clientConnection.UserId
                 };

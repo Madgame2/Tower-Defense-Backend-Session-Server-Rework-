@@ -1,5 +1,7 @@
 ﻿using GameServer.Contracts.UDP.Contract;
 using GameServer.Contracts.UDP.Enums;
+using GameServer.Contracts.WorldStates;
+using GameServer.Domain.Player;
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -9,17 +11,42 @@ using System.Text;
 
 namespace GameServer.Contracts.UDP.Pakets
 {
+    public ref struct PlayerStateSnapshotWriter
+    {
+        public static int WriteSnapshot(Span<byte> buffer, uint serverTick, IReadOnlyCollection<Player> players)
+        {
+            int offset = 0;
+
+            buffer[offset] = (byte)PacketType.PlayerWorldState;
+            offset += 1;
+
+            MemoryMarshal.Write(buffer.Slice(offset), ref serverTick);
+            offset += 4;
+
+            ushort playersCount = (ushort)players.Count;
+            MemoryMarshal.Write(buffer.Slice(offset), ref playersCount);
+            offset += 2;
+
+            foreach (var player in players)
+            {
+                var state = new PlayerState(player.ObjectId, player.Position);
+                offset += state.Serialize(buffer.Slice(offset));
+            }
+
+            return offset;
+        }
+    }
+
+
     public struct PlayerStateSnapshot : IServerUdpPaket
     {
         public PacketType Type => PacketType.PlayerWorldState;
-        public string UserId;
         public uint ServerTick;
-        public Vector3 Position;
+        public PlayerState[] PlayersState;
 
-        public PlayerStateSnapshot(string userId, uint serverTick, Vector3 position)
+
+        public PlayerStateSnapshot(uint serverTick)
         {
-            UserId = userId;
-            Position = position;
             ServerTick = serverTick;
         }
 
@@ -30,31 +57,18 @@ namespace GameServer.Contracts.UDP.Pakets
             buffer[offset] = (byte)Type;
             offset += 1;
 
-            int stringByteLength = Encoding.UTF8.GetByteCount(UserId);
-
-            ushort length = (ushort)stringByteLength;
-            MemoryMarshal.Write(buffer.Slice(offset), ref length);
-            offset += 2;
-
-            Encoding.UTF8.GetBytes(UserId, buffer.Slice(offset));
-            offset += stringByteLength;
-
             uint tick = ServerTick;
             MemoryMarshal.Write(buffer.Slice(offset), ref tick);
             offset += 4;
 
-            float x = Position.X;
-            float y = Position.Y;
-            float z = Position.Z;
+            ushort playersCount = (ushort)PlayersState.Length;
+            MemoryMarshal.Write(buffer.Slice(offset), ref playersCount);
+            offset += 2;
 
-            MemoryMarshal.Write(buffer.Slice(offset), ref x);
-            offset += 4;
-
-            MemoryMarshal.Write(buffer.Slice(offset), ref y);
-            offset += 4;
-
-            MemoryMarshal.Write(buffer.Slice(offset), ref z);
-            offset += 4;
+            foreach (var playerState in PlayersState)
+            {
+                offset += playerState.Serialize(buffer.Slice(offset));
+            }
 
             return offset;
         }
