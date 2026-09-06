@@ -64,8 +64,8 @@ namespace GameServer.Domain.SessionWorld
             float chunkGridX = MathF.Floor(adjustedX / chunkSize);
             float chunkGridZ = MathF.Floor(adjustedZ / chunkSize);
 
-            float pivotX = chunkGridX * chunkSize;
-            float pivotZ = chunkGridZ * chunkSize;
+            float pivotX = chunkGridX;
+            float pivotZ = chunkGridZ;
 
             var pivot = new Vector2(pivotX, pivotZ);
 

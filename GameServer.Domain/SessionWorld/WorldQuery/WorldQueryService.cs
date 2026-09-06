@@ -1,6 +1,7 @@
 ﻿using GameServer.Domain.SessionWorld.WorldQuery.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace GameServer.Domain.SessionWorld.WorldQuery
@@ -28,33 +29,41 @@ namespace GameServer.Domain.SessionWorld.WorldQuery
             float localX = worldX - chunkLeftEdgeX;
             float localZ = worldZ - chunkLeftEdgeZ;
 
-            int x0 = (int)MathF.Floor(localX);
-            int z0 = (int)MathF.Floor(localZ);
+            float clampedX = Math.Clamp(localX, 0f, chunk.Size);
+            float clampedZ = Math.Clamp(localZ, 0f, chunk.Size);
 
-            x0 = Math.Clamp(x0, 0, chunk.Size - 1);
-            z0 = Math.Clamp(z0, 0, chunk.Size - 1);
+            int x0 = (int)MathF.Floor(clampedX);
+            int z0 = (int)MathF.Floor(clampedZ);
+
+            if (x0 >= chunk.Size) x0 = chunk.Size - 1;
+            if (z0 >= chunk.Size) z0 = chunk.Size - 1;
+
 
             int x1 = x0 + 1;
             int z1 = z0 + 1;
+
+            float fx = clampedX - x0;
+            float fz = clampedZ - z0;
 
             float h00 = chunk.GetLandscapeHeight(x0, z0);
             float h10 = chunk.GetLandscapeHeight(x1, z0);
             float h01 = chunk.GetLandscapeHeight(x0, z1);
             float h11 = chunk.GetLandscapeHeight(x1, z1);
 
-            float fx = localX - MathF.Floor(localX);
-            float fz = localZ - MathF.Floor(localZ);
+            float calculatedHeight;
 
             if (fx + fz <= 1.0f)
             {
-                return h00
+                calculatedHeight = h00
                     + fx * (h10 - h00)
                     + fz * (h01 - h00);
             }
 
-            return h11
+            calculatedHeight = h11
                 + (1.0f - fx) * (h01 - h11)
                 + (1.0f - fz) * (h10 - h11);
+
+            return calculatedHeight;
         }
     }
 }
