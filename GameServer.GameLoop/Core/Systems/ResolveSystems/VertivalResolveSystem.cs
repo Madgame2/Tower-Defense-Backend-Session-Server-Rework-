@@ -32,6 +32,7 @@ namespace GameServer.GameLoop.Core.Systems.ResolveSystems
 
                     playerPosition.Y += correction;
 
+                    player.Velocity.Y = 0;
                     player.Position = playerPosition;
                     player.IsGrounded = true;
                 }

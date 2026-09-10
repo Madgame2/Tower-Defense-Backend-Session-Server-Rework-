@@ -14,7 +14,7 @@ namespace GameServer.Domain.Player
         public uint ObjectId {  get; set; }
         public Vector3 Velocity;
         public Vector3 Position {  get; set; }
-        public float Speed { get; private set; } = 1f;
+        public float Speed { get; private set; } = 2f;
         public ColliderShape Colider = new();
         public Vector3 Size {  get; set; }
         private Vector3 _pivot;
@@ -24,6 +24,7 @@ namespace GameServer.Domain.Player
             } }
 
         public bool IsGrounded = false;
+        public bool IsJumping = false;
 
 
         private readonly PlayerInputBuffer _playerInputBuffer = new();

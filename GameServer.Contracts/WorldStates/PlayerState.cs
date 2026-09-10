@@ -15,12 +15,14 @@ namespace GameServer.Contracts.WorldStates
     {
         public uint ObjectId;
         public Vector3 Position;
+        public Vector3 Velocity;
 
 
-        public PlayerState(uint objectId, Vector3 position)
+        public PlayerState(uint objectId, Vector3 position, Vector3 velocity)
         {
             ObjectId = objectId;
             Position = position;
+            Velocity = velocity;
         }
 
         public int Serialize(Span<byte> buffer)
@@ -30,7 +32,11 @@ namespace GameServer.Contracts.WorldStates
             ref byte posBuffer = ref buffer[4];
             MemoryMarshal.Write(MemoryMarshal.CreateSpan(ref posBuffer, 12), ref Unsafe.AsRef(in Position));
 
-            return 16;
+
+            posBuffer = ref buffer[16];
+            MemoryMarshal.Write(MemoryMarshal.CreateSpan(ref posBuffer, 12), ref Unsafe.AsRef(in Velocity));
+
+            return 28;
         }
     }
 }

@@ -18,6 +18,8 @@ namespace GameServer.GameLoop.Core.Systems
                 player.Velocity.X = playerInput.MoveDirection.X * player.Speed;
                 player.Velocity.Z = playerInput.MoveDirection.Z * player.Speed;
 
+                player.IsJumping = playerInput.JumpRequest;
+
                 //player.Position += playerInput.MoveDirection* player.Speed * delta;
             }
         }

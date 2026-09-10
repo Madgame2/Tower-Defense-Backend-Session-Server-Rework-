@@ -11,11 +11,13 @@ namespace GameServer.Domain.ValueObjects
     {
         public readonly uint Tick;
         public readonly Vector3 MoveDirection;
+        public readonly bool JumpRequest;
 
-        public MoveInputCommand(uint tick, Vector3 moveDirection)
+        public MoveInputCommand(uint tick, Vector3 moveDirection, bool jumpRequest)
         {
             Tick = tick;
             MoveDirection = moveDirection;
+            JumpRequest = jumpRequest;
         }
     }
 }
