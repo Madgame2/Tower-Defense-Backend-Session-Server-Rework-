@@ -29,7 +29,7 @@ namespace GameServer.Contracts.UDP.Pakets
 
             foreach (var player in players)
             {
-                var state = new PlayerState(player.ObjectId, player.Position, player.Velocity);
+                var state = new PlayerState(player.ObjectId, player.Position, player.Velocity, player.MovementState);
                 offset += state.Serialize(buffer.Slice(offset));
             }
 

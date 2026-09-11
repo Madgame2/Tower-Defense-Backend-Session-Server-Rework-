@@ -1,5 +1,6 @@
 ﻿using GameServer.Contracts.UDP.Enums;
 using GameServer.Domain.Player;
+using GameServer.Domain.Player.Enums;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -16,27 +17,29 @@ namespace GameServer.Contracts.WorldStates
         public uint ObjectId;
         public Vector3 Position;
         public Vector3 Velocity;
+        public MovementState MovementState;
 
+        public const int SerializedSize = 29;
 
-        public PlayerState(uint objectId, Vector3 position, Vector3 velocity)
+        public PlayerState(uint objectId, Vector3 position, Vector3 velocity, MovementState movementState)
         {
             ObjectId = objectId;
             Position = position;
             Velocity = velocity;
+            MovementState = movementState;
         }
 
         public int Serialize(Span<byte> buffer)
         {
-            MemoryMarshal.Write(buffer.Slice(0), ref Unsafe.AsRef(in ObjectId));
+            if (buffer.Length < SerializedSize)
+                return 0;
 
-            ref byte posBuffer = ref buffer[4];
-            MemoryMarshal.Write(MemoryMarshal.CreateSpan(ref posBuffer, 12), ref Unsafe.AsRef(in Position));
+            MemoryMarshal.Write(buffer.Slice(0), ref ObjectId);
+            MemoryMarshal.Write(buffer.Slice(4), ref Position);
+            MemoryMarshal.Write(buffer.Slice(16), ref Velocity);
+            buffer[28] = (byte)MovementState;
 
-
-            posBuffer = ref buffer[16];
-            MemoryMarshal.Write(MemoryMarshal.CreateSpan(ref posBuffer, 12), ref Unsafe.AsRef(in Velocity));
-
-            return 28;
+            return SerializedSize;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using GameServer.Domain.ColliderSystem.Core;
 using GameServer.Domain.Player.Components;
+using GameServer.Domain.Player.Enums;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -14,6 +15,7 @@ namespace GameServer.Domain.Player
         public uint ObjectId {  get; set; }
         public Vector3 Velocity;
         public Vector3 Position {  get; set; }
+        public MovementState MovementState { get; set; } = MovementState.Grounded;
         public float Speed { get; private set; } = 2f;
         public ColliderShape Colider = new();
         public Vector3 Size {  get; set; }

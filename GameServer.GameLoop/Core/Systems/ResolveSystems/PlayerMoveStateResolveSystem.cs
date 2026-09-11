@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace GameServer.GameLoop.Core.Systems
+namespace GameServer.GameLoop.Core.Systems.ResolveSystems
 {
-    internal class ProcessJumpSystem : ITickable
+    internal class PlayerMoveStateResolveSystem : ITickable
     {
         public async Task Tick(float delta, GameRoom world)
         {
@@ -14,13 +14,9 @@ namespace GameServer.GameLoop.Core.Systems
 
             foreach (var player in players)
             {
-                if(player.IsGrounded&& player.IsJumping)
+                if(!player.IsGrounded)
                 {
-                    player.MovementState = Domain.Player.Enums.MovementState.Jumping;
-                    player.Velocity.Y = 5;
-
-                    player.IsGrounded = false;
-                    player.IsJumping = false;
+                    player.MovementState = Domain.Player.Enums.MovementState.Falling;
                 }
             }
         }

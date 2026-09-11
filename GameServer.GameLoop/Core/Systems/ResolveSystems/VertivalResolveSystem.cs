@@ -33,12 +33,14 @@ namespace GameServer.GameLoop.Core.Systems.ResolveSystems
                     playerPosition.Y += correction;
 
                     player.Velocity.Y = 0;
+                    player.MovementState = Domain.Player.Enums.MovementState.Grounded;
                     player.Position = playerPosition;
                     player.IsGrounded = true;
                 }
                 else
                 {
                     player.IsGrounded = false;
+
                 }
             }
         }
