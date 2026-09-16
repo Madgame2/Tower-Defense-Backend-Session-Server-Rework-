@@ -22,7 +22,7 @@ namespace GameServer.GameLoop.Core.Systems
 
                 player.Velocity.Y -= Gravity * delta;
 
-                if(player.Velocity.Y < TerminalVelocity)
+                if (player.Velocity.Y < TerminalVelocity)
                 {
                     player.Velocity.Y = TerminalVelocity;
                 }

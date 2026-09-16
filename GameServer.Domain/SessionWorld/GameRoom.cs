@@ -16,7 +16,7 @@ namespace GameServer.Domain.SessionWorld
     public class GameRoom
     {
         private SessionChunkGenerator _chunkGenerator;
-        private IChunkStorage _chunkStorage;
+        private readonly IChunkStorage _chunkStorage;
         private readonly IChunksSettings _chunksSettings;
         private readonly IPlayersStorage _playersStorage;
         private readonly IWorldQueryService _worldQueryService;
