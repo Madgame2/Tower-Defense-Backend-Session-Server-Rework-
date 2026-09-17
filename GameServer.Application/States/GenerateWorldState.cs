@@ -13,6 +13,8 @@ using GameServer.Domain.SessionWorld.Meta.Interfaces;
 using GameServer.Domain.SessionWorld.Routers;
 using GameServer.Domain.SessionWorld.WorldQuery.Interfaces;
 using System.Numerics;
+using EntityLib.GameRoomExtentions;
+using GameServer.Application.Components.Common;
 
 namespace GameServer.Application.Sessions.States
 {
@@ -62,6 +64,9 @@ namespace GameServer.Application.Sessions.States
             await SpawnPlayers(ctx.OnlinePlayersIDs, newWorldObject);
 
             ctx.CurrentRoom = newWorldObject;
+
+            var tereeDebugEnity = newWorldObject.CreateEntity();
+            newWorldObject.GetStash<PositionComponent>().Set(tereeDebugEnity, new PositionComponent());
 
             await EnterSyncState(ctx);
         }

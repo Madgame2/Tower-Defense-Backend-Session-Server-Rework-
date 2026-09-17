@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="EntityLib/EntityLib.csproj" Id="56e6f748-ff8e-490e-8673-51109d8af85d" />
   <Project Path="GameServer.Application/GameServer.Application.csproj" />
   <Project Path="GameServer.Contracts/GameServer.Contracts.csproj" />
   <Project Path="GameServer.Domain/GameServer.Domain.csproj" />

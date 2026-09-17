@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EntityLib\EntityLib.csproj" />
     <ProjectReference Include="..\GameServer.Contracts\GameServer.Contracts.csproj" />
     <ProjectReference Include="..\GameServer.Domain\GameServer.Domain.csproj" />
     <ProjectReference Include="..\GameServer.GameLoop\GameServer.GameLoop.csproj" />
