@@ -44,13 +44,15 @@ namespace EntityLib.GameRoomExtentions
             return newStash;
         }
 
-        public static IEnumerable<Entity> GetEnities(this GameRoom gameRoom, Filter scanner)
+
+        public static IEnumerable<Entity> GetEnities(this GameRoom gameRoom, Filter filter)
+
         {
             var data = ExtentinonStoredData.GetExternalData(gameRoom);
             var service = data.EntityManager;
 
 
-            return service.SelectEntites(data.StashesStorage, scanner);
+            return service.SelectEntites(data.StashesStorage, filter);
         }
     }
 }
