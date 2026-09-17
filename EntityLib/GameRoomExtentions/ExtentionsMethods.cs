@@ -7,7 +7,7 @@ using System.Text;
 
 namespace EntityLib.GameRoomExtentions
 {
-    internal static class ExtentionsMethods
+    public static class ExtentionsMethods
     {
         public static Entity CreateEntity(this GameRoom gameRoom)
         {
@@ -45,14 +45,16 @@ namespace EntityLib.GameRoomExtentions
         }
 
 
-        public static IEnumerable<Entity> GetEnities(this GameRoom gameRoom, Filter filter)
+        public static EntityQuery GetEnities(this GameRoom gameRoom, Filter filter)
 
         {
             var data = ExtentinonStoredData.GetExternalData(gameRoom);
             var service = data.EntityManager;
 
 
-            return service.SelectEntites(data.StashesStorage, filter);
+            return data.EntityManager.SelectEntities(
+                data.StashesStorage,
+                filter);
         }
     }
 }

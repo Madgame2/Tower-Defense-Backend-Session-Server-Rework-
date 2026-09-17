@@ -7,7 +7,7 @@ using System.Text;
 
 namespace EntityLib.Models
 {
-    internal sealed class Stash<T> : IStash
+    public sealed class Stash<T> : IStash
         where T : struct, IComponent
     {
         private T[] _components = new T[128];

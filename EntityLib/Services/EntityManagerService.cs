@@ -54,50 +54,21 @@ namespace EntityLib.Services
             return new Entity(id, _generations[id]);
         }
 
-        internal IEnumerable<Entity> SelectEntites(Dictionary<Type, IStash> stashesStorage, Filter filter)
+        internal EntityQuery SelectEntities(
+            Dictionary<Type, IStash> stashesStorage,
+            Filter filter)
         {
-            var smallestStashType = GetSmalestSthash(stashesStorage, filter);
+            var smallestStashType =
+                GetSmalestSthash(stashesStorage, filter);
 
-            var smallestStash = stashesStorage[smallestStashType];
+            var smallestStash =
+                stashesStorage[smallestStashType];
 
-            foreach ( var entityId in smallestStash.EntityIds)
-            {
-                Entity entity = GetEntity(entityId);
-
-                bool include = true;
-
-                foreach (var stashType in filter.Include)
-                {
-                    var stash = stashesStorage[stashType];
-
-                    if (!stash.Has(entity))
-                    {
-                        include = false;
-                        break;
-                    }
-                }
-
-                if (!include)
-                    continue;
-
-                bool exclude = false;
-
-                foreach (var stashType in filter.Exclude)
-                {
-                    var stash = stashesStorage[stashType];
-
-                    if (stash.Has(entity))
-                    {
-                        exclude = true;
-                        break;
-                    }
-                }
-
-                if (exclude)
-                    continue;
-
-                yield return entity;
-            }
+            return new EntityQuery(
+                this,
+                stashesStorage,
+                filter,
+                smallestStash);
         }
 
         private Type GetSmalestSthash(Dictionary<Type, IStash> stashesStorage, Filter scanner)
