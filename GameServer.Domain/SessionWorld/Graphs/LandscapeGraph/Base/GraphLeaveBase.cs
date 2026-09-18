@@ -15,6 +15,6 @@ namespace GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Base
 
         public abstract IGraphNode[] GetChildren();
 
-        public abstract NodeParam[] GetParams();
+        public abstract NodeParam[] GetParams(Func<IGraphNode, short> serializeCallback);
     }
 }

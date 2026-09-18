@@ -15,6 +15,7 @@ using GameServer.Domain.SessionWorld.WorldQuery.Interfaces;
 using System.Numerics;
 using EntityLib.GameRoomExtentions;
 using GameServer.Application.Components.Common;
+using GameServer.Domain.SessionWorld.Graphs.TreeGraph.Factory.Interfaces;
 
 namespace GameServer.Application.Sessions.States
 {
@@ -26,15 +27,18 @@ namespace GameServer.Application.Sessions.States
         private IChunkGeneratorFactory _chankGeneratorFactory;
         private ILandscapeGraphFactory _landscapeGraphFactory;
         private IBiomGraphFactory _biomGraphFactory;
+        private ITreeGraphFactory _treeGraphFactory;
 
         public GenerateWorldState(IChunksSettings chunksSettings, IWorldQueryService worldQueryService,
-            IChunkGeneratorFactory chankFactory, ILandscapeGraphFactory landscapeGraphFactory, IBiomGraphFactory biomGraphFactory)
+            IChunkGeneratorFactory chankFactory, ILandscapeGraphFactory landscapeGraphFactory, IBiomGraphFactory biomGraphFactory,
+            ITreeGraphFactory treeGraphFactory)
         {
             _worldQueryService = worldQueryService;
             _chunksSettings = chunksSettings;
             _chankGeneratorFactory = chankFactory;
             _landscapeGraphFactory = landscapeGraphFactory;
             _biomGraphFactory = biomGraphFactory;
+            _treeGraphFactory = treeGraphFactory;
         }
 
         public override void Configure(StateEventHandler handlers)
@@ -65,9 +69,6 @@ namespace GameServer.Application.Sessions.States
 
             ctx.CurrentRoom = newWorldObject;
 
-            var tereeDebugEnity = newWorldObject.CreateEntity();
-            newWorldObject.GetStash<PositionComponent>().Set(tereeDebugEnity, new PositionComponent());
-
             await EnterSyncState(ctx);
         }
 
@@ -81,7 +82,8 @@ namespace GameServer.Application.Sessions.States
         {
             var landscapeGraph = _landscapeGraphFactory.Create(53523256262632);
             var biomeGraph = _biomGraphFactory.Create(53523256262632);
-            return _chankGeneratorFactory.CreateForSession(landscapeGraph, biomeGraph);
+            var treeGraph = _treeGraphFactory.Create(53523256262632);
+            return _chankGeneratorFactory.CreateForSession(landscapeGraph, biomeGraph, treeGraph);
         }
 
         private async Task SpawnPlayers(HashSet<string> onlinePlayersIDs, GameRoom world)

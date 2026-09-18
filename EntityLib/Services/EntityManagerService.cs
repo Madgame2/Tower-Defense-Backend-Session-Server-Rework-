@@ -15,6 +15,12 @@ namespace EntityLib.Services
 
         private readonly List<ushort> _generations = new List<ushort>();
 
+        private readonly Dictionary<Type, IStash> _stashesStorage;
+
+        public EntityManagerService(Dictionary<Type, IStash> stashesStorage)
+        {
+            _stashesStorage = stashesStorage;
+        }
 
         internal Entity CreateEntity()
         {
@@ -32,13 +38,17 @@ namespace EntityLib.Services
         {
             if (!IsAlive(entity)) return;
 
+            foreach (var stash in _stashesStorage.Values)
+            {
+                stash.Remove(entity);
+            }
+
+
             int id = entity.Id;
 
             _generations[id]++;
 
             _freeIds.Enqueue(id);
-
-            // TODO: Здесь в будущем мы добавим удаление всех компонентов этой сущности
         }
 
         internal bool IsAlive(Entity entity)

@@ -12,5 +12,7 @@ namespace GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Nodes.Enums
         String,
         Int,
         Bool,
+
+        Condition
     }
 }

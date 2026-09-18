@@ -15,6 +15,7 @@ namespace GameServer.Domain.SessionWorld.Model
         public float[] HeightMap { get; }
         public BiomeType[] BiomeMap { get; }
 
+        public List<StaticTreeData> Trees { get; }
 
         public Chank(Vector2 offset, int size, Vector2 pivot)
         {
@@ -26,6 +27,14 @@ namespace GameServer.Domain.SessionWorld.Model
 
             HeightMap = new float[vertexCount];
             BiomeMap = new BiomeType[size * size];
+        }
+
+        public void AddTree(Vector2 localPos)
+        {
+            Trees.Add(new StaticTreeData
+            {
+                LocalPosition = localPos,
+            });
         }
 
         public void SetlandscapeHeight(int x, int y, float value)

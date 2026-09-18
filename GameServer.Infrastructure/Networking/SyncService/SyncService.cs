@@ -141,9 +141,10 @@ namespace GameServer.Infrastructure.Networking.SyncService
 
             GraphNodeDTO[] flatLandscapeGraph = serializer.SerializeGraph(chunkGenerator.LandscapeRoot);
             GraphNodeDTO[] flatBiomGraph = serializer.SerializeGraph(chunkGenerator.BiomGraphRoot);
+            GraphNodeDTO[] flatTreeGraph = serializer.SerializeGraph(chunkGenerator.TreeGraphRoot);
 
 
-            var worldMetaGenerationMetaData = new WorldGenerationMetaDataMessage(flatLandscapeGraph, flatBiomGraph);
+            var worldMetaGenerationMetaData = new WorldGenerationMetaDataMessage(flatLandscapeGraph, flatBiomGraph, flatTreeGraph);
 
             _sessionBroadcaster.SendToPlayer(clientConnection, worldMetaGenerationMetaData, Contracts.MessageFormats.MessageFormat.Json);
 

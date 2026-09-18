@@ -19,6 +19,6 @@ namespace GameServer.Domain.SessionWorld.Graphs.BiomGraph.Nodes.Base
         }
         public abstract BiomeType Evaluate(float x, float y);
 
-        public abstract NodeParam[] GetParams();
+        public abstract NodeParam[] GetParams(Func<IGraphNode, short> serializeCallback);
     }
 }

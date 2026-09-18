@@ -8,6 +8,9 @@ namespace GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Nodes.Enums
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum ParamsType
     {
-        Frequency
+        Frequency,
+        
+        Condition,
+        ConstValue
     }
 }

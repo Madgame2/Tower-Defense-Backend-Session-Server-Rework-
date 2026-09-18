@@ -16,6 +16,8 @@ using GameServer.Domain.SessionWorld.Graphs.BiomGraph.Factories;
 using GameServer.Domain.SessionWorld.Graphs.BiomGraph.Interfaces;
 using GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Factory;
 using GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Interfaces;
+using GameServer.Domain.SessionWorld.Graphs.TreeGraph.Factory;
+using GameServer.Domain.SessionWorld.Graphs.TreeGraph.Factory.Interfaces;
 using GameServer.Domain.SessionWorld.Interfaces;
 using GameServer.Domain.SessionWorld.Meta.Interfaces;
 using GameServer.Domain.SessionWorld.WorldQuery;
@@ -104,6 +106,8 @@ builder.Services.AddTransient<IMessageSerializer, MessageSerializer>();
 builder.Services.AddSingleton<ISyncService, SyncService>();
 
 builder.Services.AddTransient<IBiomGraphFactory, BiomGraphFactory>();
+
+builder.Services.AddTransient<ITreeGraphFactory, TreeGraphFactory>();
 
 builder.Services.AddTransient<ISimulationFactory, SimulationFactory>();  
 

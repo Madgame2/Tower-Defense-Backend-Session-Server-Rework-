@@ -2,8 +2,10 @@
 using GameServer.Domain.SessionWorld.Graphs.Base.Interfaces;
 using GameServer.Domain.SessionWorld.Graphs.BiomGraph.Interfaces;
 using GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Base;
+using GameServer.Domain.SessionWorld.Graphs.TreeGraph;
 using GameServer.Domain.SessionWorld.Interfaces;
 using GameServer.Domain.SessionWorld.Meta.Interfaces;
+using GameServer.Domain.SessionWorld.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,9 +23,9 @@ namespace GameServer.Domain.SessionWorld.Factory
             _chunksSettings = chunksSettings;
         }
 
-        public SessionChunkGenerator CreateForSession(ILandscapeGraphNode landscapeRoot, IBiomeGraphNode biomeRoot)
+        public SessionChunkGenerator CreateForSession(ILandscapeGraphNode landscapeRoot, IBiomeGraphNode biomeRoot, IGraphNode<StaticTreeData> treeRoot)
         {
-            return new SessionChunkGenerator(landscapeRoot, biomeRoot, _chunksSettings);
+            return new SessionChunkGenerator(landscapeRoot, biomeRoot, treeRoot, _chunksSettings);
         }
     }
 }

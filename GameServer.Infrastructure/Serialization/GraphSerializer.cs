@@ -1,5 +1,6 @@
 ﻿using GameServer.Contracts.WorldMetadata;
 using GameServer.Domain.SessionWorld.Graphs.Base.Interfaces;
+using GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Nodes.MetaData;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -32,8 +33,8 @@ namespace GameServer.Infrastructure.Serialization
             }
 
             short currentIndex = (short)_serializedNodes.Count;
-            _serializedNodes.Add(default); 
-            _visitedNodes[node] = currentIndex; 
+            _serializedNodes.Add(default);
+            _visitedNodes[node] = currentIndex;
 
             IGraphNode[] children = node.GetChildren();
             short[] childIndices = new short[children.Length];
@@ -43,11 +44,13 @@ namespace GameServer.Infrastructure.Serialization
                 childIndices[i] = SerializeRecursive(children[i], currentIndex);
             }
 
+            NodeParam[] parameters = node.GetParams(n => SerializeRecursive(n, -1));
+
             _serializedNodes[currentIndex] = new GraphNodeDTO(
                 node.Type,
                 parentIndex,
                 childIndices,
-                node.GetParams()
+                parameters
             );
 
             return currentIndex;

@@ -23,7 +23,13 @@ namespace EntityLib.GameRoomExtentions
 
     internal class ExternalData
     {
-        public EntityManagerService EntityManager = new();
-        public Dictionary<Type, IStash> StashesStorage = new();
+        public Dictionary<Type, IStash> StashesStorage { get; }
+        public EntityManagerService EntityManager { get; }
+
+        public ExternalData()
+        {
+            StashesStorage = new();
+            EntityManager = new EntityManagerService(StashesStorage);
+        }
     }
 }

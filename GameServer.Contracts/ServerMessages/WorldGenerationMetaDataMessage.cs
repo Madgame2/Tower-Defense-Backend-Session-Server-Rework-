@@ -19,10 +19,14 @@ namespace GameServer.Contracts.ServerMessages
         [Key(2)]
         public GraphNodeDTO[] BiomsGraphDTOs { get; set; }
 
-        public WorldGenerationMetaDataMessage(GraphNodeDTO[] landscapeGraphDTOs, GraphNodeDTO[] biomsGraphDTOs)
+        [Key(3)]
+        public GraphNodeDTO[] TreeGraphDTOs { get; set; }
+
+        public WorldGenerationMetaDataMessage(GraphNodeDTO[] landscapeGraphDTOs, GraphNodeDTO[] biomsGraphDTOs, GraphNodeDTO[] treeGraphDTOs)
         {
             LandscapeGraphDTOs = landscapeGraphDTOs;
             BiomsGraphDTOs = biomsGraphDTOs;
+            TreeGraphDTOs = treeGraphDTOs;
         }
     }
 }

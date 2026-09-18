@@ -1,4 +1,5 @@
-﻿using GameServer.Domain.SessionWorld.Graphs.BiomGraph.Meta.Enums;
+﻿using GameServer.Domain.SessionWorld.Graphs.Base.Interfaces;
+using GameServer.Domain.SessionWorld.Graphs.BiomGraph.Meta.Enums;
 using GameServer.Domain.SessionWorld.Graphs.BiomGraph.Nodes.Base;
 using GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Nodes.MetaData;
 using GameServer.Domain.SessionWorld.Graphs.Meta.Enums;
@@ -14,7 +15,7 @@ namespace GameServer.Domain.SessionWorld.Graphs.BiomGraph.Nodes.Leaves
 
         public override BiomeType Evaluate(float x, float y) => BiomeType.STONE_AREA;
 
-        public override NodeParam[] GetParams()
+        public override NodeParam[] GetParams(Func<IGraphNode, short> serializeCallback)
         {
             return Array.Empty<NodeParam>();
         }

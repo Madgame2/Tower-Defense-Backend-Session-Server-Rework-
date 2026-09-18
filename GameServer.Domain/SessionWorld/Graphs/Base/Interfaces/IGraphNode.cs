@@ -11,6 +11,12 @@ namespace GameServer.Domain.SessionWorld.Graphs.Base.Interfaces
     {
         NodeType Type { get; }
         IGraphNode[] GetChildren();
-        NodeParam[] GetParams();
+        NodeParam[] GetParams(Func<IGraphNode, short> serializeCallback);
+    }
+
+
+    public interface IGraphNode<out TOutput> : IGraphNode
+    {
+        TOutput Evaluate(float x, float y);
     }
 }

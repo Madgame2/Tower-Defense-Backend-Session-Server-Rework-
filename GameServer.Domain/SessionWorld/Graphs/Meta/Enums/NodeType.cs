@@ -12,6 +12,11 @@ namespace GameServer.Domain.SessionWorld.Graphs.Meta.Enums
         PerlinNoiseNode,
 
         GreenMeadowsNode,
-        StoneAreaNode
+        StoneAreaNode,
+
+        CreateTreeNode,
+
+        IfNode,
+        ConstNode
     }
 }

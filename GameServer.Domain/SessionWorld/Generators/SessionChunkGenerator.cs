@@ -1,6 +1,7 @@
 ﻿using GameServer.Domain.SessionWorld.Graphs.Base.Interfaces;
 using GameServer.Domain.SessionWorld.Graphs.BiomGraph.Interfaces;
 using GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Base;
+using GameServer.Domain.SessionWorld.Graphs.TreeGraph;
 using GameServer.Domain.SessionWorld.Meta.Interfaces;
 using GameServer.Domain.SessionWorld.Model;
 using System;
@@ -14,18 +15,20 @@ namespace GameServer.Domain.SessionWorld.Generators
     {
         private readonly ILandscapeGraphNode _landscapeRoot;
         private readonly IBiomeGraphNode _biomGraphRot;
+        private readonly IGraphNode<StaticTreeData> _treeGraphRoot;
         private readonly IChunksSettings _chunksSettings;
 
-        public SessionChunkGenerator(ILandscapeGraphNode landscapeRoot, IBiomeGraphNode biomGraphRot, IChunksSettings chunksSettings)
+        public SessionChunkGenerator(ILandscapeGraphNode landscapeRoot, IBiomeGraphNode biomGraphRot, IGraphNode<StaticTreeData> treeRoot, IChunksSettings chunksSettings)
         {
             _landscapeRoot = landscapeRoot;
             _biomGraphRot = biomGraphRot;
+            _treeGraphRoot = treeRoot;
             _chunksSettings = chunksSettings;
         }
 
         public ILandscapeGraphNode LandscapeRoot {  get { return _landscapeRoot; } }
         public IBiomeGraphNode BiomGraphRoot { get { return _biomGraphRot; } }
-
+        public IGraphNode<StaticTreeData> TreeGraphRoot {  get { return _treeGraphRoot; } }
 
         public async Task<Chank> CreateChankAsync(Vector2 offset)
         {
