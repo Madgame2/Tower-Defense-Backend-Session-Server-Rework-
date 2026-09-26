@@ -34,9 +34,9 @@ namespace GameServer.Contracts.WorldStates
             if (buffer.Length < SerializedSize)
                 return 0;
 
-            MemoryMarshal.Write(buffer.Slice(0), ref ObjectId);
-            MemoryMarshal.Write(buffer.Slice(4), ref Position);
-            MemoryMarshal.Write(buffer.Slice(16), ref Velocity);
+            MemoryMarshal.Write(buffer.Slice(0), in ObjectId);
+            MemoryMarshal.Write(buffer.Slice(4), in Position);
+            MemoryMarshal.Write(buffer.Slice(16), in Velocity);
             buffer[28] = (byte)MovementState;
 
             return SerializedSize;

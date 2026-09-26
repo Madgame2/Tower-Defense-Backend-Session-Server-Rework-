@@ -20,11 +20,11 @@ namespace GameServer.Contracts.UDP.Pakets
             buffer[offset] = (byte)PacketType.PlayerWorldState;
             offset += 1;
 
-            MemoryMarshal.Write(buffer.Slice(offset), ref serverTick);
+            MemoryMarshal.Write(buffer.Slice(offset), in serverTick);
             offset += 4;
 
             ushort playersCount = (ushort)players.Count;
-            MemoryMarshal.Write(buffer.Slice(offset), ref playersCount);
+            MemoryMarshal.Write(buffer.Slice(offset), in playersCount);
             offset += 2;
 
             foreach (var player in players)
@@ -58,11 +58,11 @@ namespace GameServer.Contracts.UDP.Pakets
             offset += 1;
 
             uint tick = ServerTick;
-            MemoryMarshal.Write(buffer.Slice(offset), ref tick);
+            MemoryMarshal.Write(buffer.Slice(offset), in tick);
             offset += 4;
 
             ushort playersCount = (ushort)PlayersState.Length;
-            MemoryMarshal.Write(buffer.Slice(offset), ref playersCount);
+            MemoryMarshal.Write(buffer.Slice(offset), in playersCount);
             offset += 2;
 
             foreach (var playerState in PlayersState)
