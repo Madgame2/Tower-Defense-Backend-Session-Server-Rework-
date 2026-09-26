@@ -8,6 +8,8 @@ namespace GameServer.Domain.SessionWorld.ChunksService.ChunkStorage.Interfaces
 {
     public interface IChunkStorage
     {
+        event Action<Chank> OnChunkUnloaded;
+
         Chank Get(Vector2 pivot);
         void Save(Chank chunk);
     }

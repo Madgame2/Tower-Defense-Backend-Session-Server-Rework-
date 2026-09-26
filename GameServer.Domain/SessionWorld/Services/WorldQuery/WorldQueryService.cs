@@ -1,10 +1,10 @@
-﻿using GameServer.Domain.SessionWorld.WorldQuery.Interfaces;
+﻿using GameServer.Domain.SessionWorld.Services.WorldQuery.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
-namespace GameServer.Domain.SessionWorld.WorldQuery
+namespace GameServer.Domain.SessionWorld.Services.WorldQuery
 {
     public class WorldQueryService : IWorldQueryService
     {
