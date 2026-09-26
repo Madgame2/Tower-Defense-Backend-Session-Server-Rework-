@@ -1,6 +1,7 @@
 using GameServer.Api.WebSockets;
 using GameServer.Application.Interfaces;
 using GameServer.Application.Meta;
+using GameServer.Application.Session.Ressources;
 using GameServer.Application.Sessions;
 using GameServer.Application.Sessions.imp;
 using GameServer.Application.Sessions.Repository;
@@ -112,6 +113,8 @@ builder.Services.AddTransient<ITreeGraphFactory, TreeGraphFactory>();
 builder.Services.AddTransient<ISimulationFactory, SimulationFactory>();  
 
 builder.Services.AddSingleton<IWorldQueryService, WorldQueryService>();
+
+builder.Services.AddSingleton<ISessionStaticResources, SessionStaticResources>();
 
 
 builder.Services.AddSingleton<UdpServerTransport>();

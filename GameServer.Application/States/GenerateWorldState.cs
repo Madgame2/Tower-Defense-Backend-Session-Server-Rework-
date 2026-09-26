@@ -11,11 +11,13 @@ using GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Interfaces;
 using GameServer.Domain.SessionWorld.Interfaces;
 using GameServer.Domain.SessionWorld.Meta.Interfaces;
 using GameServer.Domain.SessionWorld.Routers;
-using GameServer.Domain.SessionWorld.WorldQuery.Interfaces;
 using System.Numerics;
 using EntityLib.GameRoomExtentions;
 using GameServer.Application.Components.Common;
 using GameServer.Domain.SessionWorld.Graphs.TreeGraph.Factory.Interfaces;
+using GameServer.Domain.SessionWorld.Services.WorldQuery.Interfaces;
+using GameServer.Domain.SessionWorld.Model;
+using GameServer.Domain.SessionWorld.Services.IndicesService.IndexesImplement;
 
 namespace GameServer.Application.Sessions.States
 {
@@ -63,6 +65,9 @@ namespace GameServer.Application.Sessions.States
 
             var router = new GeneralMathcRouter();
             var newWorldObject = new GameRoom(_chunksSettings, _worldQueryService, router);
+
+            var treesIndex = new SpatialGridIndex<StaticTreeData>((treeData) => { return treeData.LocalPosition; });
+            newWorldObject.AddIndex<StaticTreeData>(treesIndex);
 
             CreateWorldGenerationRules(newWorldObject);
             await SpawnPlayers(ctx.OnlinePlayersIDs, newWorldObject);

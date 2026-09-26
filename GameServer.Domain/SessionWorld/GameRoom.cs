@@ -1,4 +1,5 @@
-﻿using GameServer.Domain.Player;
+﻿using GameServer.Domain.ColliderSystem.Core;
+using GameServer.Domain.Player;
 using GameServer.Domain.SessionWorld.ChunksService.ChunkStorage;
 using GameServer.Domain.SessionWorld.ChunksService.ChunkStorage.Interfaces;
 using GameServer.Domain.SessionWorld.Generators;
@@ -7,7 +8,9 @@ using GameServer.Domain.SessionWorld.Meta.Interfaces;
 using GameServer.Domain.SessionWorld.Model;
 using GameServer.Domain.SessionWorld.PlayerStorages;
 using GameServer.Domain.SessionWorld.PlayerStorages.Interfaces;
-using GameServer.Domain.SessionWorld.WorldQuery.Interfaces;
+using GameServer.Domain.SessionWorld.Services.IndicesService.Interfaces;
+using GameServer.Domain.SessionWorld.Services.IndicesService.Storages;
+using GameServer.Domain.SessionWorld.Services.WorldQuery.Interfaces;
 using GameServer.Domain.ValueObjects;
 using System.Numerics;
 
@@ -21,6 +24,7 @@ namespace GameServer.Domain.SessionWorld
         private readonly IPlayersStorage _playersStorage;
         private readonly IWorldQueryService _worldQueryService;
         private readonly IPacketRouter _packetRouter;
+        private readonly IIndexStorage _indicesStorage;
 
         public IPacketRouter Router { get => _packetRouter; }
 
@@ -46,6 +50,12 @@ namespace GameServer.Domain.SessionWorld
 
             _chunkStorage = new InMemmoryChunkStorage();
             _playersStorage = new InMemmoryPlayerStorage();
+            _indicesStorage = new InMemmoryIndesStorage();
+        }
+
+        public void AddIndex<T, TQuery>(IIndex<T, TQuery> indexsystem)
+        {
+            _indicesStorage.Add(indexsystem);
         }
 
         public async Task<float> GetHeightAt(float WorldX, float WorldZ)
