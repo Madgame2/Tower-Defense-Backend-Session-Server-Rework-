@@ -73,7 +73,7 @@ namespace GameServer.GameLoop.Core.Simultaion
 
                     for (int i = 0; i < _systems.Count; i++)
                     {
-                        _systems[i].Tick(deltaTime, _simulatedWorld);
+                        await _systems[i].Tick(deltaTime, _simulatedWorld);
                     }
 
                     networkAccumulator += deltaTime;

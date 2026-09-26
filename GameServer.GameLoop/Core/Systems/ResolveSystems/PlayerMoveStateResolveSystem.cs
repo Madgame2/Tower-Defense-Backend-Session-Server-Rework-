@@ -14,7 +14,7 @@ namespace GameServer.GameLoop.Core.Systems.ResolveSystems
 
             foreach (var player in players)
             {
-                if(!player.IsGrounded)
+                if (!player.IsGrounded&& player.Velocity.Y <= - 2)
                 {
                     player.MovementState = Domain.Player.Enums.MovementState.Falling;
                 }

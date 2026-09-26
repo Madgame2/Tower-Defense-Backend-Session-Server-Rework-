@@ -8,6 +8,5 @@ namespace GameServer.Domain.SessionWorld.Graphs.TreeGraph
 {
     public interface ITreeGraphNode: IGraphNode<StaticTreeData>
     {
-        StaticTreeData Evaluate(float x, float y);
     }
 }

@@ -18,6 +18,12 @@ namespace GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Nodes.MetaData
 
         [Key(5)] public ParamValueType ValueType;
 
-        [Key(6)] public ConditionData ConditionValue;
+        [Key(6)] public ConditionData? ConditionValue;
+        [Key(7)] public GenericTypes GenericType;
+
+        public NodeParam()
+        {
+            ConditionValue = null;
+        }
     }
 }

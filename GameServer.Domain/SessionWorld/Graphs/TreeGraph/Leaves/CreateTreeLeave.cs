@@ -23,7 +23,7 @@ namespace GameServer.Domain.SessionWorld.Graphs.TreeGraph.Leaves
             return Array.Empty<IGraphNode>();
         }
 
-        public NodeParam[] GetParams(Func<IGraphNode, short> serializeCallback = null)
+        public NodeParam[] GetParams(Func<IGraphNode, short> serializeCallback)
         {
             return Array.Empty<NodeParam>();
         }

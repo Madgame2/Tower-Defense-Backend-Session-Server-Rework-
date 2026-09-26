@@ -40,7 +40,7 @@ namespace GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Nodes.Leaves
             return Array.Empty<ILandscapeGraphNode>();
         }
 
-        public override NodeParam[] GetParams(Func<IGraphNode, short> serializeCallback = null)
+        public override NodeParam[] GetParams(Func<IGraphNode, short> serializeCallback)
         {
             return new[]
         {

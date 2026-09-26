@@ -8,6 +8,6 @@ namespace GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Base
 {
     public interface ILandscapeGraphNode : IGraphNode<float>
     {
-        float Evaluate(float x, float y);
+
     }
 }

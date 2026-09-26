@@ -1,4 +1,5 @@
 ﻿using GameServer.Domain.SessionWorld.Graphs.Base.Enums;
+using GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Nodes.Enums;
 using MessagePack;
 using System;
 using System.Collections.Generic;
@@ -20,5 +21,7 @@ namespace GameServer.Domain.SessionWorld.Graphs.Base.Meta
         // Идентификаторы нод-входов (для CompareCondition между нодами)
         [Key(5)] public int InputAId { get; set; }
         [Key(6)] public int InputBId { get; set; }
+
+        [Key(7)] public ParamValueType CompareDataType;
     }
 }

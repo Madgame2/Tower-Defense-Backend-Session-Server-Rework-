@@ -1,4 +1,5 @@
-﻿using GameServer.Domain.SessionWorld.Graphs.Base.Interfaces;
+﻿using GameServer.Domain.SessionWorld.Graphs.Base;
+using GameServer.Domain.SessionWorld.Graphs.Base.Interfaces;
 using GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Nodes.Enums;
 using GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Nodes.MetaData;
 using GameServer.Domain.SessionWorld.Graphs.Meta.Enums;
@@ -44,7 +45,8 @@ namespace GameServer.Domain.SessionWorld.Graphs.CommonNodes
                 {
                     Param = ParamsType.Condition,
                     ValueType = ParamValueType.Condition,
-                    ConditionValue = _condition.GetMetaData(serializeCallback)
+                    ConditionValue = _condition.GetMetaData(serializeCallback),
+                    GenericType = DataTypeRegistry.GetEnum(typeof(T))
                 }
             };
         }

@@ -1,6 +1,7 @@
 ﻿using GameServer.Domain.SessionWorld.Graphs.Base.Enums;
 using GameServer.Domain.SessionWorld.Graphs.Base.Interfaces;
 using GameServer.Domain.SessionWorld.Graphs.Base.Meta;
+using GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Nodes.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -24,14 +25,24 @@ namespace GameServer.Domain.SessionWorld.Graphs.Base
 
         public IGraphNode[] GetConditionNodes() => new IGraphNode[] { _a, _b };
 
-        public ConditionData GetMetaData(Func<IGraphNode, short> serializeCallback) => new ConditionData
+        public ConditionData GetMetaData(Func<IGraphNode, short> serializeCallback)
         {
-            Type = ConditionType.Compare,
-            CompareMode = _mode,
+            ParamValueType compareType = ParamValueType.Float; 
 
-            InputAId = serializeCallback(_a),
-            InputBId = serializeCallback(_b)
-        };
+            if (typeof(T) == typeof(int)) compareType = ParamValueType.Int;
+            else if (typeof(T) == typeof(bool)) compareType = ParamValueType.Bool;
+            else if (typeof(T) == typeof(string)) compareType = ParamValueType.String;
+
+            return new ConditionData
+            {
+                Type = ConditionType.Compare,
+                CompareMode = _mode,
+                InputAId = serializeCallback(_a),
+                InputBId = serializeCallback(_b),
+
+                CompareDataType = compareType
+            };
+        }
 
         public bool Pass(float x, float y)
         {
