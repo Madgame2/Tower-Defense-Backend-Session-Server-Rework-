@@ -18,4 +18,10 @@
     <ProjectReference Include="..\GameServer.GameLoop\GameServer.GameLoop.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Resources\ObstaclesDescriptions\Tree_1.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

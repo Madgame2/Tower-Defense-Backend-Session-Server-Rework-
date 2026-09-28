@@ -46,8 +46,8 @@ namespace GameServer.Domain.SessionWorld.Graphs.Base
 
         public bool Pass(float x, float y)
         {
-            T valA = _a.Evaluate(x, y);
-            T valB = _b.Evaluate(x, y);
+           _a.TryEvaluate(x, y, out T valA);
+           _b.TryEvaluate(x, y, out T valB);
 
             int result = _comparer.Compare(valA, valB);
 

@@ -6,6 +6,7 @@ using GameServer.Domain.SessionWorld.Meta.Interfaces;
 using GameServer.Domain.SessionWorld.Model;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Numerics;
 using System.Text;
 
@@ -36,17 +37,57 @@ namespace GameServer.Domain.SessionWorld.Generators
 
             DefineLandscape(newChank);
             DefineBioms(newChank);
+            PlaceTrees(newChank);
 
             return newChank;
         }
 
-        private void DefineBioms(Chank chank)
+        private void PlaceTrees(Chank chank)
         {
+            int baseSize = _chunksSettings.ChunkSize;
+            float chunkWorldOriginX = chank.Position.X * baseSize;
+            float chunkWorldOriginY = chank.Position.Y * baseSize;
+
+            Vector2 pivotOffset = chank.Pivot * baseSize;
+
             for (var x = 0; x < chank.Size; x++)
             {
                 for (var y = 0; y < chank.Size; y++)
                 {
-                    var biom = _biomGraphRot.Evaluate(x, y);
+                    float worldX = chunkWorldOriginX + x - pivotOffset.X;
+                    float worldY = chunkWorldOriginY + y - pivotOffset.Y;
+
+                    try
+                    {
+                        var hasTree = TreeGraphRoot.TryEvaluate(worldX, worldY, out var data);
+                        if (hasTree)
+                            chank.AddTree(data);
+                    }
+                    catch (Exception exception)
+                    {
+                        
+                    }
+
+                }
+            }
+        }
+
+        private void DefineBioms(Chank chank)
+        {
+            int baseSize = _chunksSettings.ChunkSize;
+            float chunkWorldOriginX = chank.Position.X * baseSize;
+            float chunkWorldOriginY = chank.Position.Y * baseSize;
+
+            Vector2 pivotOffset = chank.Pivot * baseSize;
+
+            for (var x = 0; x < chank.Size; x++)
+            {
+                for (var y = 0; y < chank.Size; y++)
+                {
+                    float worldX = chunkWorldOriginX + x - pivotOffset.X;
+                    float worldY = chunkWorldOriginY + y - pivotOffset.Y;
+
+                    var biom = _biomGraphRot.Evaluate(worldX, worldY);
                     chank.SetBiomeCell(x, y, biom);
                 }
             }
@@ -67,7 +108,7 @@ namespace GameServer.Domain.SessionWorld.Generators
                     float worldX = chunkWorldOriginX + x - pivotOffset.X;
                     float worldY = chunkWorldOriginY + y - pivotOffset.Y;
 
-                    var height = _landscapeRoot.Evaluate(worldX, worldY);
+                    _landscapeRoot.TryEvaluate(worldX, worldY, out var height);
                     chank.SetlandscapeHeight(x, y, height);
                 }
             }

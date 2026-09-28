@@ -27,12 +27,12 @@ namespace GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Nodes.Leaves
 
         public override NodeType Type => NodeType.PerlinNoiseNode;
 
-        public override float Evaluate(float x, float y)
+        public override bool TryEvaluate(float x, float y, out float result)
         {
             float rawNoise = _noise.GetPerlin(x, y);
-            float result = (rawNoise + 1.0f) / 2.0f;
+            result = (rawNoise + 1.0f) / 2.0f;
 
-            return result;
+            return true;
         }
 
         public override ILandscapeGraphNode[] GetChildren()

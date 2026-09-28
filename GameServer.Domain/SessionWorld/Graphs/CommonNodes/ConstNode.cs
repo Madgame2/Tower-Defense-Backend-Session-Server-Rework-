@@ -21,9 +21,10 @@ namespace GameServer.Domain.SessionWorld.Graphs.CommonNodes
             _const = value;
         }
 
-        public T Evaluate(float x, float y)
+        public bool TryEvaluate(float x, float y, out T result)
         {
-            return _const;
+            result = _const;
+            return true;
         }
 
         public IGraphNode[] GetChildren()

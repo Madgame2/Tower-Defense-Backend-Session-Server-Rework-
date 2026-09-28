@@ -13,9 +13,10 @@ namespace GameServer.Domain.SessionWorld.Graphs.TreeGraph.Leaves
     {
         public NodeType Type => NodeType.CreateTreeNode;
 
-        public StaticTreeData Evaluate(float x, float y)
+        public bool TryEvaluate(float x, float y, out StaticTreeData result)
         {
-            return new StaticTreeData { LocalPosition = new Vector2(x, y) };
+            result = new StaticTreeData { LocalPosition = new Vector2(x, y) };
+            return true;
         }
 
         public IGraphNode[] GetChildren()

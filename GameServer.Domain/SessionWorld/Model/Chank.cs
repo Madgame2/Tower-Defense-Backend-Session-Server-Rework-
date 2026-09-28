@@ -29,12 +29,9 @@ namespace GameServer.Domain.SessionWorld.Model
             BiomeMap = new BiomeType[size * size];
         }
 
-        public void AddTree(Vector2 localPos)
+        public void AddTree(StaticTreeData newTree)
         {
-            Trees.Add(new StaticTreeData
-            {
-                LocalPosition = localPos,
-            });
+            Trees.Add(newTree);
         }
 
         public void SetlandscapeHeight(int x, int y, float value)

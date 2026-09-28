@@ -10,6 +10,8 @@ using GameServer.Domain.SessionWorld.PlayerStorages;
 using GameServer.Domain.SessionWorld.PlayerStorages.Interfaces;
 using GameServer.Domain.SessionWorld.Services.IndicesService.Interfaces;
 using GameServer.Domain.SessionWorld.Services.IndicesService.Storages;
+using GameServer.Domain.SessionWorld.Services.ObjectRegister;
+using GameServer.Domain.SessionWorld.Services.ObjectRegister.Handlers;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.Interfaces;
 using GameServer.Domain.ValueObjects;
 using System.Numerics;
@@ -26,7 +28,12 @@ namespace GameServer.Domain.SessionWorld
         private readonly IPacketRouter _packetRouter;
         private readonly IIndexStorage _indicesStorage;
 
+        private readonly IObjectRegistry _objectRegistry;
+
         public IPacketRouter Router { get => _packetRouter; }
+        public IObjectRegistry ObjectRegistry { get => _objectRegistry; }
+
+        public IWorldQueryService worldQueryService { get => _worldQueryService; }
 
         public SessionChunkGenerator ChunkGenerator
         {
@@ -51,6 +58,11 @@ namespace GameServer.Domain.SessionWorld
             _chunkStorage = new InMemmoryChunkStorage();
             _playersStorage = new InMemmoryPlayerStorage();
             _indicesStorage = new InMemmoryIndesStorage();
+            _objectRegistry = new InMemmoryObjectRegister();
+
+            var contex = new GameRoomContext(_chunkStorage, chunksSettings, _playersStorage, _indicesStorage);
+
+            _objectRegistry.RegisterHandler(new PlayersRegisterHandler(_playersStorage));
         }
 
         public void AddIndex<T, TQuery>(IIndex<T, TQuery> indexsystem)
@@ -58,12 +70,24 @@ namespace GameServer.Domain.SessionWorld
             _indicesStorage.Add(indexsystem);
         }
 
-        public async Task<float> GetHeightAt(float WorldX, float WorldZ)
-        {
-            return await _worldQueryService.GetHeightAt(this, WorldX, WorldZ);
-        }
 
         public async Task<Chank> GetOrGenerateChunkAsync(float worldX, float worldZ)
+        {
+            var pivot = CalculateChunkPivot(worldX, worldZ);
+
+            var chunk = _chunkStorage.Get(pivot);
+
+            if (chunk != null)
+                return chunk;
+
+            chunk = await _chunkGenerator.CreateChankAsync(pivot);
+
+            _objectRegistry.Add(chunk);
+
+            return chunk;
+        }
+
+        private Vector2 CalculateChunkPivot(float worldX, float worldZ)
         {
             var chunkSize = _chunksSettings.ChunkSize;
             var chunkPivot = _chunksSettings.Pivot;
@@ -77,24 +101,7 @@ namespace GameServer.Domain.SessionWorld
             float pivotX = chunkGridX;
             float pivotZ = chunkGridZ;
 
-            var pivot = new Vector2(pivotX, pivotZ);
-
-            var chunk = _chunkStorage.Get(pivot);
-            if (chunk != null)
-            {
-                return chunk;
-            }
-
-            chunk = await _chunkGenerator.CreateChankAsync(pivot);
-
-            _chunkStorage.Save(chunk);
-
-            return chunk;
-        }
-
-        public void RegPlayer(Player.Player playerobj)
-        {
-            _playersStorage.Add(playerobj);
+            return new Vector2(pivotX, pivotZ);
         }
 
         public void HandleMoveInputs(string playerId, uint lastTick, ReadOnlySpan<MoveInputCommand> inputs)
@@ -107,6 +114,25 @@ namespace GameServer.Domain.SessionWorld
             foreach (var input in inputs)
             {
                 player.InputBuffer.AddInput(input);
+            }
+        }
+
+        public class GameRoomContext
+        {
+            public IChunkStorage ChunkStorage { get; }
+            public IChunksSettings ChunksSettings { get; }
+            public IPlayersStorage PlayersStorage { get; }
+            public IIndexStorage IndicesStorage { get; }
+
+            public GameRoomContext(IChunkStorage chunkStorage,
+                IChunksSettings chunksSettings,
+                IPlayersStorage playersStorage,
+                IIndexStorage indexStorage)
+            {
+                ChunksSettings = chunksSettings;
+                ChunksSettings = chunksSettings;
+                PlayersStorage = playersStorage;
+                IndicesStorage = indexStorage;
             }
         }
     }

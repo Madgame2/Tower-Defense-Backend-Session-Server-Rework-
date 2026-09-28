@@ -19,9 +19,9 @@ namespace GameServer.Domain.SessionWorld.Graphs.TreeGraph.Addapters
 
         public NodeType Type => throw new NotImplementedException();
 
-        public StaticTreeData Evaluate(float x, float y)
+        public bool TryEvaluate(float x, float y, out StaticTreeData result)
         {
-            return _innerNode.Evaluate(x, y);
+            throw new NotImplementedException();
         }
 
         public IGraphNode[] GetChildren()

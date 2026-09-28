@@ -15,8 +15,8 @@ namespace GameServer.Domain.SessionWorld.Graphs.Base.Interfaces
     }
 
 
-    public interface IGraphNode<out TOutput> : IGraphNode
+    public interface IGraphNode<TOutput> : IGraphNode
     {
-        TOutput Evaluate(float x, float y);
+        bool TryEvaluate(float x, float y, out TOutput result);
     }
 }

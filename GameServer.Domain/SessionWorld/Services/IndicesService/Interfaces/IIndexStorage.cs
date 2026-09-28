@@ -6,9 +6,7 @@ namespace GameServer.Domain.SessionWorld.Services.IndicesService.Interfaces
 {
     public interface IIndexStorage
     {
-        void Add<T, TQuery>(
-            IIndex<T, TQuery> index);
-
-        IIndex<T, TQuery> Get<T, TQuery>();
+        void Add<T, TQuery>(IIndex<T, TQuery> index);
+        ReadOnlySpan<IIndex<T>> Get<T>();
     }
 }

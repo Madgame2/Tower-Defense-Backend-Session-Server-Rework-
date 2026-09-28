@@ -31,8 +31,11 @@ namespace GameServer.Application.Sessions.States
         private IBiomGraphFactory _biomGraphFactory;
         private ITreeGraphFactory _treeGraphFactory;
 
-        public GenerateWorldState(IChunksSettings chunksSettings, IWorldQueryService worldQueryService,
-            IChunkGeneratorFactory chankFactory, ILandscapeGraphFactory landscapeGraphFactory, IBiomGraphFactory biomGraphFactory,
+        public GenerateWorldState(IChunksSettings chunksSettings,
+            IWorldQueryService worldQueryService,
+            IChunkGeneratorFactory chankFactory,
+            ILandscapeGraphFactory landscapeGraphFactory,
+            IBiomGraphFactory biomGraphFactory,
             ITreeGraphFactory treeGraphFactory)
         {
             _worldQueryService = worldQueryService;
@@ -67,7 +70,7 @@ namespace GameServer.Application.Sessions.States
             var newWorldObject = new GameRoom(_chunksSettings, _worldQueryService, router);
 
             var treesIndex = new SpatialGridIndex<StaticTreeData>((treeData) => { return treeData.LocalPosition; });
-            newWorldObject.AddIndex<StaticTreeData>(treesIndex);
+            newWorldObject.AddIndex(treesIndex);
 
             CreateWorldGenerationRules(newWorldObject);
             await SpawnPlayers(ctx.OnlinePlayersIDs, newWorldObject);
@@ -96,7 +99,7 @@ namespace GameServer.Application.Sessions.States
             foreach (var player in onlinePlayersIDs)
             {
 
-                var y = await world.GetHeightAt(0, 0);
+                var y = await world.worldQueryService.GetHeightAt(world,0, 0);
 
                 var playerPosition = new Vector3(0, y, 0);
 
@@ -110,7 +113,7 @@ namespace GameServer.Application.Sessions.States
 
                 playerobj.Pivot = new Vector3(0, -1, 0);
 
-                world.RegPlayer(playerobj);
+                world.ObjectRegistry.Add(playerobj);
             }
         }
 

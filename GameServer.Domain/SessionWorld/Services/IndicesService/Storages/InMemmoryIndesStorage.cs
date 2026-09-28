@@ -1,38 +1,43 @@
 ﻿using GameServer.Domain.SessionWorld.Services.IndicesService.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace GameServer.Domain.SessionWorld.Services.IndicesService.Storages
 {
     public class InMemmoryIndesStorage : IIndexStorage
     {
-        private readonly Dictionary<Type, IIndex> _indexDictionary = new();
+        private readonly Dictionary<Type, object> _buckets = new();
 
         public void Add<T, TQuery>(IIndex<T, TQuery> index)
         {
-            var key = typeof(IIndex<T, TQuery>);
-
-            if (!_indexDictionary.TryAdd(key, index))
+            if (!_buckets.TryGetValue(typeof(T), out var value))
             {
-                throw new InvalidOperationException(
-                    $"Индекс типа {key} уже зарегистрирован."
-                );
+                var bucket = new IndexBucket<T>();
+                _buckets.Add(typeof(T), bucket);
+                value = bucket;
             }
+
+            var typedBucket = (IndexBucket<T>)value;
+
+            typedBucket.Indices.Add(index);
         }
 
-        public IIndex<T, TQuery> Get<T, TQuery>()
+        public ReadOnlySpan<IIndex<T>> Get<T>()
         {
-            var key = typeof(IIndex<T, TQuery>);
+            if (!_buckets.TryGetValue(typeof(T), out var value))
+                return ReadOnlySpan<IIndex<T>>.Empty;
 
-            if (!_indexDictionary.TryGetValue(key, out var index))
-            {
-                throw new InvalidOperationException(
-                    $"Индекс типа {key} не зарегистрирован."
-                );
-            }
+            var bucket = (IndexBucket<T>)value;
 
-            return (IIndex<T, TQuery>)index;
+            return CollectionsMarshal.AsSpan(bucket.Indices);
+        }
+
+
+        private sealed class IndexBucket<T>
+        {
+            public readonly List<IIndex<T>> Indices = new();
         }
     }
 }

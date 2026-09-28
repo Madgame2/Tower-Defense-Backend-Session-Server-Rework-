@@ -25,11 +25,21 @@ namespace GameServer.Domain.SessionWorld.Graphs.CommonNodes
             ElseNode = elseNode;
         }
 
-        public T Evaluate(float x, float y)
+        public bool TryEvaluate(float x, float y, out T output)
         {
-            return _condition.Pass(x, y)
-                ? ThenNode.Evaluate(x, y)
-                : ElseNode.Evaluate(x, y);
+            output = default;
+
+            if (_condition.Pass(x, y))
+            {
+                return ThenNode != null && ThenNode.TryEvaluate(x, y, out output);
+            }
+
+            if (ElseNode != null)
+            {
+                return ElseNode.TryEvaluate(x, y, out var output1);
+            }
+
+            return false;
         }
 
         public IGraphNode[] GetChildren()

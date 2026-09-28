@@ -11,7 +11,7 @@ namespace GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Base
     {
         public abstract NodeType Type { get; }
 
-        public abstract float Evaluate(float x, float y);
+        public abstract bool TryEvaluate(float x, float y, out float result);
 
         public abstract IGraphNode[] GetChildren();
 
