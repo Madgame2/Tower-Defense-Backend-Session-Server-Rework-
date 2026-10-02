@@ -12,6 +12,7 @@
     <ProjectReference Include="..\GameServer.Domain\GameServer.Domain.csproj" />
     <ProjectReference Include="..\GameServer.GameLoop\GameServer.GameLoop.csproj" />
     <ProjectReference Include="..\GameServer.Infrastructure\GameServer.Infrastructure.csproj" />
+    <ProjectReference Include="..\GameServer.SearchComponents\GameServer.SearchComponents.csproj" />
   </ItemGroup>
 
 </Project>

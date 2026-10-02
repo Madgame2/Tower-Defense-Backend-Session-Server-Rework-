@@ -20,11 +20,18 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Build
 
     public sealed class WorldQueryBuilder<T>
     {
+        private GameRoom _gameRoom;
+
+        public WorldQueryBuilder(GameRoom gameRoom)
+        {
+            _gameRoom = gameRoom;
+        }
+
         public readonly List<IQueryOperation>Operations = new();
 
         public WorldQuery<T> Build(out QueryContext context)
         {
-            context = new();
+            context = new(_gameRoom.IndexStorage);
 
             foreach (var operation in this.Operations)
             {

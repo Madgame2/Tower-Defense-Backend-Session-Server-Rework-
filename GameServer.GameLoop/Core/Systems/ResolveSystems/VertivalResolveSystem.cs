@@ -21,7 +21,7 @@ namespace GameServer.GameLoop.Core.Systems.ResolveSystems
             {
                 var playerPosition = player.Position;
 
-                var terrainY = await world.worldQueryService.GetHeightAt(world,playerPosition.X, playerPosition.Z);
+                var terrainY = await world.worldQueryService.GetHeightAt(playerPosition.X, playerPosition.Z);
 
                 float pivotOffsetY = -player.Pivot.Y * player.Size.Y / 2f;
 

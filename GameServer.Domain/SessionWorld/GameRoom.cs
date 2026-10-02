@@ -35,6 +35,7 @@ namespace GameServer.Domain.SessionWorld
 
         public IPacketRouter Router { get => _packetRouter; }
         public IObjectRegistry ObjectRegistry { get => _objectRegistry; }
+        public IIndexStorage IndexStorage { get => _indicesStorage; }
 
         public IWorldQueryService worldQueryService { get => _worldQueryService; }
 
@@ -52,12 +53,13 @@ namespace GameServer.Domain.SessionWorld
 
         public GameRoom(IChunksSettings chunksSettings,
             IPacketRouter packetRouter,
-            IQueryExecutor queryExecuteEngine)
+            IQueryExecutor queryExecuteEngine,
+            IQueryPlanner queryPlanner)
         {
             _chunksSettings = chunksSettings;
             _packetRouter = packetRouter;
 
-            _worldQueryService = new WorldQueryService(this, queryExecuteEngine);
+            _worldQueryService = new WorldQueryService(this, queryPlanner, queryExecuteEngine);
             _chunkStorage = new InMemmoryChunkStorage();
             _playersStorage = new InMemmoryPlayerStorage();
             _indicesStorage = new InMemmoryIndesStorage();
@@ -66,6 +68,7 @@ namespace GameServer.Domain.SessionWorld
             var contex = new GameRoomContext(_chunkStorage, chunksSettings, _playersStorage, _indicesStorage);
 
             _objectRegistry.RegisterHandler(new PlayersRegisterHandler(_playersStorage));
+            _objectRegistry.RegisterHandler(new ChunkRegisterHandler(_chunkStorage, IndexStorage));
         }
 
         public void AddIndex<T, TQuery>(IIndex<T, TQuery> indexsystem)

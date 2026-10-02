@@ -6,7 +6,7 @@ using System.Text;
 
 namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Operators
 {
-    public sealed class PredicateOperation<T> : IQueryOperation<T>
+    public sealed class PredicateOperation<T> : IQueryOperation
     {
         public Func<T, bool> Predicate { get; }
 

@@ -26,7 +26,7 @@ namespace GameServer.Domain.SessionWorld.Services.ObjectRegister
 
             if( !_handlers.TryGetValue(handlerType, out var handler))
             {
-                throw new ArgumentException($"not found hndlaer for type {handlerType}");
+                throw new ArgumentException($"not found handler for type {handlerType}");
             }
 
             ((IObjectHandler<T>)handler).Add(obj);

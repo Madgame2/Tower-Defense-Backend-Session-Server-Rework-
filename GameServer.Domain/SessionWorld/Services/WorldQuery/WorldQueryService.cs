@@ -87,7 +87,7 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery
 
         public WorldQueryBuilder<T> Search<T>()
         {
-            return new WorldQueryBuilder<T>();
+            return new WorldQueryBuilder<T>(_gameRoom);
         }
 
         public void ExecuteQuery<T>(WorldQuery<T> query, QueryContext queryContext, IList<T> buffer)

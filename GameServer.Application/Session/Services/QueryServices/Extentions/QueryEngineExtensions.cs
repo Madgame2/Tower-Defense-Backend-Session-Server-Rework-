@@ -1,5 +1,6 @@
 ﻿using GameServer.Application.Session.Services.QueryServices;
 using GameServer.Application.Session.Services.QueryServices.Model;
+using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -13,6 +14,10 @@ namespace GameServer.Application.Session.Services.QueryServices.SearchService.En
     {
         public static IServiceCollection AddQueryEngine(this IServiceCollection services)
         {
+            services.AddSingleton<IQueryPlanner, QueryPlaner>();
+            services.AddSingleton<IQueryExecutor, QueryExecuteEngine>();
+
+
             services.AddSingleton<QueryCapabilityRegistry>();
             services.AddSingleton<IQueryCapabilityRegistry>( sp => sp.GetRequiredService<QueryCapabilityRegistry>());
 

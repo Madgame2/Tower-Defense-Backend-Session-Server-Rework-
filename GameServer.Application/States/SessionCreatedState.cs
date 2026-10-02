@@ -25,7 +25,7 @@ namespace GameServer.Application.Sessions.States
 
                     try
                     {
-                        _ = ctx.StateMachine.MoveTo<GenerateWorldState>();
+                        await ctx.StateMachine.MoveTo<GenerateWorldState>();
                     }
                     catch (Exception ex)
                     {

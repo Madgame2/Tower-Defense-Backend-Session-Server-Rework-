@@ -27,6 +27,7 @@ namespace GameServer.Application.Sessions.States
     {
         private readonly IChunksSettings _chunksSettings;
         private readonly IQueryExecutor _worldQueryService;
+        private readonly IQueryPlanner _queryPlanner;
         private IChunkGeneratorFactory _chankGeneratorFactory;
         private ILandscapeGraphFactory _landscapeGraphFactory;
         private IBiomGraphFactory _biomGraphFactory;
@@ -37,7 +38,8 @@ namespace GameServer.Application.Sessions.States
             IChunkGeneratorFactory chankFactory,
             ILandscapeGraphFactory landscapeGraphFactory,
             IBiomGraphFactory biomGraphFactory,
-            ITreeGraphFactory treeGraphFactory)
+            ITreeGraphFactory treeGraphFactory,
+            IQueryPlanner queryPlanner)
         {
             _worldQueryService = worldQueryService;
             _chunksSettings = chunksSettings;
@@ -45,6 +47,7 @@ namespace GameServer.Application.Sessions.States
             _landscapeGraphFactory = landscapeGraphFactory;
             _biomGraphFactory = biomGraphFactory;
             _treeGraphFactory = treeGraphFactory;
+            _queryPlanner = queryPlanner;
         }
 
         public override void Configure(StateEventHandler handlers)
@@ -68,7 +71,7 @@ namespace GameServer.Application.Sessions.States
             Console.WriteLine("ON GenerateWorld");
 
             var router = new GeneralMathcRouter();
-            var newWorldObject = new GameRoom(_chunksSettings, router, _worldQueryService);
+            var newWorldObject = new GameRoom(_chunksSettings, router, _worldQueryService, _queryPlanner);
 
             var treesIndex = new SpatialGridIndex<StaticTreeData>((treeData) => { return treeData.LocalPosition; });
             newWorldObject.AddIndex(treesIndex);
@@ -100,7 +103,7 @@ namespace GameServer.Application.Sessions.States
             foreach (var player in onlinePlayersIDs)
             {
 
-                var y = await world.worldQueryService.GetHeightAt(world,0, 0);
+                var y = await world.worldQueryService.GetHeightAt(0, 0);
 
                 var playerPosition = new Vector3(0, y, 0);
 

@@ -27,6 +27,8 @@ namespace GameServer.Domain.SessionWorld.Model
 
             HeightMap = new float[vertexCount];
             BiomeMap = new BiomeType[size * size];
+
+            Trees = new();
         }
 
         public void AddTree(StaticTreeData newTree)

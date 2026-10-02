@@ -11,13 +11,13 @@
     <PackageReference Include="MessagePack" Version="3.1.6" />
     <PackageReference Include="MessagePack.Annotations" Version="3.1.6" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="SessionWorld\EntitySystem\Models\" />
     <Folder Include="SessionWorld\Graphs\LandscapeGraph\Nodes\Operations\" />
     <Folder Include="SessionWorld\Graphs\Meta\Enums\" />
-    <Folder Include="SessionWorld\Services\WorldQuery\SearchService\Engine\" />
   </ItemGroup>
 
   <ItemGroup>
