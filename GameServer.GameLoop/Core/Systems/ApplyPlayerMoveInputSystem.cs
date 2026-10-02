@@ -8,6 +8,11 @@ namespace GameServer.GameLoop.Core.Systems
 {
     internal class ApplyPlayerMoveInputSystem : ITickable
     {
+
+        public void OnAwake(GameRoom world)
+        {
+
+        }
         public async Task Tick(float delta, GameRoom world)
         {
             var players = world.AllPlayers;

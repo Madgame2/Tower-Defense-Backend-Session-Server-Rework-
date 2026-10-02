@@ -2,13 +2,13 @@ using GameServer.Api.WebSockets;
 using GameServer.Application.Interfaces;
 using GameServer.Application.Meta;
 using GameServer.Application.Session.Ressources;
+using GameServer.Application.Session.Services.QueryServices.SearchService.Engine.Extentions;
 using GameServer.Application.Sessions;
 using GameServer.Application.Sessions.imp;
 using GameServer.Application.Sessions.Repository;
 using GameServer.Application.Sessions.States;
 using GameServer.Domain.Common.Interfaces;
 using GameServer.Domain.Interfaces;
-using GameServer.Domain.Sessions;
 using GameServer.Domain.Sessions.Repository;
 using GameServer.Domain.Sessions.StateMachine.Factory;
 using GameServer.Domain.Sessions.StateMachine.StatesGraph;
@@ -21,8 +21,6 @@ using GameServer.Domain.SessionWorld.Graphs.TreeGraph.Factory;
 using GameServer.Domain.SessionWorld.Graphs.TreeGraph.Factory.Interfaces;
 using GameServer.Domain.SessionWorld.Interfaces;
 using GameServer.Domain.SessionWorld.Meta.Interfaces;
-using GameServer.Domain.SessionWorld.Services.WorldQuery;
-using GameServer.Domain.SessionWorld.Services.WorldQuery.Interfaces;
 using GameServer.Domain.UDP.Interfaces;
 using GameServer.Endpoints;
 using GameServer.GameLoop.Core.Simultaion.Factory;
@@ -37,12 +35,12 @@ using GameServer.Infrastructure.Sessions.Repository;
 using GameServer.Infrastructure.UDP.Core;
 using GameServer.Infrastructure.WSRouter;
 using GameServer.Middleware;
+using GameServer.SearchComponents.Marker;
 using GameServer.Services.WS.WSMiddleware;
 using GameServer.Services.WS.WSMiddleware.Imp.LoggingMiddleware;
 using GameServer.Services.WS.WSMiddleware.Imp.ParcerMiddleware;
 using GameServer.Services.WS.WSMiddleware.Model;
 using Microsoft.Extensions.Options;
-using System.Reflection;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -112,14 +110,16 @@ builder.Services.AddTransient<ITreeGraphFactory, TreeGraphFactory>();
 
 builder.Services.AddTransient<ISimulationFactory, SimulationFactory>();  
 
-builder.Services.AddSingleton<IWorldQueryService, WorldQueryService>();
-
 builder.Services.AddSingleton<ISessionStaticResources, SessionStaticResources>();
 
 
 builder.Services.AddSingleton<UdpServerTransport>();
 builder.Services.AddSingleton<IUdpSender>(sp => sp.GetRequiredService<UdpServerTransport>());
 builder.Services.AddHostedService(sp => sp.GetRequiredService<UdpServerTransport>());
+
+builder.Services.AddQueryEngine();
+builder.Services.AddQueryCapabilityAssembly<SearchCompoentsModuleMarker>();
+
 
 var app = builder.Build();
 

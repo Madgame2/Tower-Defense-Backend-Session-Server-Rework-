@@ -8,6 +8,12 @@ namespace GameServer.GameLoop.Core.Systems
 {
     internal class VelocityToPositionSystem : ITickable
     {
+
+        public void OnAwake(GameRoom world)
+        {
+
+        }
+
         public async Task Tick(float delta, GameRoom world)
         {
             var allPlayers = world.AllPlayers;

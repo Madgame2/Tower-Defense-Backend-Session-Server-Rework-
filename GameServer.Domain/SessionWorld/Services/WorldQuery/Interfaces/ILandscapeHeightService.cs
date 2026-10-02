@@ -6,6 +6,6 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.Interfaces
 {
     public interface ILandscapeHeightService
     {
-        Task<float> GetHeightAt(GameRoom world, float worldX, float worldZ);        
+        Task<float> GetHeightAt(float worldX, float worldZ);        
     }
 }

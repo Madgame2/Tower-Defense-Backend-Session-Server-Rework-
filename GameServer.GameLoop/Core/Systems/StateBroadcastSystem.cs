@@ -22,6 +22,11 @@ namespace GameServer.GameLoop.Core.Systems
             _connectedClinetStorage = connectedClientsStorage;
         }
 
+        public void OnAwake(GameRoom world)
+        {
+
+        }
+
         public void NetworkTick(float delta, uint serverTick, GameRoom world)
         {
             var players = world.AllPlayers;

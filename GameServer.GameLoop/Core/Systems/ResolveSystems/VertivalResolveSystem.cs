@@ -8,6 +8,11 @@ namespace GameServer.GameLoop.Core.Systems.ResolveSystems
 {
     internal class VertivalResolveSystem : ITickable
     {
+        public void OnAwake(GameRoom world)
+        {
+
+        }
+
         public async Task Tick(float delta, GameRoom world)
         {
             var allPlayers = world.AllPlayers;

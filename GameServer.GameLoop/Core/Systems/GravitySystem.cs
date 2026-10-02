@@ -11,6 +11,11 @@ namespace GameServer.GameLoop.Core.Systems
         private const float Gravity = 9.8f;
         private const float TerminalVelocity = -50f;
 
+        public void OnAwake(GameRoom world)
+        {
+
+        }
+
         public async Task Tick(float delta, GameRoom world)
         {
             var allPlayers = world.AllPlayers;

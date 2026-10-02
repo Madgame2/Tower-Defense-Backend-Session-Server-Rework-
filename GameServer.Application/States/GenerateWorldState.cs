@@ -18,6 +18,7 @@ using GameServer.Domain.SessionWorld.Graphs.TreeGraph.Factory.Interfaces;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.Interfaces;
 using GameServer.Domain.SessionWorld.Model;
 using GameServer.Domain.SessionWorld.Services.IndicesService.IndexesImplement;
+using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Interfaces;
 
 namespace GameServer.Application.Sessions.States
 {
@@ -25,14 +26,14 @@ namespace GameServer.Application.Sessions.States
     public class GenerateWorldState : BaseState
     {
         private readonly IChunksSettings _chunksSettings;
-        private readonly IWorldQueryService _worldQueryService;
+        private readonly IQueryExecutor _worldQueryService;
         private IChunkGeneratorFactory _chankGeneratorFactory;
         private ILandscapeGraphFactory _landscapeGraphFactory;
         private IBiomGraphFactory _biomGraphFactory;
         private ITreeGraphFactory _treeGraphFactory;
 
         public GenerateWorldState(IChunksSettings chunksSettings,
-            IWorldQueryService worldQueryService,
+            IQueryExecutor worldQueryService,
             IChunkGeneratorFactory chankFactory,
             ILandscapeGraphFactory landscapeGraphFactory,
             IBiomGraphFactory biomGraphFactory,
@@ -67,7 +68,7 @@ namespace GameServer.Application.Sessions.States
             Console.WriteLine("ON GenerateWorld");
 
             var router = new GeneralMathcRouter();
-            var newWorldObject = new GameRoom(_chunksSettings, _worldQueryService, router);
+            var newWorldObject = new GameRoom(_chunksSettings, router, _worldQueryService);
 
             var treesIndex = new SpatialGridIndex<StaticTreeData>((treeData) => { return treeData.LocalPosition; });
             newWorldObject.AddIndex(treesIndex);

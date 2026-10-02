@@ -12,8 +12,11 @@ using GameServer.Domain.SessionWorld.Services.IndicesService.Interfaces;
 using GameServer.Domain.SessionWorld.Services.IndicesService.Storages;
 using GameServer.Domain.SessionWorld.Services.ObjectRegister;
 using GameServer.Domain.SessionWorld.Services.ObjectRegister.Handlers;
+using GameServer.Domain.SessionWorld.Services.WorldQuery;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.Interfaces;
+using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Interfaces;
 using GameServer.Domain.ValueObjects;
+using Microsoft.Extensions.Logging;
 using System.Numerics;
 
 namespace GameServer.Domain.SessionWorld
@@ -48,13 +51,13 @@ namespace GameServer.Domain.SessionWorld
         public Player.Player[] AllPlayers { get => _playersStorage.GetAll(); }
 
         public GameRoom(IChunksSettings chunksSettings,
-            IWorldQueryService worldQueryService,
-            IPacketRouter packetRouter)
+            IPacketRouter packetRouter,
+            IQueryExecutor queryExecuteEngine)
         {
             _chunksSettings = chunksSettings;
-            _worldQueryService = worldQueryService;
             _packetRouter = packetRouter;
 
+            _worldQueryService = new WorldQueryService(this, queryExecuteEngine);
             _chunkStorage = new InMemmoryChunkStorage();
             _playersStorage = new InMemmoryPlayerStorage();
             _indicesStorage = new InMemmoryIndesStorage();

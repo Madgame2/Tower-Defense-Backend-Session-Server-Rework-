@@ -1,4 +1,9 @@
-﻿using GameServer.Domain.SessionWorld.Services.WorldQuery.Interfaces;
+﻿using GameServer.Domain.SessionWorld.Model;
+using GameServer.Domain.SessionWorld.Services.WorldQuery.Interfaces;
+using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Builder;
+using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Interfaces;
+using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,9 +13,23 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery
 {
     public class WorldQueryService : IWorldQueryService
     {
-        public async Task<float> GetHeightAt(GameRoom world, float worldX, float worldZ)
+        private readonly GameRoom _gameRoom;
+        private readonly IQueryPlanner _queryPlanner;
+        private readonly IQueryExecutor _queryExecutor;
+
+        public WorldQueryService(
+            GameRoom gameRoom,
+            IQueryPlanner queryPlanner,
+            IQueryExecutor queryExecutor)
         {
-            var chunk = await world.GetOrGenerateChunkAsync(worldX, worldZ);
+            _gameRoom = gameRoom;
+            _queryPlanner = queryPlanner;
+            _queryExecutor = queryExecutor;
+        }
+
+        public async Task<float> GetHeightAt(float worldX, float worldZ)
+        {
+            var chunk = await _gameRoom.GetOrGenerateChunkAsync(worldX, worldZ);
 
             float chunkSize = chunk.Size;
 
@@ -64,6 +83,24 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery
                 + (1.0f - fz) * (h10 - h11);
 
             return calculatedHeight;
+        }
+
+        public WorldQueryBuilder<T> Search<T>()
+        {
+            return new WorldQueryBuilder<T>();
+        }
+
+        public void ExecuteQuery<T>(WorldQuery<T> query, QueryContext queryContext, IList<T> buffer)
+        {
+            var plan = _queryPlanner.Build(
+                           query,
+                           queryContext);
+
+            _queryExecutor.Execute(
+                            plan,
+                            queryContext,
+                            buffer);
+
         }
     }
 }

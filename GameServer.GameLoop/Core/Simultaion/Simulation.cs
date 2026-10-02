@@ -63,6 +63,8 @@ namespace GameServer.GameLoop.Core.Simultaion
             uint gameTicks = 0;
             try
             {
+                AwaekeSystems(_systems);
+
                 while (await timer.WaitForNextTickAsync(token))
                 {
                     float deltaTime = (float)stopwatch.Elapsed.TotalSeconds;
@@ -99,6 +101,14 @@ namespace GameServer.GameLoop.Core.Simultaion
             finally
             {
                 stopwatch.Stop();
+            }
+        }
+
+        private void AwaekeSystems(List<ITickable> systems)
+        {
+            foreach (ITickable system in systems)
+            {
+                system.OnAwake(_simulatedWorld);
             }
         }
     }

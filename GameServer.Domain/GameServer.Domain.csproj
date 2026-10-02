@@ -17,6 +17,7 @@
     <Folder Include="SessionWorld\EntitySystem\Models\" />
     <Folder Include="SessionWorld\Graphs\LandscapeGraph\Nodes\Operations\" />
     <Folder Include="SessionWorld\Graphs\Meta\Enums\" />
+    <Folder Include="SessionWorld\Services\WorldQuery\SearchService\Engine\" />
   </ItemGroup>
 
   <ItemGroup>
