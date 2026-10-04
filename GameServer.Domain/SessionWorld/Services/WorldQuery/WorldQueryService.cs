@@ -5,6 +5,7 @@ using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.In
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -92,14 +93,19 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery
 
         public void ExecuteQuery<T>(WorldQuery<T> query, QueryContext queryContext, IList<T> buffer)
         {
-            var plan = _queryPlanner.Build(
-                           query,
-                           queryContext);
+            var arrayPool = ArrayPool<QueryExecutionStep<T>>.Shared;
+            var planBuffer = arrayPool.Rent(query.Count);
 
-            _queryExecutor.Execute(
-                            plan,
-                            queryContext,
-                            buffer);
+            try
+            {
+                var plan = _queryPlanner.Build(query, queryContext, planBuffer);
+
+                _queryExecutor.Execute(plan, queryContext, buffer);
+            }
+            finally
+            {
+                arrayPool.Return(planBuffer);
+            }
 
         }
     }

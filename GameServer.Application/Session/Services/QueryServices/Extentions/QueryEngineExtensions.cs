@@ -18,11 +18,11 @@ namespace GameServer.Application.Session.Services.QueryServices.SearchService.En
             services.AddSingleton<IQueryExecutor, QueryExecuteEngine>();
 
 
-            services.AddSingleton<QueryCapabilityRegistry>();
-            services.AddSingleton<IQueryCapabilityRegistry>( sp => sp.GetRequiredService<QueryCapabilityRegistry>());
+            services.AddSingleton<QueryAdapterRegistry>();
+            services.AddSingleton<IQueryAdapterRegistry>( sp => sp.GetRequiredService<QueryAdapterRegistry>());
 
-            services.AddQueryCapabilityAssembly<QueryCapabilityRegistry>();
-            services.AddQueryCapabilityAssembly<IQueryCapabilityRegistry>();
+            services.AddQueryCapabilityAssembly<QueryAdapterRegistry>();
+            services.AddQueryCapabilityAssembly<IQueryAdapterRegistry>();
 
             return services;
         }

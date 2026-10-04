@@ -8,6 +8,6 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engin
 {
     public interface IQueryExecutor
     {
-        void Execute<T>(QueryExecutePlan executePlan, QueryContext queryContext, IList<T> buffer);
+        void Execute<T>(QueryExecutePlan<T> executePlan, QueryContext queryContext, IList<T> buffer);
     }
 }

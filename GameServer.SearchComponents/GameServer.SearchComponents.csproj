@@ -10,4 +10,8 @@
     <ProjectReference Include="..\GameServer.Domain\GameServer.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ExecutionSteps\" />
+  </ItemGroup>
+
 </Project>

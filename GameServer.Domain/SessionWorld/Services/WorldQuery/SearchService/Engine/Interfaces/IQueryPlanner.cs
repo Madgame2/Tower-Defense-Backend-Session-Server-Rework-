@@ -8,6 +8,6 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engin
 {
     public interface IQueryPlanner
     {
-        QueryExecutePlan Build<T>(WorldQuery<T> query, QueryContext queryContext);
+        QueryExecutePlan<T> Build<T>(WorldQuery<T> query, QueryContext queryContext, QueryExecutionStep<T>[] planBuffer);
     }
 }

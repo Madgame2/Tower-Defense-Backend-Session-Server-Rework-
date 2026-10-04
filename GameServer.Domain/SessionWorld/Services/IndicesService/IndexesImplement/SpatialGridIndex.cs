@@ -68,6 +68,11 @@ namespace GameServer.Domain.SessionWorld.Services.IndicesService.IndexesImplemen
             }
         }
 
+        public void Get(object query, List<T> result)
+        {
+            Get((SpatiialGridQuery)query, result);
+        }
+
         public void Remove(T item)
         {
             Vector2 position = _keySelector(item);

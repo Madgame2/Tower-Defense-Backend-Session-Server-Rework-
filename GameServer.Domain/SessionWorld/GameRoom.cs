@@ -62,7 +62,7 @@ namespace GameServer.Domain.SessionWorld
             _worldQueryService = new WorldQueryService(this, queryPlanner, queryExecuteEngine);
             _chunkStorage = new InMemmoryChunkStorage();
             _playersStorage = new InMemmoryPlayerStorage();
-            _indicesStorage = new InMemmoryIndesStorage();
+            _indicesStorage = new InMemmoryIndexStorage();
             _objectRegistry = new InMemmoryObjectRegister();
 
             var contex = new GameRoomContext(_chunkStorage, chunksSettings, _playersStorage, _indicesStorage);

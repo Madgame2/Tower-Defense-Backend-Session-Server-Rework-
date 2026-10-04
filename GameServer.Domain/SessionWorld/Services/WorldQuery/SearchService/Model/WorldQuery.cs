@@ -9,9 +9,11 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model
 {
     public class WorldQuery<T>
     {
-        internal IReadOnlyList<IQueryOperation> Operations { get; }
+        public IReadOnlyList<IQueryOperation> Operations { get; }
 
-        internal WorldQuery(
+        public int Count => Operations.Count;
+
+        public WorldQuery(
             IReadOnlyList<IQueryOperation> operations)
         {
             Operations = operations;
