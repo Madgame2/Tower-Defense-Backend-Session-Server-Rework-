@@ -1,6 +1,7 @@
 ﻿using GameServer.Domain.SessionWorld;
 using GameServer.Domain.SessionWorld.Model;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Builder;
+using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Model;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Operators.Extentions;
 using GameServer.GameLoop.Core.Simultaion.Steps.Interfaces;
@@ -14,7 +15,7 @@ namespace GameServer.GameLoop.Core.Systems.ResolveSystems
 {
     internal class HorizontalResolveSystem : ITickable
     {
-        private WorldQuery<StaticTreeData> _treeQuery;
+        private QueryExecutePlan<StaticTreeData> _treeQuery;
         private QueryContext queryContext;
 
         private List<StaticTreeData> buffer = new(32);

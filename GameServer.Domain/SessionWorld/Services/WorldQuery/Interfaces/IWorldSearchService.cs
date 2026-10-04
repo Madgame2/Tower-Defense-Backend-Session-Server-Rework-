@@ -1,5 +1,6 @@
 ﻿using GameServer.Domain.SessionWorld.Model;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Builder;
+using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Model;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,6 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.Interfaces
     public interface IWorldSearchService
     {
         WorldQueryBuilder<T> Search<T>();
-        void ExecuteQuery<T>(WorldQuery<T> treeQuery, QueryContext queryContext, IList<T> buffer);
+        void ExecuteQuery<T>(QueryExecutePlan<T> treeQuery, QueryContext queryContext, IList<T> buffer);
     }
 }

@@ -2,6 +2,7 @@
 using GameServer.Domain.SessionWorld.Services.WorldQuery.Interfaces;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Builder;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Interfaces;
+using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Model;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model;
 using Microsoft.Extensions.Logging;
 using System;
@@ -24,7 +25,7 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery
             IQueryExecutor queryExecutor)
         {
             _gameRoom = gameRoom;
-            _queryPlanner = queryPlanner;
+             = queryPlanner;
             _queryExecutor = queryExecutor;
         }
 
@@ -88,25 +89,13 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery
 
         public WorldQueryBuilder<T> Search<T>()
         {
-            return new WorldQueryBuilder<T>(_gameRoom);
+            return new WorldQueryBuilder<T>(_gameRoom, _queryPlanner);
         }
 
-        public void ExecuteQuery<T>(WorldQuery<T> query, QueryContext queryContext, IList<T> buffer)
+        public void ExecuteQuery<T>(QueryExecutePlan<T> plan, QueryContext queryContext, IList<T> buffer)
         {
-            var arrayPool = ArrayPool<QueryExecutionStep<T>>.Shared;
-            var planBuffer = arrayPool.Rent(query.Count);
-
-            try
-            {
-                var plan = _queryPlanner.Build(query, queryContext, planBuffer);
-
-                _queryExecutor.Execute(plan, queryContext, buffer);
-            }
-            finally
-            {
-                arrayPool.Return(planBuffer);
-            }
-
+            buffer.Clear();
+            _queryExecutor.Execute(plan, queryContext, buffer);
         }
     }
 }

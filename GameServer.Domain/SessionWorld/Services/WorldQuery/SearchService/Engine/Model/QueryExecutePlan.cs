@@ -5,7 +5,7 @@ using System.Text;
 
 namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Model
 {
-    public struct QueryExecutePlan<T>
+    public class QueryExecutePlan<T>
     {
         private readonly QueryExecutionStep<T>[] _steps;
         private int _count;

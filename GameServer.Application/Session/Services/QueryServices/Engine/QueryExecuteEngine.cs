@@ -12,19 +12,10 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engin
     {
         public void Execute<T>(QueryExecutePlan<T> executePlan, QueryContext queryContext, IList<T> buffer)
         {
-            foreach(var executeStep in executePlan)
+            buffer.Clear();
+            foreach (var step in executePlan)
             {
-                switch (executeStep.Kind)
-                {
-                    case QueryExecutionStep<T>.QueryExecutionStepKind.Index:
-
-                        var selectedIndex = typeof(IIndex<,>).MakeGenericType(typeof(T), executeStep.QueryType);
-
-                        break;
-                    case QueryExecutionStep<T>.QueryExecutionStepKind.FullScan:
-
-                        break;
-                }
+                step.Executor(step.MetaData, queryContext, buffer);
             }
         }
     }
