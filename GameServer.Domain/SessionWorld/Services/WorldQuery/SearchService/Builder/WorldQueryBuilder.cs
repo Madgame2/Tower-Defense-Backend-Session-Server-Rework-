@@ -34,7 +34,7 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Build
 
         public readonly List<IQueryOperation>Operations = new();
 
-        public QueryExecutePlan<T> Build(out QueryContext context)
+        public QueryExecutePlan<T> Build(out QueryContext<T> context)
         {
             context = new(_gameRoom.IndexStorage);
 

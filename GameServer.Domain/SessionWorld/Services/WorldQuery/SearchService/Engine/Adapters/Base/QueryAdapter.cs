@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GameServer.Domain.SessionWorld.Services.IndicesService.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,5 +11,7 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engin
         public Type To => typeof(TTo);
 
         public abstract TTo Adapt(TFrom query);
+
+        public abstract IndexExecutorDelegate<T> CreateExecutor<T>(IIndex<T> index);
     }
 }

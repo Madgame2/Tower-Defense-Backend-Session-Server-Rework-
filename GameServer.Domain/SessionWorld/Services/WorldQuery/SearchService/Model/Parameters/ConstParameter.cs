@@ -13,5 +13,7 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model
         {
             _value = value;
         }
+
+        public T GetValue() => _value;
     }
 }

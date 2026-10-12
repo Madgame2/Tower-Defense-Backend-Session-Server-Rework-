@@ -7,7 +7,7 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engin
 {
     public delegate void StepExecutorDelegate<T>(
         object state,
-        QueryContext context,
-        IList<T> buffer
+        QueryContext<T> context,
+        List<T> buffer
     );
 }

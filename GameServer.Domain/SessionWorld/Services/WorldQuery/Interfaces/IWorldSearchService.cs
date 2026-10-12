@@ -11,6 +11,6 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.Interfaces
     public interface IWorldSearchService
     {
         WorldQueryBuilder<T> Search<T>();
-        void ExecuteQuery<T>(QueryExecutePlan<T> treeQuery, QueryContext queryContext, IList<T> buffer);
+        void ExecuteQuery<T>(QueryExecutePlan<T> treeQuery, QueryContext<T> queryContext, List<T> buffer);
     }
 }

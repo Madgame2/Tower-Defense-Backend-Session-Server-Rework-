@@ -16,6 +16,7 @@ namespace GameServer.GameLoop.Core
             Register<GravitySystem>();
             Register<VelocityToPositionSystem>();
             Register<VertivalResolveSystem>();
+            Register<HorizontalResolveSystem>();
             Register<PlayerMoveStateResolveSystem>();
 
             RegisterNetwork<StateBroadcastSystem>();

@@ -5,13 +5,23 @@ using System.Text;
 
 namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model.Parameters
 {
-    public readonly struct NamedParameter<T>: IQueryParameter<T>
+
+    public class NamedParameter : IQueryParameter
     {
-        private readonly string _name;
+        protected string _name;
+
+        public string Name => _name;
+    }
+
+    public class NamedParameter<T>: NamedParameter, IQueryParameter<T>
+    {
+        public T Value { get; set; }
 
         public NamedParameter(string name)
         {
             _name = name;
         }
+
+        public T GetValue() => Value;
     }
 }

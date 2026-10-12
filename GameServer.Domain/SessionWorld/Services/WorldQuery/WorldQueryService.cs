@@ -25,7 +25,7 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery
             IQueryExecutor queryExecutor)
         {
             _gameRoom = gameRoom;
-             = queryPlanner;
+            _queryPlanner = queryPlanner;
             _queryExecutor = queryExecutor;
         }
 
@@ -92,7 +92,7 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery
             return new WorldQueryBuilder<T>(_gameRoom, _queryPlanner);
         }
 
-        public void ExecuteQuery<T>(QueryExecutePlan<T> plan, QueryContext queryContext, IList<T> buffer)
+        public void ExecuteQuery<T>(QueryExecutePlan<T> plan, QueryContext<T> queryContext, List<T> buffer)
         {
             buffer.Clear();
             _queryExecutor.Execute(plan, queryContext, buffer);

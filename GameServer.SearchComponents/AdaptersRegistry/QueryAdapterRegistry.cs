@@ -2,7 +2,6 @@
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Adapters.Base;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Interfaces;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Operators.Interfaces;
-using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -16,19 +15,51 @@ namespace GameServer.Application.Session.Services.QueryServices
         private readonly Dictionary<(Type From, Type To), IQueryAdapter> _adapters = new();
         private readonly Dictionary<Type, List<Type>> _capabilities = new();
 
+        private readonly Dictionary<Type, List<IQueryAdapter>> _operationAdapters = new();
+
         public QueryAdapterRegistry(IEnumerable<QueryCapabilityAssembly> assemblies)
         {
             foreach (var assembly in assemblies)
             {
-                RegisterAssembly(assembly.Assembly);
+                try
+                {
+                    RegisterAssembly(assembly.Assembly);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
 
         public ReadOnlySpan<Type> GetCapabilities<T>(IQueryOperation operation)
         {
-            var oeprationType = typeof(T);
+            var operationType = typeof(T);
+            return _capabilities.TryGetValue(operationType, out var list)
+                ? CollectionsMarshal.AsSpan(list)
+                : ReadOnlySpan<Type>.Empty;
+        }
 
-            return CollectionsMarshal.AsSpan(_capabilities[oeprationType]);
+        public int GetCapabilities<T>(
+                IQueryOperation operation,
+                out ReadOnlySpan<Type> indexQueriesTypes,
+                out ReadOnlySpan<IQueryAdapter> adapters)
+        {
+            var operationType = operation.GetType();
+
+            if (_capabilities.TryGetValue(operationType, out var types) &&
+                _operationAdapters.TryGetValue(operationType, out var adapterList))
+            {
+                indexQueriesTypes = CollectionsMarshal.AsSpan(types);
+                adapters = CollectionsMarshal.AsSpan(adapterList);
+            }
+            else
+            {
+                indexQueriesTypes = ReadOnlySpan<Type>.Empty;
+                adapters = ReadOnlySpan<IQueryAdapter>.Empty;
+            }
+
+            return indexQueriesTypes.Length;
         }
 
         private void RegisterAssembly(Assembly assembly)
@@ -48,10 +79,21 @@ namespace GameServer.Application.Session.Services.QueryServices
                         $"Duplicate adapter: {type.FullName}");
                 }
 
-                if(!_capabilities.TryGetValue(from, out var outList)){
-                    _capabilities[from] = new List<Type>();
+                // 1. Заполняем типы (capabilities)
+                if (!_capabilities.TryGetValue(from, out var typeList))
+                {
+                    typeList = new List<Type>();
+                    _capabilities[from] = typeList;
                 }
-                _capabilities[from].Add(to);
+                typeList.Add(to);
+
+                // 2. Заполняем адаптеры синхронно с типами
+                if (!_operationAdapters.TryGetValue(from, out var adapterList))
+                {
+                    adapterList = new List<IQueryAdapter>();
+                    _operationAdapters[from] = adapterList;
+                }
+                adapterList.Add(adapter);
             }
         }
 

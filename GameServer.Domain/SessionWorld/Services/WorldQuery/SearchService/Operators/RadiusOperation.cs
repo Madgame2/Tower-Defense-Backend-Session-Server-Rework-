@@ -12,6 +12,10 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Opera
         private IQueryParameter<Vector3> _center;
         private IQueryParameter<float> _radius;
 
+        public Vector3 Center => _center.GetValue();
+        public float Radius => _radius.GetValue();
+
+
         public RadiusOperation(IQueryParameter<Vector3> center, IQueryParameter<float> radius)
         {
             _center = center;

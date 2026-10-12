@@ -10,14 +10,14 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engin
         private readonly QueryExecutionStep<T>[] _steps;
         private int _count;
 
-        public readonly int Count => _count;
+        public int Count => _count;
 
-        public readonly ReadOnlySpan<QueryExecutionStep<T>> Steps
+        public ReadOnlySpan<QueryExecutionStep<T>> Steps
             => _steps.AsSpan(0, _count);
 
-        public QueryExecutePlan(QueryExecutionStep<T>[] buffer)
+        public QueryExecutePlan(int capacity)
         {
-            _steps = buffer;
+            _steps = new QueryExecutionStep<T>[capacity];
             _count = 0;
         }
 

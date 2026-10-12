@@ -10,7 +10,7 @@ namespace GameServer.Domain.SessionWorld.Services.IndicesService.Interfaces
     public delegate void IndexExecutorDelegate<T>(
         IIndex<T> index,
         IQueryOperation operation,
-        QueryContext context,
+        QueryContext<T> context,
         List<T> buffer);
 
     public readonly struct IndexEntry<T>

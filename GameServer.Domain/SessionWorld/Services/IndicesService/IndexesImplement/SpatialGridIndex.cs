@@ -24,7 +24,8 @@ namespace GameServer.Domain.SessionWorld.Services.IndicesService.IndexesImplemen
 
             if (!_cellsStorage.TryGetValue(normalizedPosition, out var cell))
             {
-                cell = new();
+                cell = new List<T>();
+                _cellsStorage[normalizedPosition] = cell;
             }
             cell.Add(item);
         }

@@ -1,7 +1,10 @@
 ﻿using GameServer.Application.Session.Services.QueryServices;
+using GameServer.Application.Session.Services.QueryServices.Engine;
 using GameServer.Application.Session.Services.QueryServices.Model;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Interfaces;
+using GameServer.SearchComponents.ExecutionSteps.CandidatesGenration.DataSourceModules.Base;
+using GameServer.SearchComponents.ExecutionSteps.CandidatesGenration.Implementation;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -16,22 +19,6 @@ namespace GameServer.Application.Session.Services.QueryServices.SearchService.En
         {
             services.AddSingleton<IQueryPlanner, QueryPlaner>();
             services.AddSingleton<IQueryExecutor, QueryExecuteEngine>();
-
-
-            services.AddSingleton<QueryAdapterRegistry>();
-            services.AddSingleton<IQueryAdapterRegistry>( sp => sp.GetRequiredService<QueryAdapterRegistry>());
-
-            services.AddQueryCapabilityAssembly<QueryAdapterRegistry>();
-            services.AddQueryCapabilityAssembly<IQueryAdapterRegistry>();
-
-            return services;
-        }
-
-        public static IServiceCollection AddQueryCapabilityAssembly<T>(
-            this IServiceCollection services)
-        {
-            services.AddSingleton(
-                new QueryCapabilityAssembly(typeof(T).Assembly));
 
             return services;
         }

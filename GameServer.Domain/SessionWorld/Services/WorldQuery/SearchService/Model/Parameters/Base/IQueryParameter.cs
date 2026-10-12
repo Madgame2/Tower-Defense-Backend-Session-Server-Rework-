@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 
 namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model.Parameters.Base
@@ -8,7 +9,8 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model
     {
     }
 
-    public interface IQueryParameter<T>: IQueryParameter
+    public interface IQueryParameter<T> : IQueryParameter
     {
+        T GetValue();
     }
 }

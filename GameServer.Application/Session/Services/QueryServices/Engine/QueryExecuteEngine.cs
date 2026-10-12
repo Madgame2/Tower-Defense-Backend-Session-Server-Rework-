@@ -10,7 +10,7 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engin
 {
     public class QueryExecuteEngine : IQueryExecutor
     {
-        public void Execute<T>(QueryExecutePlan<T> executePlan, QueryContext queryContext, IList<T> buffer)
+        public void Execute<T>(QueryExecutePlan<T> executePlan, QueryContext<T> queryContext, List<T> buffer)
         {
             buffer.Clear();
             foreach (var step in executePlan)

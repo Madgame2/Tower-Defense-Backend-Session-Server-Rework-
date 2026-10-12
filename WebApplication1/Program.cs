@@ -117,6 +117,8 @@ builder.Services.AddSingleton<UdpServerTransport>();
 builder.Services.AddSingleton<IUdpSender>(sp => sp.GetRequiredService<UdpServerTransport>());
 builder.Services.AddHostedService(sp => sp.GetRequiredService<UdpServerTransport>());
 
+builder.Services.AddSearchCompoents();
+
 builder.Services.AddQueryEngine();
 builder.Services.AddQueryCapabilityAssembly<SearchCompoentsModuleMarker>();
 
