@@ -4,6 +4,7 @@
   <Project Path="GameServer.Contracts/GameServer.Contracts.csproj" />
   <Project Path="GameServer.Domain/GameServer.Domain.csproj" />
   <Project Path="GameServer.GameLoop/GameServer.GameLoop.csproj" />
+  <Project Path="GameServer.GameObjectComponents/GameServer.GameObjectComponentsAndServices.csproj" Id="6ba5f670-8edc-4777-999c-b76145ae8206" />
   <Project Path="GameServer.Infrastructure/GameServer.Infrastructure.csproj" />
   <Project Path="GameServer.SearchComponents/GameServer.SearchComponents.csproj" Id="b86a927a-01a6-4970-b7c8-ca7e812546ae" />
   <Project Path="WebApplication1/GameServer.csproj" />
