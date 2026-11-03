@@ -7,5 +7,7 @@ namespace GameServer.Domain.Interfaces
     public interface ISyncService
     {
         Task SyncSessionUsersAsync(Guid sessionId, CancellationToken token = default);
+
+        Task SyncPlayerAsync(Guid sessionId, string playerId, CancellationToken token = default);
     }
 }

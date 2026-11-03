@@ -1,30 +1,35 @@
-﻿using GameServer.Domain.SessionWorld.Model;
+﻿using GameServer.Domain.ColliderSystem.Enum;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.Interfaces;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Builder;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Interfaces;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Model;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
+using System.Numerics;
+using GameServer.GameObjectComponentsAndServices.GameObjectsComponents.Transform;
 
 namespace GameServer.Domain.SessionWorld.Services.WorldQuery
 {
     public class WorldQueryService : IWorldQueryService
     {
-        private readonly GameRoom _gameRoom;
+        private GameRoom _gameRoom;
         private readonly IQueryPlanner _queryPlanner;
         private readonly IQueryExecutor _queryExecutor;
 
+        public GameRoom GameRoom
+        {
+            set
+            {
+                if (_gameRoom == null && value != null)
+                    _gameRoom = value;
+
+                return;
+            }
+        }
+
         public WorldQueryService(
-            GameRoom gameRoom,
             IQueryPlanner queryPlanner,
             IQueryExecutor queryExecutor)
         {
-            _gameRoom = gameRoom;
             _queryPlanner = queryPlanner;
             _queryExecutor = queryExecutor;
         }
@@ -96,6 +101,37 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery
         {
             buffer.Clear();
             _queryExecutor.Execute(plan, queryContext, buffer);
+        }
+
+        public async Task<Player.Player> RegisterPlayerAsync(string playerId, CancellationToken cancellationToken)
+        {
+            var existingPlayer = _gameRoom.ObjectRegistry.Get<Player.Player,string>(playerId);
+
+            if (existingPlayer != null)
+                return existingPlayer;
+
+            var player = _gameRoom.GameObjectSpawner.Spawn<Player.Player>(playerId);
+
+            var y = await GetHeightAt(0, 0);
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (player.TryGetComponent<TransformComponent>(out var transformCompoent))
+            {
+                transformCompoent.Position = new Vector3(0, y, 0);
+            }
+
+            player.Size = new Vector3(1, 2, 1);
+
+            player.Colider.Type = ColliderType.Capsule;
+            player.Colider.Height = 2;
+            player.Colider.Radius = 0.5f;
+
+            player.Pivot = new Vector3(0, -1, 0);
+
+            _gameRoom.ObjectRegistry.Add(player);
+
+            return player;
         }
     }
 }

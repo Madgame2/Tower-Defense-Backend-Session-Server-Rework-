@@ -1,7 +1,13 @@
 using GameServer.Api.WebSockets;
 using GameServer.Application.Interfaces;
 using GameServer.Application.Meta;
-using GameServer.Application.Session.Ressources;
+using GameServer.Application.Services.Factories.GameObjectFactory.Implementation;
+using GameServer.Application.Services.Factories.GameObjectFactory.Interfaces;
+using GameServer.Application.Services.Factories.GameObjectFactory.Modules.Base;
+using GameServer.Application.Services.Factories.GameObjectFactory.Modules.HitBoxFactoryComponent;
+using GameServer.Application.Services.StaticResources;
+using GameServer.Application.Session.ClientStateMachine.Extentions;
+using GameServer.Application.Session.Services.GameObjectSpawner.Extentions;
 using GameServer.Application.Session.Services.QueryServices.SearchService.Engine.Extentions;
 using GameServer.Application.Sessions;
 using GameServer.Application.Sessions.imp;
@@ -9,6 +15,7 @@ using GameServer.Application.Sessions.Repository;
 using GameServer.Application.Sessions.States;
 using GameServer.Domain.Common.Interfaces;
 using GameServer.Domain.Interfaces;
+using GameServer.Domain.Services.StaticData;
 using GameServer.Domain.Sessions.Repository;
 using GameServer.Domain.Sessions.StateMachine.Factory;
 using GameServer.Domain.Sessions.StateMachine.StatesGraph;
@@ -25,6 +32,7 @@ using GameServer.Domain.UDP.Interfaces;
 using GameServer.Endpoints;
 using GameServer.GameLoop.Core.Simultaion.Factory;
 using GameServer.GameLoop.Core.Simultaion.Factory.Interfaces;
+using GameServer.GameObjectComponentsAndServices.Services.HitBoxesColitionService;
 using GameServer.Infrastructure.Connection;
 using GameServer.Infrastructure.Factory.WSContext;
 using GameServer.Infrastructure.Networking;
@@ -110,18 +118,23 @@ builder.Services.AddTransient<ITreeGraphFactory, TreeGraphFactory>();
 
 builder.Services.AddTransient<ISimulationFactory, SimulationFactory>();  
 
-builder.Services.AddSingleton<ISessionStaticResources, SessionStaticResources>();
-
-
 builder.Services.AddSingleton<UdpServerTransport>();
 builder.Services.AddSingleton<IUdpSender>(sp => sp.GetRequiredService<UdpServerTransport>());
 builder.Services.AddHostedService(sp => sp.GetRequiredService<UdpServerTransport>());
+
+builder.Services.AddSingleton<IStaticResourceLoader, StaticResourceLoader>();
+builder.Services.AddTransient<IGameObjectFactory, GameObjectFactory>();
+
+builder.Services.AddSingleton<GameObjectComponentFactoryModule, HitBoxFactoryModule>();
 
 builder.Services.AddSearchCompoents();
 
 builder.Services.AddQueryEngine();
 builder.Services.AddQueryCapabilityAssembly<SearchCompoentsModuleMarker>();
 
+builder.Services.AddHitBoxServices();
+builder.Services.AddGameObjectSpawnerService();
+builder.Services.AddClentStateMachine();
 
 var app = builder.Build();
 

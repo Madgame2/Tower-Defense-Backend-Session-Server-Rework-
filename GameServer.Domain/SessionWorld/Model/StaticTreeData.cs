@@ -8,5 +8,12 @@ namespace GameServer.Domain.SessionWorld.Model
     public struct StaticTreeData
     {
         public Vector2 LocalPosition;
+        public Quaternion Rotation;
+        public float Scale = 1.0f;
+
+        public StaticTreeData()
+        {
+
+        }
     }
 }

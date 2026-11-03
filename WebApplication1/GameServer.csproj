@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -11,6 +11,7 @@
     <ProjectReference Include="..\GameServer.Contracts\GameServer.Contracts.csproj" />
     <ProjectReference Include="..\GameServer.Domain\GameServer.Domain.csproj" />
     <ProjectReference Include="..\GameServer.GameLoop\GameServer.GameLoop.csproj" />
+    <ProjectReference Include="..\GameServer.GameObjectComponents\GameServer.GameObjectComponentsAndServices.csproj" />
     <ProjectReference Include="..\GameServer.Infrastructure\GameServer.Infrastructure.csproj" />
     <ProjectReference Include="..\GameServer.SearchComponents\GameServer.SearchComponents.csproj" />
   </ItemGroup>

@@ -1,8 +1,11 @@
-﻿using GameServer.Domain.Interfaces;
+﻿using GameServer.Domain.ColliderSystem.Enum;
+using GameServer.Domain.Interfaces;
+using GameServer.Domain.Player;
 using GameServer.Domain.Sessions.Events;
 using GameServer.Domain.Sessions.Events.Stateshandler;
 using GameServer.Domain.Sessions.StateMachine;
 using GameServer.Domain.Sessions.StateMachine.StatesGraph.Attributes;
+using System.Numerics;
 
 namespace GameServer.Application.Sessions.States
 {
@@ -23,6 +26,8 @@ namespace GameServer.Application.Sessions.States
             handlers.Register<PlayerConnected>(async (ctx, evt) =>
             {
                 Console.WriteLine($"Player join {evt.PlayerId}");
+
+                //await _syncService.SyncPlayerAsync(ctx.Id, evt.PlayerId);
             });
 
             handlers.Register<PlayerDisconnected>(async (ctx, evt) =>
@@ -35,7 +40,16 @@ namespace GameServer.Application.Sessions.States
         {
             Console.WriteLine("ON Sysnc State");
 
-            await _syncService.SyncSessionUsersAsync(ctx.Id);
+            var allClients = ctx.OnlinePlayersIDs;
+
+            ctx.SyncBarrier.Begin(allClients);
+
+            bool completed = await ctx.SyncBarrier.WaitAsync(TimeSpan.FromSeconds(60), CancellationToken.None);
+
+            if (!completed)
+            {
+                Console.WriteLine("Synchronization timeout!");
+            }
 
             await ctx.StateMachine.MoveTo<SimulationState>();
         }

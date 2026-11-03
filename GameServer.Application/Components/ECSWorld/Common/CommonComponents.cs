@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
-namespace GameServer.Application.Components.Common
+namespace GameServer.Application.Components.ECSWorld.Common
 {
     public struct PositionComponent : IComponent
     {

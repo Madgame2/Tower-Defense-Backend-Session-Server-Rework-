@@ -7,7 +7,7 @@ using System.Text;
 
 namespace GameServer.Domain.SessionWorld.Services.ObjectRegister.Handlers
 {
-    public class PlayersRegisterHandler : IObjectHandler<Player.Player>
+    public class PlayersRegisterHandler : IObjectHandler<Player.Player, string>
     {
         private IPlayersStorage _playerStorage;
 
@@ -24,6 +24,11 @@ namespace GameServer.Domain.SessionWorld.Services.ObjectRegister.Handlers
         public void Change(Player.Player obj)
         {
             
+        }
+
+        public Player.Player? Get(string arg)
+        {
+            return _playerStorage.Get(arg);
         }
 
         public void Remove(Player.Player obj)

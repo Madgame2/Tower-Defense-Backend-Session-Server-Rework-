@@ -13,4 +13,9 @@ namespace GameServer.Domain.SessionWorld.Services.ObjectRegister.Interfaces
         void Change(T obj);
         void Remove(T obj);
     }
+
+    public interface IObjectHandler<T, TSearch> : IObjectHandler<T>
+    {
+        T? Get(TSearch arg);
+    }
 }

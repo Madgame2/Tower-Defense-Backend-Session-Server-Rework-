@@ -1,5 +1,9 @@
-﻿using GameServer.Domain.ColliderSystem.Enum;
+﻿using EntityLib.GameRoomExtentions;
+using GameServer.Application.Resources.PrefabsRegesters;
+using GameServer.Application.Services.StaticResources;
+using GameServer.Domain.ColliderSystem.Enum;
 using GameServer.Domain.Player;
+using GameServer.Domain.Services.StaticData;
 using GameServer.Domain.Sessions.Events;
 using GameServer.Domain.Sessions.Events.Stateshandler;
 using GameServer.Domain.Sessions.StateMachine;
@@ -8,17 +12,18 @@ using GameServer.Domain.SessionWorld;
 using GameServer.Domain.SessionWorld.Generators;
 using GameServer.Domain.SessionWorld.Graphs.BiomGraph.Interfaces;
 using GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Interfaces;
+using GameServer.Domain.SessionWorld.Graphs.TreeGraph.Factory.Interfaces;
 using GameServer.Domain.SessionWorld.Interfaces;
 using GameServer.Domain.SessionWorld.Meta.Interfaces;
-using GameServer.Domain.SessionWorld.Routers;
-using System.Numerics;
-using EntityLib.GameRoomExtentions;
-using GameServer.Application.Components.Common;
-using GameServer.Domain.SessionWorld.Graphs.TreeGraph.Factory.Interfaces;
-using GameServer.Domain.SessionWorld.Services.WorldQuery.Interfaces;
 using GameServer.Domain.SessionWorld.Model;
+using GameServer.Domain.SessionWorld.Routers;
 using GameServer.Domain.SessionWorld.Services.IndicesService.IndexesImplement;
+using GameServer.Domain.SessionWorld.Services.WorldQuery;
+using GameServer.Domain.SessionWorld.Services.WorldQuery.Interfaces;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Interfaces;
+using GameServer.GameObjectComponentsAndServices.GameObjectsComponents.Transform;
+using Microsoft.Extensions.Logging;
+using System.Numerics;
 
 namespace GameServer.Application.Sessions.States
 {
@@ -27,7 +32,10 @@ namespace GameServer.Application.Sessions.States
     {
         private readonly IChunksSettings _chunksSettings;
         private readonly IQueryExecutor _worldQueryService;
+        private readonly IGameObjectSpawner _gameObjectSpawner;
         private readonly IQueryPlanner _queryPlanner;
+        private readonly IStaticResourceLoader _staticResourceLoader;
+        private readonly ILoggerFactory _loggerFactory;
         private IChunkGeneratorFactory _chankGeneratorFactory;
         private ILandscapeGraphFactory _landscapeGraphFactory;
         private IBiomGraphFactory _biomGraphFactory;
@@ -39,7 +47,10 @@ namespace GameServer.Application.Sessions.States
             ILandscapeGraphFactory landscapeGraphFactory,
             IBiomGraphFactory biomGraphFactory,
             ITreeGraphFactory treeGraphFactory,
-            IQueryPlanner queryPlanner)
+            IQueryPlanner queryPlanner,
+            IStaticResourceLoader statickResourceLoader,
+            ILoggerFactory loggerFactory,
+            IGameObjectSpawner gameObjectSpawner)
         {
             _worldQueryService = worldQueryService;
             _chunksSettings = chunksSettings;
@@ -48,6 +59,9 @@ namespace GameServer.Application.Sessions.States
             _biomGraphFactory = biomGraphFactory;
             _treeGraphFactory = treeGraphFactory;
             _queryPlanner = queryPlanner;
+            _staticResourceLoader = statickResourceLoader;
+            _loggerFactory = loggerFactory;
+            _gameObjectSpawner = gameObjectSpawner;
         }
 
         public override void Configure(StateEventHandler handlers)
@@ -71,7 +85,12 @@ namespace GameServer.Application.Sessions.States
             Console.WriteLine("ON GenerateWorld");
 
             var router = new GeneralMathcRouter();
-            var newWorldObject = new GameRoom(_chunksSettings, router, _worldQueryService, _queryPlanner);
+            var preafabsERgister = new GeneralPrefabsRegester();
+            var staticResourcesService = new SessionStaticResources(_staticResourceLoader, _loggerFactory.CreateLogger<SessionStaticResources>(), preafabsERgister);
+            var worldQueryService = new WorldQueryService(_queryPlanner, _worldQueryService);
+            var newWorldObject = new GameRoom(_chunksSettings, router, _worldQueryService, _queryPlanner, staticResourcesService, _gameObjectSpawner, worldQueryService);
+            
+            worldQueryService.GameRoom = newWorldObject;
 
             var treesIndex = new SpatialGridIndex<StaticTreeData>((treeData) => { return treeData.LocalPosition; });
             newWorldObject.AddIndex(treesIndex);
@@ -79,7 +98,7 @@ namespace GameServer.Application.Sessions.States
             CreateWorldGenerationRules(newWorldObject);
             await SpawnPlayers(ctx.OnlinePlayersIDs, newWorldObject);
 
-            ctx.CurrentRoom = newWorldObject;
+            ctx.SetRoom(newWorldObject);
 
             await EnterSyncState(ctx);
         }
@@ -100,14 +119,19 @@ namespace GameServer.Application.Sessions.States
 
         private async Task SpawnPlayers(HashSet<string> onlinePlayersIDs, GameRoom world)
         {
+            var spawner = world.GameObjectSpawner;
+
             foreach (var player in onlinePlayersIDs)
             {
+                var playerobj = spawner.Spawn<Player>(player);
 
                 var y = await world.worldQueryService.GetHeightAt(0, 0);
-
                 var playerPosition = new Vector3(0, y, 0);
 
-                var playerobj = new Player(player, playerPosition);
+                if( playerobj.TryGetComponent<TransformComponent>(out var transformCompoent))
+                {
+                    transformCompoent.Position = playerPosition;
+                }
 
                 playerobj.Size = new Vector3(1, 2, 1);
 

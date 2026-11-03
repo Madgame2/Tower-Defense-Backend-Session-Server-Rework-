@@ -2,6 +2,7 @@
 using GameServer.Application.Messaging;
 using GameServer.Application.Sessions;
 using GameServer.Contracts.MessageFormats;
+using GameServer.Domain.Services.ClientStateMachine;
 using GameServer.Services.WS.WSMiddleware;
 using System.Buffers;
 using System.Net;
@@ -14,6 +15,7 @@ namespace GameServer.Application.Model
 {
     public class ClientConnection : IAsyncDisposable, IDisposable
     {
+        private readonly IClientStateMachine _clientStateMachine;
         private readonly IConnectedClientsStorage _connectedClientsStorage;
         private readonly IWsContextFactory _wsContextFactory;
         private readonly MessagePipeline _pipeline;
@@ -71,11 +73,12 @@ namespace GameServer.Application.Model
             }
         }
 
-        public ClientConnection(IWsContextFactory wsFactory, MessagePipeline messagePipeline, IConnectedClientsStorage clientStorage)
+        public ClientConnection(IWsContextFactory wsFactory, MessagePipeline messagePipeline, IConnectedClientsStorage clientStorage, IClientStateMachine clientStateMachine)
         {
             _wsContextFactory = wsFactory;
             _pipeline = messagePipeline;
             _connectedClientsStorage = clientStorage;
+            _clientStateMachine = clientStateMachine;
         }
 
         public void Init(string UserId, uint UdpToken, GameSession session, WebSocket socket, CancellationToken kestrelToken)
@@ -87,6 +90,8 @@ namespace GameServer.Application.Model
             this._socket = socket;
             this.Session = session;
 
+            _clientStateMachine.Init(this, session);
+
             _context = _wsContextFactory.Create(_socket, UserId, Session.Id);
             Router = _context.Router;
 
@@ -95,6 +100,8 @@ namespace GameServer.Application.Model
 
             _sendingLoop = WriteLoopAsync(_cancelAllToken.Token);
             _receivingLoop = ReadLoopAsync(_cancelAllToken.Token);
+
+            _clientStateMachine.Start(kestrelToken);
         }
 
         private void SybscribeToclientReady()

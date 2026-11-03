@@ -2,6 +2,7 @@
 using GameServer.GameLoop.Core.Simultaion.Interfaces;
 using GameServer.GameLoop.Core.Simultaion.Meta.Base;
 using GameServer.GameLoop.Core.Simultaion.Steps.Interfaces;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,13 +20,17 @@ namespace GameServer.GameLoop.Core.Simultaion
 
         private CancellationTokenSource _cts;
 
+        private readonly ILogger<Simulation> _logger;
+
         public Simulation(GameRoom simulatedWorld,
             List<ITickable> Systems,
-            List<INetworkTickable> networkSystems)
+            List<INetworkTickable> networkSystems,
+            ILogger<Simulation> logger)
         {
             _simulatedWorld = simulatedWorld;
             _systems = Systems;
             _networkSystems = networkSystems;
+            _logger = logger;
         }
 
         public void Start()
@@ -97,6 +102,10 @@ namespace GameServer.GameLoop.Core.Simultaion
             catch (OperationCanceledException)
             {
 
+            }
+            catch(Exception ex)
+            {
+                _logger.LogCritical(ex.Message);
             }
             finally
             {

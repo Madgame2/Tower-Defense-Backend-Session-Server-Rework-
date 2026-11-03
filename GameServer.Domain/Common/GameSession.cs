@@ -1,4 +1,5 @@
-﻿using GameServer.Domain.Sessions;
+﻿using GameServer.Domain.Core.Synchronization;
+using GameServer.Domain.Sessions;
 using GameServer.Domain.Sessions.Events;
 using GameServer.Domain.Sessions.StateMachine;
 using GameServer.Domain.SessionWorld;
@@ -34,6 +35,7 @@ namespace GameServer.Application.Sessions
         private HashSet<string> _playersResurvation = new();
         private HashSet<string> _onlinePlayers = new();
         private SessionStateMachine _sessionStatemachine;
+        public ClientSyncBarrier SyncBarrier { get; } = new();
         private Task _eventLoop;
         
         private GameRoom _world;
@@ -46,6 +48,24 @@ namespace GameServer.Application.Sessions
 
         private readonly Channel<SessionEvent> _events = Channel.CreateUnbounded<SessionEvent>();
         public SessionStateMachine StateMachine { get => _sessionStatemachine; }
+
+        private readonly TaskCompletionSource<GameRoom> _roomReady =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public void SetRoom(GameRoom room)
+        {
+            if (CurrentRoom != null)
+                throw new InvalidOperationException("GameRoom already initialized.");
+
+            CurrentRoom = room;
+            _roomReady.TrySetResult(room);
+        }
+
+        public Task<GameRoom> WaitForRoomAsync(
+            CancellationToken cancellationToken)
+        {
+            return _roomReady.Task.WaitAsync(cancellationToken);
+        }
 
         public void Init(SessionStateMachine sm)
         {

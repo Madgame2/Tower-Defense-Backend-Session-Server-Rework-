@@ -23,26 +23,33 @@ namespace GameServer.Middleware
                 return;
             }
 
-            if (_env.IsDevelopment())
+            if (_env.IsDevelopment() &&
+                context.Request.Headers["EnterMode"] == "Development")
             {
-                if (context.Request.Headers["EnterMode"] == "Development")
-                {
-                    string userId = Guid.NewGuid().ToString();
-                    var sessionId = await _gameSessions.CreateSession();
+                string externalSessionId =
+                    context.Request.Headers["SessionId"].ToString();
 
-                    var session = _gameSessions.Get(sessionId);
-                    session.reservForPlayer(userId);
+                Guid sessionId = await _gameSessions.GetOrCreateSession(
+                    externalSessionId
+                );
 
-                    context.Request.Headers["UserId"] = userId;
-                    context.Request.Headers["SessionId"] = sessionId.ToString();
-                    await _next(context);
-                    return;
-                }
+                string userId = Guid.NewGuid().ToString();
+
+                var session = _gameSessions.Get(sessionId);
+
+                session.reservForPlayer(userId);
+
+                context.Request.Headers["UserId"] = userId;
+                context.Request.Headers["SessionId"] = sessionId.ToString();
+
+                await _next(context);
+                return;
             }
 
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            await context.Response.WriteAsync("WebSocket connection rejected: unauthorized");
-            return;
+            await context.Response.WriteAsync(
+                "WebSocket connection rejected: unauthorized"
+            );
         }
 
     }

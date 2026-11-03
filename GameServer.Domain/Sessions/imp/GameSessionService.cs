@@ -20,6 +20,9 @@ namespace GameServer.Application.Sessions.imp
         private readonly ISessionRegistry _sessionRegistry;
         private readonly GameSessionFactory _sessionFactory;
 
+        private readonly Dictionary<string, Guid> _externalSessionIds = new();
+        private readonly SemaphoreSlim _sessionLock = new(1, 1);
+
         public GameSessionService(
             IGameSessionRepository sessionRep,
             ISessionRegistry sessionRegistry,
@@ -71,8 +74,15 @@ namespace GameServer.Application.Sessions.imp
             _sessionRep.Remove(sessionId);
 
             session._terminateSession -= removeSessionCallback;
-        }
 
+            var externalIds = _externalSessionIds
+                .Where(x => x.Value == sessionId)
+                .Select(x => x.Key)
+                .ToArray();
+
+            foreach (var externalId in externalIds)
+                _externalSessionIds.Remove(externalId);
+        }
         public async Task<Guid> CreateSession()
         {
             var session = _sessionFactory.Create();
@@ -95,6 +105,38 @@ namespace GameServer.Application.Sessions.imp
             var all = _sessionRep.GetAll();
 
             return all.Select(x => x.Id).ToArray();
+        }
+
+
+        public async Task<Guid> GetOrCreateSession(string externalId)
+        {
+            if (string.IsNullOrWhiteSpace(externalId))
+                return await CreateSession();
+
+            externalId = externalId.Trim();
+
+            await _sessionLock.WaitAsync();
+
+            try
+            {
+                if (_externalSessionIds.TryGetValue(externalId, out var sessionId))
+                {
+                    if (_sessionRep.Get(sessionId) != null)
+                        return sessionId;
+
+                    _externalSessionIds.Remove(externalId);
+                }
+
+                var newSessionId = await CreateSession();
+
+                _externalSessionIds[externalId] = newSessionId;
+
+                return newSessionId;
+            }
+            finally
+            {
+                _sessionLock.Release();
+            }
         }
     }
 

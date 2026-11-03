@@ -9,6 +9,7 @@ namespace GameServer.Application.Sessions
     public interface IGameSessionService
     {
         Task<Guid> CreateSession();
+        Task<Guid> GetOrCreateSession(string externalId);
         GameSession? Get(Guid sessionId);
         Task<AttachResult> Attach(string playerId, Guid sessionId);
 

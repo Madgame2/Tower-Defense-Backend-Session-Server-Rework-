@@ -1,4 +1,5 @@
 ﻿using GameServer.Domain.ColliderSystem.Core;
+using GameServer.Domain.Core.GameObjects;
 using GameServer.Domain.Player.Components;
 using GameServer.Domain.Player.Enums;
 using System;
@@ -9,12 +10,10 @@ using System.Text;
 
 namespace GameServer.Domain.Player
 {
-    public class Player
+    public class Player : GameObject
     {
         public string Id { get; private set; }
-        public uint ObjectId {  get; set; }
         public Vector3 Velocity;
-        public Vector3 Position {  get; set; }
         public MovementState MovementState { get; set; } = MovementState.Grounded;
         public float Speed { get; private set; } = 2f;
         public ColliderShape Colider = new();
@@ -28,21 +27,13 @@ namespace GameServer.Domain.Player
         public bool IsGrounded = false;
         public bool IsJumping = false;
 
-
         private readonly PlayerInputBuffer _playerInputBuffer = new();
-
 
         public PlayerInputBuffer InputBuffer {  get { return _playerInputBuffer; } }
 
-        public Player(string id, Vector3 position)
+        public Player(string id) : base("PlayerGameObject")
         {
             Id = id;
-            Position = position;
-
-            Span<byte> buffer = stackalloc byte[4];
-            Random.Shared.NextBytes(buffer);
-
-            ObjectId = BitConverter.ToUInt32(buffer);
         }
     }
 }

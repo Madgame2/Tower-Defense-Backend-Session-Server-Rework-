@@ -1,4 +1,5 @@
 ﻿using GameServer.Domain.ColliderSystem.Core;
+using GameServer.Domain.ColliderSystem.Enum;
 using GameServer.Domain.Player;
 using GameServer.Domain.SessionWorld.ChunksService.ChunkStorage;
 using GameServer.Domain.SessionWorld.ChunksService.ChunkStorage.Interfaces;
@@ -24,19 +25,21 @@ namespace GameServer.Domain.SessionWorld
     public class GameRoom
     {
         private SessionChunkGenerator _chunkGenerator;
+        private readonly ISessionStaticResources _statickResources;
         private readonly IChunkStorage _chunkStorage;
         private readonly IChunksSettings _chunksSettings;
         private readonly IPlayersStorage _playersStorage;
         private readonly IWorldQueryService _worldQueryService;
         private readonly IPacketRouter _packetRouter;
         private readonly IIndexStorage _indicesStorage;
-
+        private readonly IGameObjectSpawner _gameObjectSpawner;
         private readonly IObjectRegistry _objectRegistry;
 
+        public ISessionStaticResources StaticResources { get => _statickResources; }
         public IPacketRouter Router { get => _packetRouter; }
         public IObjectRegistry ObjectRegistry { get => _objectRegistry; }
         public IIndexStorage IndexStorage { get => _indicesStorage; }
-
+        public IGameObjectSpawner GameObjectSpawner { get => _gameObjectSpawner; }
         public IWorldQueryService worldQueryService { get => _worldQueryService; }
 
         public SessionChunkGenerator ChunkGenerator
@@ -51,15 +54,22 @@ namespace GameServer.Domain.SessionWorld
 
         public Player.Player[] AllPlayers { get => _playersStorage.GetAll(); }
 
-        public GameRoom(IChunksSettings chunksSettings,
+        public GameRoom(
+            IChunksSettings chunksSettings,
             IPacketRouter packetRouter,
             IQueryExecutor queryExecuteEngine,
-            IQueryPlanner queryPlanner)
+            IQueryPlanner queryPlanner,
+            ISessionStaticResources staticResources,
+            IGameObjectSpawner gameObjectSpawner,
+            IWorldQueryService worldQueryService)
         {
             _chunksSettings = chunksSettings;
             _packetRouter = packetRouter;
+            _statickResources = staticResources;
+            _gameObjectSpawner = gameObjectSpawner;
 
-            _worldQueryService = new WorldQueryService(this, queryPlanner, queryExecuteEngine);
+
+            _worldQueryService = worldQueryService;
             _chunkStorage = new InMemmoryChunkStorage();
             _playersStorage = new InMemmoryPlayerStorage();
             _indicesStorage = new InMemmoryIndexStorage();
@@ -75,7 +85,6 @@ namespace GameServer.Domain.SessionWorld
         {
             _indicesStorage.Add(indexsystem);
         }
-
 
         public async Task<Chank> GetOrGenerateChunkAsync(float worldX, float worldZ)
         {
@@ -122,6 +131,8 @@ namespace GameServer.Domain.SessionWorld
                 player.InputBuffer.AddInput(input);
             }
         }
+
+
 
         public class GameRoomContext
         {

@@ -55,5 +55,24 @@ namespace GameServer.Domain.SessionWorld.Services.ObjectRegister
 
             ((IObjectHandler<T>)handler).Remove(obj);
         }
+
+        public TResult? Get<TResult, TSearch>(TSearch arg)
+        {
+            var handlerType = typeof(TResult);
+
+            if (!_handlers.TryGetValue(handlerType, out var handler))
+            {
+                throw new ArgumentException(
+                    $"Not found handler for type {handlerType}");
+            }
+
+            if (handler is not IObjectHandler<TResult, TSearch> typedHandler)
+            {
+                throw new InvalidOperationException(
+                    $"Handler for {handlerType} does not support search type {typeof(TSearch)}");
+            }
+
+            return typedHandler.Get(arg);
+        }
     }
 }

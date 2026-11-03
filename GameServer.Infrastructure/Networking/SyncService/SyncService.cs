@@ -9,6 +9,7 @@ using GameServer.Domain.Common.Interfaces;
 using GameServer.Domain.Interfaces;
 using GameServer.Domain.SessionWorld;
 using GameServer.Domain.SessionWorld.Meta.Interfaces;
+using GameServer.GameObjectComponentsAndServices.GameObjectsComponents.Transform;
 using GameServer.Infrastructure.Serialization;
 
 namespace GameServer.Infrastructure.Networking.SyncService
@@ -37,13 +38,36 @@ namespace GameServer.Infrastructure.Networking.SyncService
         public async Task SyncSessionUsersAsync(Guid sessionId, CancellationToken token = default)
         {
             var session = _sessionRepository.Get(sessionId);
-            if (session == null) return;
 
-            var onlinePlayersIds = session.OnlinePlayersIDs;
+            if (session == null)
+                return;
 
-            var tasks = onlinePlayersIds.Select(id => SyncPlayerWithSession(session, id));
+            var onlinePlayers = session.OnlinePlayersIDs.ToArray();
+
+            var tasks = onlinePlayers.Select(
+                playerId => SyncPlayerAsync(sessionId, playerId, token));
 
             await Task.WhenAll(tasks);
+        }
+
+        public async Task SyncPlayerAsync(
+            Guid sessionId,
+            string playerId,
+            CancellationToken token = default)
+        {
+            var session = _sessionRepository.Get(sessionId);
+
+            if (session == null)
+                return;
+
+            var hasConnection = _connectedClientStorage.TryGet(
+                playerId,
+                out var client);
+
+            if (!hasConnection)
+                return;
+
+            await SyncPlayerWithSession(session, playerId, token);
         }
 
         private async Task SyncPlayerWithSession(GameSession session, string playerId, CancellationToken token = default)
@@ -97,11 +121,14 @@ namespace GameServer.Infrastructure.Networking.SyncService
 
             foreach (var player in allPlayers)
             {
+                if (!player.TryGetComponent<TransformComponent>(out var transformComponent))
+                    continue;
+
                 var new_playerDto = new Contracts.PlayerMetaDatas.PlayaerMetaDataDTO
                 {
                     PlayerId = player.Id,
                     ObjectId = player.ObjectId,
-                    Position = player.Position,
+                    Position = transformComponent.Position,
                     IsPlaying = player.Id == clientConnection.UserId
                 };
 
@@ -166,5 +193,7 @@ namespace GameServer.Infrastructure.Networking.SyncService
             await clientConnection.WaitClientActionAsync("Applied", token);
             Console.WriteLine($"chunks metaData done: {clientConnection.UserId}");
         }
+
+
     }
 }

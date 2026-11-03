@@ -1,5 +1,6 @@
 ﻿using GameServer.Domain.SessionWorld;
 using GameServer.GameLoop.Core.Simultaion.Steps.Interfaces;
+using GameServer.GameObjectComponentsAndServices.GameObjectsComponents.Transform;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,7 +20,10 @@ namespace GameServer.GameLoop.Core.Systems.ResolveSystems
 
             foreach (var player in allPlayers)
             {
-                var playerPosition = player.Position;
+                if (!player.TryGetComponent<TransformComponent>(out var transformCompoent))
+                    continue;
+
+                var playerPosition = transformCompoent.Position;
 
                 var terrainY = await world.worldQueryService.GetHeightAt(playerPosition.X, playerPosition.Z);
 
@@ -39,7 +43,7 @@ namespace GameServer.GameLoop.Core.Systems.ResolveSystems
 
                     player.Velocity.Y = 0;
                     player.MovementState = Domain.Player.Enums.MovementState.Grounded;
-                    player.Position = playerPosition;
+                    transformCompoent.Position = playerPosition;
                     player.IsGrounded = true;
                 }
                 else
