@@ -6,6 +6,6 @@ namespace GameServer.Domain.SessionWorld.Interfaces
 {
     public interface IPacketRouter
     {
-        void Route(GameRoom room, string playerId, uint udpToken, byte packetType, ReadOnlySpan<byte> payload);
+        void Route(GameRoom room, string userId, uint udpToken, byte packetType, ReadOnlySpan<byte> payload);
     }
 }

@@ -11,7 +11,7 @@ namespace GameServer.Application.Sessions
         Task<Guid> CreateSession();
         Task<Guid> GetOrCreateSession(string externalId);
         GameSession? Get(Guid sessionId);
-        Task<AttachResult> Attach(string playerId, Guid sessionId);
+        Task<AttachResult> Attach(string userID, Guid sessionId);
 
         Guid[] GetAllIds();
     }

@@ -25,14 +25,14 @@ namespace GameServer.Application.Sessions.States
 
             handlers.Register<PlayerConnected>(async (ctx, evt) =>
             {
-                Console.WriteLine($"Player join {evt.PlayerId}");
+                Console.WriteLine($"Player join {evt.UserId}");
 
                 //await _syncService.SyncPlayerAsync(ctx.Id, evt.PlayerId);
             });
 
             handlers.Register<PlayerDisconnected>(async (ctx, evt) =>
             {
-                Console.WriteLine($"Player leave {evt.PlayerId}");
+                Console.WriteLine($"Player leave {evt.UserId}");
             });
         }
 

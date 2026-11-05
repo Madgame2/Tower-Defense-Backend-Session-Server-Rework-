@@ -8,6 +8,6 @@ namespace GameServer.Domain.Interfaces
     {
         Task SyncSessionUsersAsync(Guid sessionId, CancellationToken token = default);
 
-        Task SyncPlayerAsync(Guid sessionId, string playerId, CancellationToken token = default);
+        Task SyncPlayerAsync(Guid sessionId, string userId, CancellationToken token = default);
     }
 }

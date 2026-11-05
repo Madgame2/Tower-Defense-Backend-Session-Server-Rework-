@@ -9,6 +9,6 @@ namespace GameServer.GameLoop.Core.Simultaion.Steps.Interfaces
     {
         void OnAwake(GameRoom world);
 
-        Task Tick(float delta, GameRoom world);
+        Task Tick(float delta, uint tick, GameRoom world);
     }
 }

@@ -7,7 +7,7 @@ namespace GameServer.Domain.SessionWorld.Interfaces
 {
     public interface IObjectRegistry
     {
-        void RegisterHandler<T>(IObjectHandler<T> handler);
+        void RegisterHandler(IObjectHandler handler);
         void Add<T>(T obj);
         void Remove<T>(T obj);
         void Change<T>(T obj);

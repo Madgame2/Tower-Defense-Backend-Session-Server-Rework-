@@ -1,6 +1,7 @@
 ﻿using EntityLib.GameRoomExtentions;
 using GameServer.Application.Resources.PrefabsRegesters;
 using GameServer.Application.Services.StaticResources;
+using GameServer.Application.Session.Services.ReplicationService.Registry;
 using GameServer.Domain.ColliderSystem.Enum;
 using GameServer.Domain.Player;
 using GameServer.Domain.Services.StaticData;
@@ -9,6 +10,7 @@ using GameServer.Domain.Sessions.Events.Stateshandler;
 using GameServer.Domain.Sessions.StateMachine;
 using GameServer.Domain.Sessions.StateMachine.StatesGraph.Attributes;
 using GameServer.Domain.SessionWorld;
+using GameServer.Domain.SessionWorld.ChunksService.ChunkStorage;
 using GameServer.Domain.SessionWorld.Generators;
 using GameServer.Domain.SessionWorld.Graphs.BiomGraph.Interfaces;
 using GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Interfaces;
@@ -16,8 +18,14 @@ using GameServer.Domain.SessionWorld.Graphs.TreeGraph.Factory.Interfaces;
 using GameServer.Domain.SessionWorld.Interfaces;
 using GameServer.Domain.SessionWorld.Meta.Interfaces;
 using GameServer.Domain.SessionWorld.Model;
+using GameServer.Domain.SessionWorld.PlayerStorages;
+using GameServer.Domain.SessionWorld.PlayerStorages.Interfaces;
 using GameServer.Domain.SessionWorld.Routers;
 using GameServer.Domain.SessionWorld.Services.IndicesService.IndexesImplement;
+using GameServer.Domain.SessionWorld.Services.IndicesService.Storages;
+using GameServer.Domain.SessionWorld.Services.ObjectRegister;
+using GameServer.Domain.SessionWorld.Services.ObjectRegister.Handlers;
+using GameServer.Domain.SessionWorld.Services.ObjectRegister.Interfaces;
 using GameServer.Domain.SessionWorld.Services.WorldQuery;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.Interfaces;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Interfaces;
@@ -70,12 +78,12 @@ namespace GameServer.Application.Sessions.States
 
             handlers.Register<PlayerConnected>(async (ctx, evt) =>
             {
-                Console.WriteLine($"Player join {evt.PlayerId}");
+                Console.WriteLine($"Player join {evt.UserId}");
             });
 
             handlers.Register<PlayerDisconnected>(async (ctx, evt) =>
             {
-                Console.WriteLine($"Player leave {evt.PlayerId}");
+                Console.WriteLine($"Player leave {evt.UserId}");
             });
         }
 
@@ -88,7 +96,29 @@ namespace GameServer.Application.Sessions.States
             var preafabsERgister = new GeneralPrefabsRegester();
             var staticResourcesService = new SessionStaticResources(_staticResourceLoader, _loggerFactory.CreateLogger<SessionStaticResources>(), preafabsERgister);
             var worldQueryService = new WorldQueryService(_queryPlanner, _worldQueryService);
-            var newWorldObject = new GameRoom(_chunksSettings, router, _worldQueryService, _queryPlanner, staticResourcesService, _gameObjectSpawner, worldQueryService);
+            var objectRegister = new InMemmoryObjectRegister();
+            var replicationRegister = new ReplicationRegistry();
+
+            var chunkStorage = new InMemmoryChunkStorage();
+            var playersSorage = new InMemmoryPlayerStorage();
+            var indexStorage = new InMemmoryIndexStorage();
+
+            IObjectHandler[] handlers =
+            {
+                new ChunkRegisterHandler(chunkStorage, indexStorage),
+                new PlayersRegisterHandler(playersSorage)
+            };
+
+            var newWorldObject = new GameRoom(_chunksSettings,
+                router,
+                _worldQueryService,
+                _queryPlanner, 
+                staticResourcesService,
+                _gameObjectSpawner,
+                worldQueryService,
+                objectRegister, 
+                replicationRegister,
+                playersSorage,chunkStorage, indexStorage, handlers);
             
             worldQueryService.GameRoom = newWorldObject;
 
@@ -96,7 +126,7 @@ namespace GameServer.Application.Sessions.States
             newWorldObject.AddIndex(treesIndex);
 
             CreateWorldGenerationRules(newWorldObject);
-            await SpawnPlayers(ctx.OnlinePlayersIDs, newWorldObject);
+            //await SpawnPlayers(ctx.OnlinePlayersIDs, newWorldObject);
 
             ctx.SetRoom(newWorldObject);
 

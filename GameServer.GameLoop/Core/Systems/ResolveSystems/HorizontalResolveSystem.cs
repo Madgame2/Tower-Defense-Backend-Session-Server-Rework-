@@ -67,7 +67,7 @@ namespace GameServer.GameLoop.Core.Systems.ResolveSystems
             }
         }
 
-        public async Task Tick(float delta, GameRoom world)
+        public async Task Tick(float delta, uint tick, GameRoom world)
         {
             var players = world.AllPlayers;
 

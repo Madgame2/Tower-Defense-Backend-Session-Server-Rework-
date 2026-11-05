@@ -7,7 +7,7 @@ namespace GameServer.Contracts.PlayerMetaDatas
 {
     public struct PlayaerMetaDataDTO
     {
-        public string PlayerId { get; set; }
+        public uint PlayerId { get; set; }
         public uint ObjectId { get; set; }
         public Vector3 Position { get; set; }
         public bool IsPlaying { get; set; }
@@ -18,7 +18,7 @@ namespace GameServer.Contracts.PlayerMetaDatas
             IsPlaying = true;
         }
 
-        public PlayaerMetaDataDTO(string playerId,uint objectId, Vector3 position, bool isPlaying)
+        public PlayaerMetaDataDTO(uint playerId,uint objectId, Vector3 position, bool isPlaying)
         {
             PlayerId = playerId;
             ObjectId = objectId;

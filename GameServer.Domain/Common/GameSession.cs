@@ -102,12 +102,18 @@ namespace GameServer.Application.Sessions
         {
             while (true)
             {
-                while (_events.Reader.TryRead(out var evt))
+                try
                 {
-                    ProcessEvent(evt);
-                }
+                    while (_events.Reader.TryRead(out var evt))
+                    {
+                        ProcessEvent(evt);
+                    }
 
-                await Task.Delay(16);
+                    await Task.Delay(16);
+                }catch(Exception ex)
+                {
+                    Console.WriteLine($"[ERROR]: {ex.Message}");
+                }
             }
         }
 
@@ -122,7 +128,7 @@ namespace GameServer.Application.Sessions
             {
                 case PlayerConnected connected:
 
-                    _onlinePlayers.Add(connected.PlayerId);
+                    _onlinePlayers.Add(connected.UserId);
 
                     await _sessionStatemachine.Publish(evt);
 
@@ -130,7 +136,7 @@ namespace GameServer.Application.Sessions
 
                 case PlayerDisconnected disconnected:
 
-                    _onlinePlayers.Remove(disconnected.PlayerId);
+                    _onlinePlayers.Remove(disconnected.UserId);
 
                     await _sessionStatemachine.Publish(evt);
 

@@ -4,8 +4,9 @@ using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Builder;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Interfaces;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Model;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model;
-using System.Numerics;
 using GameServer.GameObjectComponentsAndServices.GameObjectsComponents.Transform;
+using System.Numerics;
+using System.Security.Cryptography;
 
 namespace GameServer.Domain.SessionWorld.Services.WorldQuery
 {
@@ -103,14 +104,20 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery
             _queryExecutor.Execute(plan, queryContext, buffer);
         }
 
-        public async Task<Player.Player> RegisterPlayerAsync(string playerId, CancellationToken cancellationToken)
+        public async Task<Player.Player> RegisterPlayerAsync(string userID, CancellationToken cancellationToken)
         {
-            var existingPlayer = _gameRoom.ObjectRegistry.Get<Player.Player,string>(playerId);
+            var existingPlayer = _gameRoom.ObjectRegistry.Get<Player.Player,string>(userID);
 
             if (existingPlayer != null)
                 return existingPlayer;
 
-            var player = _gameRoom.GameObjectSpawner.Spawn<Player.Player>(playerId);
+            Span<byte> bytes = stackalloc byte[4];
+
+            RandomNumberGenerator.Fill(bytes);
+
+            uint playerID = BitConverter.ToUInt32(bytes);
+
+            var player = _gameRoom.GameObjectSpawner.Spawn<Player.Player>(userID, playerID);
 
             var y = await GetHeightAt(0, 0);
 

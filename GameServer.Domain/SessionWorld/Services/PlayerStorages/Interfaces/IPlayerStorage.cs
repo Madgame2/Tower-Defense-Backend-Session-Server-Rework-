@@ -7,9 +7,10 @@ namespace GameServer.Domain.SessionWorld.PlayerStorages.Interfaces
 {
     public interface IPlayersStorage
     {
-        Player.Player? Get(string id);
+        Player.Player? Get(uint id);
+        Player.Player? Get(string userId);
         Player.Player[] GetAll();
         void Add(Player.Player player);
-        void Remove(string id);
+        void Remove(uint id);
     }
 }

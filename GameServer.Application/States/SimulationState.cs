@@ -39,7 +39,7 @@ namespace GameServer.Application.Sessions.States
 
             handlers.Register<PlayerConnected>(async (ctx, evt) =>
             {
-                Console.WriteLine($"Player join {evt.PlayerId}");
+                Console.WriteLine($"Player join {evt.UserId}");
             });
 
         }

@@ -36,7 +36,7 @@ public class SessionSocketHandler
     {
         var token = context.RequestAborted;
 
-        if (!TryGetPlayerAndSession(context, out var playerId, out var sessionId))
+        if (!TryGetPlayerAndSession(context, out var userID, out var sessionId))
         {
             await CloseSocket(socket, WebSocketCloseStatus.PolicyViolation, "Invalid auth data", token);
             return;
@@ -57,14 +57,14 @@ public class SessionSocketHandler
         var connection = ActivatorUtilities.CreateInstance<ClientConnection>(_serviceProvider);
         var udpToken = GenerateSecureUdpToken();
 
-        connection.Init(playerId, udpToken, session, socket, token);
+        connection.Init(userID, udpToken, session, socket, token);
 
         _connectidClientStorage.Add(connection);
 
         connection.StartReadingLoop();
         connection.StartWritingLoop();
 
-        var attachResult = await _gameSessionService.Attach(playerId, sessionId);
+        var attachResult = await _gameSessionService.Attach(userID, sessionId);
 
         if (!attachResult.Success)
         {
@@ -103,10 +103,10 @@ public class SessionSocketHandler
 
     private bool TryGetPlayerAndSession(
         HttpContext context,
-        out string playerId,
+        out string userId,
         out Guid sessionId)
     {
-        playerId = null;
+        userId = null;
         sessionId = Guid.Empty;
 
         var playerIdHeader = context.Request.Headers["UserId"].FirstOrDefault();
@@ -118,7 +118,7 @@ public class SessionSocketHandler
         if (!Guid.TryParse(sessionIdHeader, out sessionId))
             return false;
 
-        playerId = playerIdHeader;
+        userId = playerIdHeader;
         return true;
     }
 }

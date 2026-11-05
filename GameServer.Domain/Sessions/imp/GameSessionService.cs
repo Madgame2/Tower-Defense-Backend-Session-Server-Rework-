@@ -33,7 +33,7 @@ namespace GameServer.Application.Sessions.imp
             _sessionFactory = sessionFactory;
         }
 
-        public async Task<AttachResult> Attach(string playerId, Guid sessionId)
+        public async Task<AttachResult> Attach(string userId, Guid sessionId)
         {
             var session = _sessionRep.Get(sessionId);
 
@@ -46,7 +46,7 @@ namespace GameServer.Application.Sessions.imp
                 };
             }
 
-            if (!session.hasPlayerReserwation(playerId))
+            if (!session.hasPlayerReserwation(userId))
             {
                 return new AttachResult
                 {
@@ -55,7 +55,7 @@ namespace GameServer.Application.Sessions.imp
                 };
             }
 
-            session.Enqueue(new PlayerConnected(playerId));
+            session.Enqueue(new PlayerConnected(userId));
 
 
             return new AttachResult

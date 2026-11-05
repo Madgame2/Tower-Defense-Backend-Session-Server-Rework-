@@ -7,6 +7,8 @@ namespace GameServer.GameLoop.Core.Simultaion.Steps.Interfaces
 {
     public interface INetworkTickable
     {
+        void OnAwake(GameRoom world);
+
         void NetworkTick(float delta,uint Tick, GameRoom world);
     }
 }

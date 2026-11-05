@@ -3,6 +3,7 @@ using GameServer.Application.Session.ClientStateMachine.Factory.Interfaces;
 using GameServer.Application.Session.ClientStateMachine.States.Base;
 using GameServer.Application.Sessions;
 using GameServer.Domain.Services.ClientStateMachine;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,7 +13,7 @@ namespace GameServer.Application.Session.PlayersStateMachine.Implementation
     public class ClientsStateMachine : IClientStateMachine, IDisposable, IAsyncDisposable
     {
         private readonly IClientStateFactory _stateFactory;
-
+        private readonly ILogger<ClientsStateMachine> _logger;
         private Task? _clientMachineTask;
 
         private CancellationTokenSource? _cts;
@@ -27,13 +28,15 @@ namespace GameServer.Application.Session.PlayersStateMachine.Implementation
 
         public ClientsStateMachine(
             IInitialClientState initialClientState,
-            IClientStateFactory stateFactory)
+            IClientStateFactory stateFactory,
+            ILogger<ClientsStateMachine> logger)
         {
             _currentState = initialClientState as ClientStateBase
                 ?? throw new InvalidOperationException(
                     "Initial state must inherit from ClientStateBase.");
 
             _stateFactory = stateFactory;
+            _logger = logger;
         }
 
         public void Init(ClientConnection clientConnection, GameSession session)
@@ -98,6 +101,10 @@ namespace GameServer.Application.Session.PlayersStateMachine.Implementation
 
                     // Определение следующего состояния
                     nextStateType = currentState.NextState;
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError(ex, "Error in ClientsStateMachine");
                 }
                 finally
                 {

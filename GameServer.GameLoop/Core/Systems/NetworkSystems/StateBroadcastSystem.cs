@@ -9,7 +9,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Text;
 
-namespace GameServer.GameLoop.Core.Systems
+namespace GameServer.GameLoop.Core.Systems.NetworkSystems
 {
     internal class StateBroadcastSystem : INetworkTickable
     {
@@ -41,7 +41,7 @@ namespace GameServer.GameLoop.Core.Systems
 
                 foreach (var player in players)
                 {
-                    if (!_connectedClinetStorage.TryGet(player.Id, out var clientConnection))
+                    if (!_connectedClinetStorage.TryGet(player.UserId, out var clientConnection))
                         continue;
 
                     if (clientConnection.ConnectionEndPoint == null) continue;

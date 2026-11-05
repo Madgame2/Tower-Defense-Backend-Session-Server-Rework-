@@ -19,6 +19,8 @@ namespace GameServer.Domain.SessionWorld.Services.ObjectRegister.Handlers
             _indexStorage = indexStorage;
         }
 
+        Type IObjectHandler.StoragedType => typeof(Chank);
+
         public void Add(Chank chunk)
         {
             _chunkStorage.Save(chunk);

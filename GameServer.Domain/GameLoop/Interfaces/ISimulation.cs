@@ -6,5 +6,6 @@ namespace GameServer.GameLoop.Core.Simultaion.Interfaces
 {
     public interface ISimulation: IStartableSimulation, IStopableSimultaion
     {
+        uint CurrentTick {  get; }
     }
 }

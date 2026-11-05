@@ -29,6 +29,8 @@
 
   <ItemGroup>
     <Folder Include="Session\Ressources\" />
+    <Folder Include="Session\Services\ReplicationService\Log\" />
+    <Folder Include="Session\SessionWorld\" />
   </ItemGroup>
 
 </Project>

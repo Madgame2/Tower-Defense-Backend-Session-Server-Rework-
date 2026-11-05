@@ -6,13 +6,13 @@ using System.Text;
 
 namespace GameServer.Domain.SessionWorld.Services.ObjectRegister
 {
-    class InMemmoryObjectRegister : IObjectRegistry
+    public class InMemmoryObjectRegister : IObjectRegistry
     {
         private readonly Dictionary<Type, IObjectHandler> _handlers = new Dictionary<Type, IObjectHandler>();
 
-        public void RegisterHandler<T>(IObjectHandler<T> handler)
+        public void RegisterHandler(IObjectHandler handler)
         {
-            var handlerType= typeof(T);
+            var handlerType= handler.StoragedType;
 
             if (_handlers.ContainsKey(handlerType))
                 return;

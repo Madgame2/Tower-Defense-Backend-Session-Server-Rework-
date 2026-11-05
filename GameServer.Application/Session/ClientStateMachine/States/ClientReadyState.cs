@@ -9,7 +9,7 @@ namespace GameServer.Application.Session.ClientStateMachine.States
 {
     public class ClientReadyState : ClientStateBase
     {
-        public override Type NextState => throw new NotImplementedException();
+        public override Type NextState => null;
 
         public override Task WaitForTransitionAsync(ClientConnection connection, GameSession session, CancellationToken cancellationToken)
         {

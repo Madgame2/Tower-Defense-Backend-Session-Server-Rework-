@@ -5,6 +5,8 @@ using GameServer.Domain.SessionWorld.ChunksService.ChunkStorage;
 using GameServer.Domain.SessionWorld.ChunksService.ChunkStorage.Interfaces;
 using GameServer.Domain.SessionWorld.Generators;
 using GameServer.Domain.SessionWorld.Interfaces;
+using GameServer.Domain.SessionWorld.Interfaces.ReplicationService;
+using GameServer.Domain.SessionWorld.Interfaces.ReplicationService.ReplicationLog;
 using GameServer.Domain.SessionWorld.Meta.Interfaces;
 using GameServer.Domain.SessionWorld.Model;
 using GameServer.Domain.SessionWorld.PlayerStorages;
@@ -12,13 +14,14 @@ using GameServer.Domain.SessionWorld.PlayerStorages.Interfaces;
 using GameServer.Domain.SessionWorld.Services.IndicesService.Interfaces;
 using GameServer.Domain.SessionWorld.Services.IndicesService.Storages;
 using GameServer.Domain.SessionWorld.Services.ObjectRegister;
-using GameServer.Domain.SessionWorld.Services.ObjectRegister.Handlers;
+using GameServer.Domain.SessionWorld.Services.ObjectRegister.Interfaces;
 using GameServer.Domain.SessionWorld.Services.WorldQuery;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.Interfaces;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Interfaces;
 using GameServer.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 using System.Numerics;
+using System.Reflection.Metadata;
 
 namespace GameServer.Domain.SessionWorld
 {
@@ -34,7 +37,11 @@ namespace GameServer.Domain.SessionWorld
         private readonly IIndexStorage _indicesStorage;
         private readonly IGameObjectSpawner _gameObjectSpawner;
         private readonly IObjectRegistry _objectRegistry;
+        private readonly IReplicationRegistry _replicationRegistry;
 
+        private ReplicationLog _logs;
+
+        public IReplicationRegistry ReplicationRegistry { get => _replicationRegistry; }
         public ISessionStaticResources StaticResources { get => _statickResources; }
         public IPacketRouter Router { get => _packetRouter; }
         public IObjectRegistry ObjectRegistry { get => _objectRegistry; }
@@ -51,6 +58,7 @@ namespace GameServer.Domain.SessionWorld
                     _chunkGenerator = value;
             }
         }
+        public ReplicationLog Logs { get => _logs; }
 
         public Player.Player[] AllPlayers { get => _playersStorage.GetAll(); }
 
@@ -61,24 +69,44 @@ namespace GameServer.Domain.SessionWorld
             IQueryPlanner queryPlanner,
             ISessionStaticResources staticResources,
             IGameObjectSpawner gameObjectSpawner,
-            IWorldQueryService worldQueryService)
+            IWorldQueryService worldQueryService,
+            IObjectRegistry objectRegistry,
+            IReplicationRegistry replicationRegistry,
+            IPlayersStorage playersStorage,
+            IChunkStorage chunkStorage,
+            IIndexStorage indexStorage,
+            IEnumerable<IObjectHandler> handlers)
         {
             _chunksSettings = chunksSettings;
             _packetRouter = packetRouter;
             _statickResources = staticResources;
             _gameObjectSpawner = gameObjectSpawner;
-
-
             _worldQueryService = worldQueryService;
-            _chunkStorage = new InMemmoryChunkStorage();
-            _playersStorage = new InMemmoryPlayerStorage();
-            _indicesStorage = new InMemmoryIndexStorage();
+            _objectRegistry = objectRegistry;
+            _replicationRegistry = replicationRegistry;
+
+            _chunkStorage = chunkStorage;
+            _playersStorage = playersStorage;
+            _indicesStorage = indexStorage;
             _objectRegistry = new InMemmoryObjectRegister();
+            _logs = new ReplicationLog();
 
             var contex = new GameRoomContext(_chunkStorage, chunksSettings, _playersStorage, _indicesStorage);
 
-            _objectRegistry.RegisterHandler(new PlayersRegisterHandler(_playersStorage));
-            _objectRegistry.RegisterHandler(new ChunkRegisterHandler(_chunkStorage, IndexStorage));
+            RegistHandlers(handlers);
+        }
+
+        private void RegistHandlers(IEnumerable<IObjectHandler> handlers)
+        {
+            foreach (var handler in handlers)
+            {
+                _objectRegistry.RegisterHandler(handler);
+
+                if(handler is IReplicationModule ripticationHandler)
+                {
+                    _replicationRegistry.RegisterModule(ripticationHandler);
+                }
+            }
         }
 
         public void AddIndex<T, TQuery>(IIndex<T, TQuery> indexsystem)
@@ -119,9 +147,9 @@ namespace GameServer.Domain.SessionWorld
             return new Vector2(pivotX, pivotZ);
         }
 
-        public void HandleMoveInputs(string playerId, uint lastTick, ReadOnlySpan<MoveInputCommand> inputs)
+        public void HandleMoveInputs(string userID, uint lastTick, ReadOnlySpan<MoveInputCommand> inputs)
         {
-            var player = _playersStorage.Get(playerId);
+            var player = _playersStorage.Get(userID);
 
             if (player == null)
                 return;

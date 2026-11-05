@@ -1,5 +1,7 @@
 ﻿using GameServer.GameLoop.Core.Simultaion.Meta.Base;
 using GameServer.GameLoop.Core.Systems;
+using GameServer.GameLoop.Core.Systems.NetworkSystems;
+using GameServer.GameLoop.Core.Systems.Replication;
 using GameServer.GameLoop.Core.Systems.ResolveSystems;
 using System;
 using System.Collections.Generic;
@@ -18,6 +20,8 @@ namespace GameServer.GameLoop.Core
             Register<VertivalResolveSystem>();
             Register<HorizontalResolveSystem>();
             Register<PlayerMoveStateResolveSystem>();
+
+            Register<SaveEventsSystem>();
 
             RegisterNetwork<StateBroadcastSystem>();
         }

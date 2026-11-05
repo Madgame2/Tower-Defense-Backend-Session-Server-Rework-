@@ -7,26 +7,34 @@ using System.Text;
 
 namespace GameServer.Domain.SessionWorld.PlayerStorages
 {
-    internal class InMemmoryPlayerStorage : IPlayersStorage
+    public class InMemmoryPlayerStorage : IPlayersStorage
     {
-        private ConcurrentDictionary<string, Player.Player> _players = new();
+        private ConcurrentDictionary<uint, Player.Player> _players = new();
+        private ConcurrentDictionary<string, Player.Player> _playersByClientID = new();
         private volatile Player.Player[] _cachedPlayers = Array.Empty<Player.Player>();
         public void Add(Player.Player player)
         {
-            if (_players.TryAdd(player.Id, player))
+            if (_players.TryAdd(player.PlayerId, player)&&
+                _playersByClientID.TryAdd(player.UserId, player))
             {
                 UpdateCache();
             }
         }
 
-        public Player.Player? Get(string id)
+        public Player.Player? Get(uint id)
         {
             return _players.TryGetValue(id, out var player) ? player : null;
         }
 
+        public Player.Player? Get(string userId)
+        {
+            return _playersByClientID.TryGetValue(userId, out var player) ? player : null;
+
+        }
+
         public Player.Player[] GetAll() => _cachedPlayers;
 
-        public void Remove(string id)
+        public void Remove(uint id)
         {
             if (_players.TryRemove(id, out _))
             {

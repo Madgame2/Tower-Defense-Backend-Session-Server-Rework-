@@ -6,9 +6,9 @@ namespace GameServer.Domain.Sessions.Events
 {
     public abstract record SessionEvent;
 
-    public record PlayerConnected(string PlayerId)
+    public record PlayerConnected(string UserId)
     : SessionEvent;
 
-    public record PlayerDisconnected(string PlayerId)
+    public record PlayerDisconnected(string UserId)
     : SessionEvent;
 }

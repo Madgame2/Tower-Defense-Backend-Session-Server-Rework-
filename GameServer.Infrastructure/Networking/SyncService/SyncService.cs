@@ -7,8 +7,11 @@ using GameServer.Contracts.ServerMessages;
 using GameServer.Contracts.WorldMetadata;
 using GameServer.Domain.Common.Interfaces;
 using GameServer.Domain.Interfaces;
+using GameServer.Domain.Player;
 using GameServer.Domain.SessionWorld;
 using GameServer.Domain.SessionWorld.Meta.Interfaces;
+using GameServer.Domain.SessionWorld.PlayerStorages.Interfaces;
+using GameServer.GameLoop.Core.Simultaion.Interfaces;
 using GameServer.GameObjectComponentsAndServices.GameObjectsComponents.Transform;
 using GameServer.Infrastructure.Serialization;
 
@@ -87,6 +90,7 @@ namespace GameServer.Infrastructure.Networking.SyncService
 
             var worldObject = session.CurrentRoom;
 
+
             await SendConnectionSuccessMessage(clientConnectionObject, clientConnectionObject.UdpToken, token);
             await SendChunkMetaDataAsync(clientConnectionObject, token);
             await SendWorldGenerationMetaDataAsync(clientConnectionObject, worldObject, token);
@@ -94,6 +98,19 @@ namespace GameServer.Infrastructure.Networking.SyncService
             await SendPlayersAvatarsDataAsync(clientConnectionObject, worldObject, token);
 
             await SendMetaDatasDone(clientConnectionObject, token);
+
+            await CommitPlayerLastTick(clientConnectionObject, worldObject, session.Simulation);
+
+        }
+
+        private async Task CommitPlayerLastTick(ClientConnection clientConnectionObject, GameRoom gameRoom, ISimulation simulation)
+        {
+            var playerObj = gameRoom.ObjectRegistry.Get<Player,string>(clientConnectionObject.UserId);
+
+            if(playerObj == null|| simulation == null) return;
+
+
+            playerObj.AcknowledgeTick(simulation.CurrentTick);
         }
 
         private async Task SendConnectionSuccessMessage(ClientConnection clientConnection, uint udpToken, CancellationToken token)
@@ -126,10 +143,10 @@ namespace GameServer.Infrastructure.Networking.SyncService
 
                 var new_playerDto = new Contracts.PlayerMetaDatas.PlayaerMetaDataDTO
                 {
-                    PlayerId = player.Id,
+                    PlayerId = player.PlayerId,
                     ObjectId = player.ObjectId,
                     Position = transformComponent.Position,
-                    IsPlaying = player.Id == clientConnection.UserId
+                    IsPlaying = player.UserId == clientConnection.UserId
                 };
 
                 message.Players.Add(new_playerDto);

@@ -22,6 +22,8 @@ namespace GameServer.GameLoop.Core.Simultaion
 
         private readonly ILogger<Simulation> _logger;
 
+        public uint CurrentTick { get; private set; }
+
         public Simulation(GameRoom simulatedWorld,
             List<ITickable> Systems,
             List<INetworkTickable> networkSystems,
@@ -68,7 +70,10 @@ namespace GameServer.GameLoop.Core.Simultaion
             uint gameTicks = 0;
             try
             {
+                CurrentTick = gameTicks;
+
                 AwaekeSystems(_systems);
+                AwaekeSystems(_networkSystems);
 
                 while (await timer.WaitForNextTickAsync(token))
                 {
@@ -80,7 +85,7 @@ namespace GameServer.GameLoop.Core.Simultaion
 
                     for (int i = 0; i < _systems.Count; i++)
                     {
-                        await _systems[i].Tick(deltaTime, _simulatedWorld);
+                        await _systems[i].Tick(deltaTime,gameTicks, _simulatedWorld);
                     }
 
                     networkAccumulator += deltaTime;
@@ -116,6 +121,14 @@ namespace GameServer.GameLoop.Core.Simultaion
         private void AwaekeSystems(List<ITickable> systems)
         {
             foreach (ITickable system in systems)
+            {
+                system.OnAwake(_simulatedWorld);
+            }
+        }
+
+        private void AwaekeSystems(List<INetworkTickable> systems)
+        {
+            foreach (INetworkTickable system in systems)
             {
                 system.OnAwake(_simulatedWorld);
             }

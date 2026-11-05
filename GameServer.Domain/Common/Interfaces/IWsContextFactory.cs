@@ -8,6 +8,6 @@ namespace GameServer.Application.Interfaces
 {
     public interface IWsContextFactory
     {
-        WsContext Create(WebSocket socket, string playerId, Guid sessionId);
+        WsContext Create(WebSocket socket, string userId, Guid sessionId);
     }
 }

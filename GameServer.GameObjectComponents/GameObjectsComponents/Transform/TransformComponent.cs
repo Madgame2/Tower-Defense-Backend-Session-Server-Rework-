@@ -1,4 +1,5 @@
 ﻿using GameServer.Domain.Core.GameObjects.Components;
+using GameServer.Domain.ValueObjects.Geometrics;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -17,6 +18,16 @@ namespace GameServer.GameObjectComponentsAndServices.GameObjectsComponents.Trans
             Position = Vector3.Zero;
             Rotation= Quaternion.Identity;
             Scale = Vector3.One;
+        }
+
+        public TransformSnapShoot GetShapShoot()
+        {
+            return new TransformSnapShoot
+            {
+                Position = Position,
+                Rotation = Rotation,
+                Scale = Scale,
+            };
         }
     }
 }

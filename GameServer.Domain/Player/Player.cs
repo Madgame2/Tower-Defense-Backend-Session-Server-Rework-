@@ -12,7 +12,8 @@ namespace GameServer.Domain.Player
 {
     public class Player : GameObject
     {
-        public string Id { get; private set; }
+        public uint PlayerId { get; private set; }
+        public string UserId {  get; private set; }
         public Vector3 Velocity;
         public MovementState MovementState { get; set; } = MovementState.Grounded;
         public float Speed { get; private set; } = 2f;
@@ -31,9 +32,35 @@ namespace GameServer.Domain.Player
 
         public PlayerInputBuffer InputBuffer {  get { return _playerInputBuffer; } }
 
-        public Player(string id) : base("PlayerGameObject")
+        private int _lastAcknowledgedTick;
+
+        public uint LastAcknowledgedTick => unchecked((uint)Volatile.Read(ref _lastAcknowledgedTick));
+
+        public void AcknowledgeTick(uint tick)
         {
-            Id = id;
+            int newValue = unchecked((int)tick);
+
+            while (true)
+            {
+                int current = Volatile.Read(ref _lastAcknowledgedTick);
+
+                if (unchecked((uint)current) >= tick)
+                    return;
+
+                int previous = Interlocked.CompareExchange(
+                    ref _lastAcknowledgedTick,
+                    newValue,
+                    current);
+
+                if (previous == current)
+                    return;
+            }
+        }
+
+        public Player(uint playerId, string userId) : base("PlayerGameObject")
+        {
+            PlayerId = playerId;
+            UserId = userId;
         }
     }
 }
