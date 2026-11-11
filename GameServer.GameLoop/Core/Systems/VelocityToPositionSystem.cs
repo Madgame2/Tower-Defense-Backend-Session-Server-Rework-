@@ -1,5 +1,6 @@
 ﻿using GameServer.Domain.SessionWorld;
 using GameServer.GameLoop.Core.Simultaion.Steps.Interfaces;
+using GameServer.GameObjectComponentsAndServices.GameObjectsComponents.Phisycs;
 using GameServer.GameObjectComponentsAndServices.GameObjectsComponents.Transform;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,10 @@ namespace GameServer.GameLoop.Core.Systems
                 if (!player.TryGetComponent<TransformComponent>(out var transformComponent))
                     continue;
 
-                transformComponent.Position += player.Velocity * delta;
+                if (!player.TryGetComponent<VelocityComponent>(out var velocityComponent))
+                    continue;
+
+                transformComponent.Position += velocityComponent.Velocity * delta;
             }
         }
     }

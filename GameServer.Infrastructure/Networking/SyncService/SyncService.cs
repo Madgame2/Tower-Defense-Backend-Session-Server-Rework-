@@ -145,6 +145,7 @@ namespace GameServer.Infrastructure.Networking.SyncService
                 {
                     PlayerId = player.PlayerId,
                     ObjectId = player.ObjectId,
+                    Rotation = transformComponent.Rotation,
                     Position = transformComponent.Position,
                     IsPlaying = player.UserId == clientConnection.UserId
                 };

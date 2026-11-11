@@ -106,7 +106,7 @@ namespace GameServer.Application.Sessions.States
             IObjectHandler[] handlers =
             {
                 new ChunkRegisterHandler(chunkStorage, indexStorage),
-                new PlayersRegisterHandler(playersSorage)
+                new PlayersRegisterHandler(playersSorage, replicationRegister)
             };
 
             var newWorldObject = new GameRoom(_chunksSettings,

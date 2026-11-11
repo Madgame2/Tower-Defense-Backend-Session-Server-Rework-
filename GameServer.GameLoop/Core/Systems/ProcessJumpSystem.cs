@@ -22,7 +22,6 @@ namespace GameServer.GameLoop.Core.Systems
                 if(player.IsGrounded&& player.IsJumping)
                 {
                     player.MovementState = Domain.Player.Enums.MovementState.Jumping;
-                    player.Velocity.Y = 5;
 
                     player.IsGrounded = false;
                     player.IsJumping = false;

@@ -7,6 +7,7 @@ namespace GameServer.Domain.SessionWorld.Interfaces.ReplicationService.Models.Me
     public enum EventType:byte
     {
         SpawnEvent,
-        DespawnEvent
+        DespawnEvent,
+        GamePlayEvent
     }
 }

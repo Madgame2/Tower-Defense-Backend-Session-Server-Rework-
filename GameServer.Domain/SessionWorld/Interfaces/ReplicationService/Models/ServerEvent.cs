@@ -1,4 +1,6 @@
 ﻿using GameServer.Domain.SessionWorld.Interfaces.ReplicationService.Models.Despawn;
+using GameServer.Domain.SessionWorld.Interfaces.ReplicationService.Models.Gameplay;
+using GameServer.Domain.SessionWorld.Interfaces.ReplicationService.Models.Gameplay.Payload;
 using GameServer.Domain.SessionWorld.Interfaces.ReplicationService.Models.Meta;
 using GameServer.Domain.SessionWorld.Interfaces.ReplicationService.Models.Spawn;
 using GameServer.Domain.SessionWorld.Interfaces.ReplicationService.Models.Spawn.Payload;
@@ -21,13 +23,19 @@ namespace GameServer.Domain.SessionWorld.Interfaces.ReplicationService.Models
         [FieldOffset(1)]
         public DespawnEvent despawnEvent;
 
+        [FieldOffset(1)]
+        public GameplayEvent gameplayEvent;
+
         public int GetSize()
         {
-            return eventType switch
+            return 1 + eventType switch
             {
-                EventType.SpawnEvent => 1 + spawnEvent.GetSize(),
-                EventType.DespawnEvent => 1 + DespawnEvent.ByteSize,
-                _ => throw new NotSupportedException()
+                EventType.SpawnEvent => spawnEvent.GetSize(),
+                EventType.DespawnEvent => DespawnEvent.ByteSize,
+                EventType.GamePlayEvent => gameplayEvent.GetSize(),
+
+                _ => throw new NotSupportedException(
+                    $"Unsupported event type: {eventType}")
             };
         }
 
@@ -48,11 +56,16 @@ namespace GameServer.Domain.SessionWorld.Interfaces.ReplicationService.Models
                 EventType.DespawnEvent =>
                     despawnEvent.WriteTo(destination.Slice(1)),
 
-                _ => throw new NotSupportedException()
+                EventType.GamePlayEvent =>
+                    gameplayEvent.WriteTo(destination.Slice(1)),
+
+                _ => throw new NotSupportedException(
+                    $"Unsupported event type: {eventType}")
             };
 
             return 1 + written;
         }
+
 
         public static ServerEvent Created(uint objectId, ObjectType objectType, SpawnPayload payload)
         {
@@ -76,6 +89,20 @@ namespace GameServer.Domain.SessionWorld.Interfaces.ReplicationService.Models
                 despawnEvent = new DespawnEvent
                 {
 
+                }
+            };
+        }
+
+        public static ServerEvent GamePlay(uint objectId, ObjectType objectType, GameplayeEventPayload payload)
+        {
+            return new ServerEvent
+            {
+                eventType = EventType.GamePlayEvent,
+                gameplayEvent = new GameplayEvent
+                {
+                    objectId = objectId,
+                    objectType = objectType,
+                    payload = payload
                 }
             };
         }

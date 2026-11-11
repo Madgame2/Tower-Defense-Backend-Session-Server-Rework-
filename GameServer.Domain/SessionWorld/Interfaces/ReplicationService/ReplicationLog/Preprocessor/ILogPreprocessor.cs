@@ -7,6 +7,6 @@ namespace GameServer.Domain.SessionWorld.Interfaces.ReplicationService.Replicati
 {
     public interface ILogPreprocessor
     {
-        int Process(uint lastAcknowledgedTick, ReplicationLog log, out ReadOnlyMemory<ReplicationLogEntry> entriesToSend);
+        int Process(uint playerId, uint lastAcknowledgedTick, ReplicationLog log, out ReadOnlyMemory<ReplicationLogEntry> entriesToSend);
     }
 }

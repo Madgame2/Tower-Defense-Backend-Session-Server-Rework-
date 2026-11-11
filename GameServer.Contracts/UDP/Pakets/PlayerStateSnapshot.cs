@@ -2,6 +2,7 @@
 using GameServer.Contracts.UDP.Enums;
 using GameServer.Contracts.WorldStates;
 using GameServer.Domain.Player;
+using GameServer.GameObjectComponentsAndServices.GameObjectsComponents.Phisycs;
 using GameServer.GameObjectComponentsAndServices.GameObjectsComponents.Transform;
 using System;
 using System.Buffers.Binary;
@@ -30,11 +31,15 @@ namespace GameServer.Contracts.UDP.Pakets
 
             foreach (var player in players)
             {
-                if (player.TryGetComponent<TransformComponent>(out var transformComponent))
-                {
-                    var state = new PlayerState(player.ObjectId, transformComponent.Position, player.Velocity, player.MovementState);
-                    offset += state.Serialize(buffer.Slice(offset));
-                }
+
+                if (!player.TryGetComponent<TransformComponent>(out var transformComponent))
+                    continue;
+
+                if (!player.TryGetComponent<VelocityComponent>(out var velocityComponent))
+                    continue;
+
+                var state = new PlayerState(player.ObjectId, transformComponent.Position, transformComponent.Rotation, player.LookAt, velocityComponent.Velocity, player.MovementState);
+                offset += state.Serialize(buffer.Slice(offset));
             }
 
             return offset;

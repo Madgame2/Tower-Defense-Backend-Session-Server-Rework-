@@ -10,6 +10,7 @@ namespace GameServer.Application.Session.Services.ReplicationService.Preprocesso
     public class LogPreprocessor : ILogPreprocessor
     {
         public int Process(
+            uint playerId,
             uint lastAcknowledgedTick,
             ReplicationLog log,
             out ReadOnlyMemory<ReplicationLogEntry> entriesToSend)

@@ -1,67 +1,122 @@
 ﻿using GameServer.Domain.ColliderSystem.Core;
 using GameServer.Domain.ValueObjects;
+using GameServer.Domain.ValueObjects.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace GameServer.Domain.Player.Components
 {
-    public class PlayerInputBuffer
+
+    public sealed class PlayerInputBuffer
     {
         private const int BUFFER_SIZE = 64;
-        private MoveInputCommand[] _moveCommandsBuffer = new MoveInputCommand[BUFFER_SIZE];
-        private bool[] _hasCommand = new bool[BUFFER_SIZE];
-        private MoveInputCommand _lastComand;
+        private const uint MAX_PENDING_TICKS = 8;
 
-        private uint _lastProcessedTick;
+        private readonly PlayerStateSnapShootClient[] _buffer =
+            new PlayerStateSnapShootClient[BUFFER_SIZE];
+
+        private readonly bool[] _hasCommand =
+            new bool[BUFFER_SIZE];
+
+        private PlayerStateSnapShootClient _lastCommand;
+
         private uint _nextExpectedTick;
-        private bool _isInitialized = false;
+        private uint _lastReceivedTick;
 
-        public void AddInput(in MoveInputCommand input)
+        private bool _isInitialized;
+
+        public void AddInput(in PlayerStateSnapShootClient input)
         {
             if (!_isInitialized)
             {
-                _lastProcessedTick = input.Tick;
+                _nextExpectedTick = input.Tick;
+                _lastReceivedTick = input.Tick;
                 _isInitialized = true;
             }
 
-            if (input.Tick < _lastProcessedTick)
+            // Отбрасываем уже обработанные команды.
+            if (IsOlder(input.Tick, _nextExpectedTick))
                 return;
 
-            int index = (int)input.Tick % BUFFER_SIZE;
-            _moveCommandsBuffer[index] = input;
+            // Не принимаем команды слишком далеко впереди.
+            if (input.Tick - _nextExpectedTick >= BUFFER_SIZE)
+                return;
+
+            int index = (int)(input.Tick % BUFFER_SIZE);
+
+            // Не перезаписываем существующую команду.
+            if (_hasCommand[index])
+            {
+                if (_buffer[index].Tick == input.Tick)
+                    return; // Дубликат пакета.
+
+                // Слот занят другой необработанной командой.
+                return;
+            }
+
+            _buffer[index] = input;
             _hasCommand[index] = true;
 
-            if(input.Tick > _lastProcessedTick)
-            {
-                _lastProcessedTick = input.Tick;
-            }
+            if (IsNewer(input.Tick, _lastReceivedTick))
+                _lastReceivedTick = input.Tick;
         }
 
-
-        public MoveInputCommand FetchNextInput()
+        public PlayerStateSnapShootClient FetchNextInput()
         {
-            if (!_isInitialized) 
+            if (!_isInitialized)
                 return default;
-
-            uint pendingCount = _lastProcessedTick - _nextExpectedTick;
-            if (pendingCount > 8)
-            {
-                _nextExpectedTick = _lastProcessedTick - 2;
-            }
 
             int index = (int)(_nextExpectedTick % BUFFER_SIZE);
 
-            if (_hasCommand[index])
+            if (_hasCommand[index] &&
+                _buffer[index].Tick == _nextExpectedTick)
             {
-                _lastComand = _moveCommandsBuffer[index];
-                _hasCommand[index] = false; 
+                _lastCommand = _buffer[index];
+                _hasCommand[index] = false;
+
                 _nextExpectedTick++;
-                return _lastComand;
+
+                return _lastCommand;
             }
 
+
             _nextExpectedTick++;
-            return _lastComand;
+
+            return new PlayerStateSnapShootClient(
+                _nextExpectedTick - 1,
+                _lastCommand.MoveDirection,
+                _lastCommand.Rotation,
+                _lastCommand.LookAtPoint,
+                ActionFlags.None
+            );
+        }
+
+        private void SkipUntil(uint targetTick)
+        {
+            while (_nextExpectedTick != targetTick)
+            {
+                int index = (int)(_nextExpectedTick % BUFFER_SIZE);
+
+                if (_hasCommand[index] &&
+                    _buffer[index].Tick == _nextExpectedTick)
+                {
+                    _hasCommand[index] = false;
+                }
+
+                _nextExpectedTick++;
+            }
+        }
+
+        private static bool IsOlder(uint a, uint b)
+        {
+            return unchecked((int)(a - b)) < 0;
+        }
+
+        private static bool IsNewer(uint a, uint b)
+        {
+            return unchecked((int)(a - b)) > 0;
         }
     }
+
 }

@@ -1,9 +1,12 @@
-﻿using GameServer.Application.Components.GameObjectsComponents;
+﻿using GameServer.Application.Characters.Skadi;
+using GameServer.Application.Components.GameObjectsComponents;
 using GameServer.Application.Components.GameObjectsComponents.HitBoxes.Meta;
 using GameServer.Application.Components.GameObjectsComponents.HitBoxes.Meta.Enums;
 using GameServer.Application.Components.GameObjectsComponents.HitBoxes.Meta.Model;
 using GameServer.Application.Session.Services.GameObjectSpawner.Modules.Base;
 using GameServer.Domain.Player;
+using GameServer.GameObjectComponentsAndServices.GameObjectsComponents.CharacterController;
+using GameServer.GameObjectComponentsAndServices.GameObjectsComponents.Phisycs;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -14,6 +17,27 @@ namespace GameServer.Application.Session.Services.GameObjectSpawner.Modules
     public class PlayerGameObjectSpawnModule : IGameObjectSpawnModule<Player>
     {
         public void Configure(Player gameObject)
+        {
+            HitBoxComponent hitBox = CreateHitBoxComponent();
+            CharacterController characterController = CreateCharacterController(gameObject);
+            VelocityComponent velocityComponent = CreateVelocityComponent();
+
+            gameObject.AddComponent(velocityComponent);
+            gameObject.AddComponent(hitBox);
+            gameObject.AddComponent(characterController);
+        }
+
+        private static VelocityComponent CreateVelocityComponent()
+        {
+            return new VelocityComponent();
+        }
+
+        private static CharacterController CreateCharacterController(Player gameObject)
+        {
+            return new SkadiController();
+        }
+
+        private static HitBoxComponent CreateHitBoxComponent()
         {
             var capsuleShapedata = new CapsuleHitboxData();
             capsuleShapedata.Height = 2;
@@ -27,8 +51,7 @@ namespace GameServer.Application.Session.Services.GameObjectSpawner.Modules
 
             var hitBox = new HitBoxComponent();
             hitBox.Data = shapeData;
-
-            gameObject.AddComponent(hitBox);
+            return hitBox;
         }
     }
 }

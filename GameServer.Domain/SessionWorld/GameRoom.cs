@@ -147,7 +147,7 @@ namespace GameServer.Domain.SessionWorld
             return new Vector2(pivotX, pivotZ);
         }
 
-        public void HandleMoveInputs(string userID, uint lastTick, ReadOnlySpan<MoveInputCommand> inputs)
+        public void HandleMoveInputs(string userID, uint lastTick, ReadOnlySpan<PlayerStateSnapShootClient> inputs)
         {
             var player = _playersStorage.Get(userID);
 

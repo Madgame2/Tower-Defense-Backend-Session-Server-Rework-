@@ -1,5 +1,6 @@
 ﻿using GameServer.Domain.SessionWorld;
 using GameServer.GameLoop.Core.Simultaion.Steps.Interfaces;
+using GameServer.GameObjectComponentsAndServices.GameObjectsComponents.Phisycs;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -25,11 +26,15 @@ namespace GameServer.GameLoop.Core.Systems
                 if (player.IsGrounded)
                     continue;
 
-                player.Velocity.Y -= Gravity * delta;
-
-                if (player.Velocity.Y < TerminalVelocity)
+                if (player.TryGetComponent<VelocityComponent>(out var component))
                 {
-                    player.Velocity.Y = TerminalVelocity;
+
+                    component.Velocity.Y -= Gravity * delta;
+
+                    if (component.Velocity.Y < TerminalVelocity)
+                    {
+                        component.Velocity.Y = TerminalVelocity;
+                    }
                 }
             }
         }

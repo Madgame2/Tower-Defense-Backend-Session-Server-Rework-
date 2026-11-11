@@ -57,9 +57,11 @@ public class SessionSocketHandler
         var connection = ActivatorUtilities.CreateInstance<ClientConnection>(_serviceProvider);
         var udpToken = GenerateSecureUdpToken();
 
-        connection.Init(userID, udpToken, session, socket, token);
+        connection.SetConnectionParams(userID, udpToken, session, socket);
 
         _connectidClientStorage.Add(connection);
+
+        connection.Init(token);
 
         connection.StartReadingLoop();
         connection.StartWritingLoop();

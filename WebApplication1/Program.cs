@@ -9,6 +9,7 @@ using GameServer.Application.Services.StaticResources;
 using GameServer.Application.Session.ClientStateMachine.Extentions;
 using GameServer.Application.Session.Services.GameObjectSpawner.Extentions;
 using GameServer.Application.Session.Services.QueryServices.SearchService.Engine.Extentions;
+using GameServer.Application.Session.Services.ReplicationService.Extentions;
 using GameServer.Application.Sessions;
 using GameServer.Application.Sessions.imp;
 using GameServer.Application.Sessions.Repository;
@@ -135,6 +136,7 @@ builder.Services.AddQueryCapabilityAssembly<SearchCompoentsModuleMarker>();
 builder.Services.AddHitBoxServices();
 builder.Services.AddGameObjectSpawnerService();
 builder.Services.AddClentStateMachine();
+builder.Services.AddReplicationService();
 
 var app = builder.Build();
 

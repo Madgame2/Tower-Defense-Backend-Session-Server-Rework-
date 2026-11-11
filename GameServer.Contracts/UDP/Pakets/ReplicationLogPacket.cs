@@ -41,6 +41,9 @@ namespace GameServer.Contracts.UDP.Pakets
 
             int offset = 0;
 
+            destination[offset] = (byte)PacketType.ReplicationLog;
+            offset += 1;
+
             // ServerTick
             BinaryPrimitives.WriteUInt32LittleEndian(
                 destination.Slice(offset, 4), tick);

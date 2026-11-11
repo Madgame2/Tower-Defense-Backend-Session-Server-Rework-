@@ -12,6 +12,9 @@ namespace GameServer.Domain.Core.GameObjects
         public uint ObjectId { get; set; }
 
         private readonly Dictionary<Type, List<ComponentBase>> _components = new();
+        private List<ComponentBase> _componentsArray = new();
+
+        public IEnumerable<ComponentBase> Components { get => _componentsArray; }
 
         public GameObject(string name)
         {
@@ -31,6 +34,7 @@ namespace GameServer.Domain.Core.GameObjects
                 componentsList = new();
                 _components[componentType] = componentsList;
             }
+            _componentsArray.Add(component);
 
             component.GameObject = this;
 

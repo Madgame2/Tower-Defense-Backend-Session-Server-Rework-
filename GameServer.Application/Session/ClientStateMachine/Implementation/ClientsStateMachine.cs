@@ -102,6 +102,10 @@ namespace GameServer.Application.Session.PlayersStateMachine.Implementation
                     // Определение следующего состояния
                     nextStateType = currentState.NextState;
                 }
+                catch (OperationCanceledException)
+                {
+
+                }
                 catch(Exception ex)
                 {
                     _logger.LogError(ex, "Error in ClientsStateMachine");

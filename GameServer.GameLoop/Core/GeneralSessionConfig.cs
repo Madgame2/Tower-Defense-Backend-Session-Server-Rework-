@@ -1,5 +1,6 @@
 ﻿using GameServer.GameLoop.Core.Simultaion.Meta.Base;
 using GameServer.GameLoop.Core.Systems;
+using GameServer.GameLoop.Core.Systems.GamePlay;
 using GameServer.GameLoop.Core.Systems.NetworkSystems;
 using GameServer.GameLoop.Core.Systems.Replication;
 using GameServer.GameLoop.Core.Systems.ResolveSystems;
@@ -13,8 +14,15 @@ namespace GameServer.GameLoop.Core
     {
         public override void Configure()
         {
-            Register<ApplyPlayerMoveInputSystem>();
-            Register<ProcessJumpSystem>();
+            Register<ApplyPlayerInputSystem>();
+
+            Register<MovementSystem>();
+            Register<ProcessPlayerJumpSystem>();
+            Register<RotatePlayerSystem>();
+            Register<SetPlayerLookAtSystem>();
+            Register<ProcessAlternativePlayerActionSystem>();
+
+            //Register<ProcessJumpSystem>();
             Register<GravitySystem>();
             Register<VelocityToPositionSystem>();
             Register<VertivalResolveSystem>();
@@ -23,6 +31,7 @@ namespace GameServer.GameLoop.Core
 
             Register<SaveEventsSystem>();
 
+            RegisterNetwork<WorldReplicationBroadcastSystem>();
             RegisterNetwork<StateBroadcastSystem>();
         }
     }

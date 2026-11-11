@@ -22,14 +22,14 @@ namespace GameServer.Infrastructure.UDP.Deserializer
 
             if (inputsCount < 0) return false;
 
-            int commandSize = Unsafe.SizeOf<MoveInputCommand>();
+            int commandSize = Unsafe.SizeOf<PlayerStateSnapShootClient>();
             int expectedPayloadSize = inputsCount * commandSize;
 
             if (data.Length < 8 + expectedPayloadSize) return false;
 
             ReadOnlySpan<byte> inputsBytes = data.Slice(8, expectedPayloadSize);
 
-            ReadOnlySpan<MoveInputCommand> inputs = MemoryMarshal.Cast<byte, MoveInputCommand>(inputsBytes);
+            ReadOnlySpan<PlayerStateSnapShootClient> inputs = MemoryMarshal.Cast<byte, PlayerStateSnapShootClient>(inputsBytes);
 
             packet = new ClientInputPacket(udpToken, lastTick, inputs);
             return true;

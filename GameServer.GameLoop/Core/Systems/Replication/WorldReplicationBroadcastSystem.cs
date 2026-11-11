@@ -45,6 +45,7 @@ namespace GameServer.GameLoop.Core.Systems.Replication
         {
             var allPlayers = world.AllPlayers;
 
+            int connectOrder = 0;
             foreach (var player in allPlayers)
             {
                 if (!_connectedClientsStorage.TryGet(
@@ -53,6 +54,7 @@ namespace GameServer.GameLoop.Core.Systems.Replication
                     continue;
 
                 int itemsCount = _logPreprocessor.Process(
+                    player.PlayerId,
                     player.LastAcknowledgedTick,
                     _log,
                     out ReadOnlyMemory<ReplicationLogEntry> entriesToSend);
@@ -72,6 +74,7 @@ namespace GameServer.GameLoop.Core.Systems.Replication
                     uint sentTick = tick;
                     uint playerId = player.PlayerId;
 
+                    Console.WriteLine($"Отправил! для connectOrder: {connectOrder} useID: {player.UserId}");
                     _ = _udpSender.SendReliableAsync(
                         connection.ConnectionEndPoint,
                         new ReadOnlyMemory<byte>(buffer, 0, length),
@@ -81,6 +84,8 @@ namespace GameServer.GameLoop.Core.Systems.Replication
                             {
                                 return;
                             }
+                            Console.WriteLine($"ПОДТВЕРДИЛ ПОЛУЧЕНИЕ  connectID: {player.UserId}");
+
                             player.AcknowledgeTick(sentTick);
                         });
                 }
@@ -92,6 +97,8 @@ namespace GameServer.GameLoop.Core.Systems.Replication
                 {
                     ArrayPool<byte>.Shared.Return(buffer);
                 }
+
+                connectOrder++;
             }
         }
     }

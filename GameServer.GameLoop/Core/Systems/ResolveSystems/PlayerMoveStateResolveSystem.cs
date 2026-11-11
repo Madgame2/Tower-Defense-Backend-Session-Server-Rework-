@@ -1,5 +1,6 @@
 ﻿using GameServer.Domain.SessionWorld;
 using GameServer.GameLoop.Core.Simultaion.Steps.Interfaces;
+using GameServer.GameObjectComponentsAndServices.GameObjectsComponents.Phisycs;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,9 +20,12 @@ namespace GameServer.GameLoop.Core.Systems.ResolveSystems
 
             foreach (var player in players)
             {
-                if (!player.IsGrounded&& player.Velocity.Y <= - 2)
+                if (player.TryGetComponent<VelocityComponent>(out var component))
                 {
-                    player.MovementState = Domain.Player.Enums.MovementState.Falling;
+                    if (!player.IsGrounded && component.Velocity.Y <= -2)
+                    {
+                        player.MovementState = Domain.Player.Enums.MovementState.Falling;
+                    }
                 }
             }
         }

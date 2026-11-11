@@ -13,9 +13,9 @@ namespace GameServer.Contracts.UDP.Packets
         public uint UdpToken { get; }
         public PacketType Type => PacketType.MoveInput;
         public uint LastTick { get; }
-        public ReadOnlySpan<MoveInputCommand> Inputs { get; }
+        public ReadOnlySpan<PlayerStateSnapShootClient> Inputs { get; }
 
-        public ClientInputPacket(uint udpToken, uint lastTick, ReadOnlySpan<MoveInputCommand> inputs)
+        public ClientInputPacket(uint udpToken, uint lastTick, ReadOnlySpan<PlayerStateSnapShootClient> inputs)
         {
             UdpToken = udpToken;
             LastTick = lastTick;

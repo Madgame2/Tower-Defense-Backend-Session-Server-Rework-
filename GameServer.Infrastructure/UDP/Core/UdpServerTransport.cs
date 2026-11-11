@@ -438,30 +438,23 @@ namespace GameServer.Infrastructure.UDP.Core
         }
 
         private void ProcessPacket(
-    ReadOnlySpan<byte> data,
-    EndPoint senderEndPoint)
+            ReadOnlySpan<byte> data,
+            EndPoint senderEndPoint)
         {
-            // UdpToken + Flags + SequenceId
-            if (data.Length < 9)
+            // TransportFlags + SequenceId
+            if (data.Length < 5)
                 return;
 
-            uint udpToken = BinaryPrimitives.ReadUInt32LittleEndian(
-                data.Slice(0, 4));
+            // 1. Читаем транспортный заголовок.
 
-            if (!_clientsRepository.tryGetByUdpToken(
-                    udpToken,
-                    out var clientConnection))
-                return;
-
-            byte flags = data[4];
+            TransportFlags transportFlags = (TransportFlags)data[0];
 
             uint sequenceId = BinaryPrimitives.ReadUInt32LittleEndian(
-                data.Slice(5, 4));
+                data.Slice(1, 4));
 
-            TransportFlags transportFlags = (TransportFlags)flags;
+            // 2. Обрабатываем ACK.
 
-            // ACK от клиента.
-            if (transportFlags.HasFlag(TransportFlags.Acknowledgement))
+            if (transportFlags == TransportFlags.Acknowledgement)
             {
                 if (_pendingPacketStorage.Acknowledge(
                         sequenceId,
@@ -475,19 +468,39 @@ namespace GameServer.Infrastructure.UDP.Core
                 return;
             }
 
-            bool reliable = transportFlags.HasFlag(TransportFlags.Reliable);
+            // 3. Определяем надёжность пакета.
 
-            // ACK на надёжный пакет клиента.
+            bool reliable = transportFlags == TransportFlags.Reliable;
+
+            if (transportFlags != TransportFlags.None && !reliable)
+                return;
+
+            // 4. Получаем прикладные данные.
+
+            var applicationData = data.Slice(5);
+
+            // UdpToken (4) + PacketType (1)
+            if (applicationData.Length < 5)
+                return;
+
+            // 5. Читаем UdpToken.
+
+            uint udpToken = BinaryPrimitives.ReadUInt32LittleEndian(
+                applicationData.Slice(0, 4));
+
+            if (!_clientsRepository.tryGetByUdpToken(
+                    udpToken,
+                    out var clientConnection))
+                return;
+
+            // 6. Подтверждаем Reliable-пакет.
+
             if (reliable)
             {
                 _ = SendAcknowledgementAsync(
                     senderEndPoint,
                     sequenceId);
             }
-
-            // Для игрового сообщения необходим PacketType.
-            if (data.Length < 10)
-                return;
 
             clientConnection.ConnectionEndPoint = senderEndPoint;
 
@@ -496,9 +509,11 @@ namespace GameServer.Infrastructure.UDP.Core
             if (room == null)
                 return;
 
-            byte type = data[9];
+            // 7. Маршрутизируем прикладной пакет.
 
-            var payload = data.Slice(10);
+            byte type = applicationData[4];
+
+            var payload = applicationData.Slice(5);
 
             room.Router.Route(
                 room,

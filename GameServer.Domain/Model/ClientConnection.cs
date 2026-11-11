@@ -80,17 +80,21 @@ namespace GameServer.Application.Model
             _connectedClientsStorage = clientStorage;
             _clientStateMachine = clientStateMachine;
         }
+        public void SetConnectionParams(string userID, uint udpToken, GameSession session, WebSocket socket)
+        {
 
-        public void Init(string UserId, uint UdpToken, GameSession session, WebSocket socket, CancellationToken kestrelToken)
+            this.UserId = userID;
+            this.UdpToken = udpToken;
+            this._socket = socket;
+            this.Session = session;
+        }
+
+        public void Init(CancellationToken kestrelToken)
         {
             _clientReadyTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            this.UserId = UserId;
-            this.UdpToken = UdpToken;
-            this._socket = socket;
-            this.Session = session;
 
-            _clientStateMachine.Init(this, session);
+            _clientStateMachine.Init(this, this.Session);
 
             _context = _wsContextFactory.Create(_socket, UserId, Session.Id);
             Router = _context.Router;

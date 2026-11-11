@@ -26,16 +26,27 @@ namespace GameServer.Domain.SessionWorld.Services.ObjectRegister.Handlers
             add => _onReplication += value;
             remove => _onReplication -= value;
         }
-        private IPlayersStorage _playerStorage;
+
+        private readonly IPlayersStorage _playerStorage;
+        private readonly IReplicationRegistry _replicationRegistry;
 
 
-        public PlayersRegisterHandler(IPlayersStorage playersStorage)
+        public PlayersRegisterHandler(IPlayersStorage playersStorage, IReplicationRegistry replicationRegistry)
         {
             _playerStorage = playersStorage;
+            _replicationRegistry = replicationRegistry;
         }
 
         public void Add(Player.Player newObject)
         {
+            foreach( var component in newObject.Components)
+            {
+                if(component is IReplicationModule replicationModule)
+                {
+                    _replicationRegistry.RegisterModule(replicationModule);
+                }
+            }
+
             _playerStorage.Add(newObject);
 
             if(newObject.TryGetComponent<TransformComponent>(out var transform))
