@@ -1,10 +1,14 @@
 using GameServer.Api.WebSockets;
 using GameServer.Application.Interfaces;
 using GameServer.Application.Meta;
+using GameServer.Application.Resources.PrefabsRegesters;
 using GameServer.Application.Services.Factories.GameObjectFactory.Implementation;
 using GameServer.Application.Services.Factories.GameObjectFactory.Interfaces;
 using GameServer.Application.Services.Factories.GameObjectFactory.Modules.Base;
 using GameServer.Application.Services.Factories.GameObjectFactory.Modules.HitBoxFactoryComponent;
+using GameServer.Application.Services.Factories.GameObjectFactory.Modules.SpawnAnchorFactoryComponent;
+using GameServer.Application.Services.Factories.GameObjectFactory.Modules.UpperBodyFactoryComponent;
+using GameServer.Application.Services.LightEnityesSpawnerService.Extentions;
 using GameServer.Application.Services.StaticResources;
 using GameServer.Application.Session.ClientStateMachine.Extentions;
 using GameServer.Application.Session.Services.GameObjectSpawner.Extentions;
@@ -17,6 +21,7 @@ using GameServer.Application.Sessions.States;
 using GameServer.Domain.Common.Interfaces;
 using GameServer.Domain.Interfaces;
 using GameServer.Domain.Services.StaticData;
+using GameServer.Domain.Services.StaticData.Meta;
 using GameServer.Domain.Sessions.Repository;
 using GameServer.Domain.Sessions.StateMachine.Factory;
 using GameServer.Domain.Sessions.StateMachine.StatesGraph;
@@ -127,6 +132,11 @@ builder.Services.AddSingleton<IStaticResourceLoader, StaticResourceLoader>();
 builder.Services.AddTransient<IGameObjectFactory, GameObjectFactory>();
 
 builder.Services.AddSingleton<GameObjectComponentFactoryModule, HitBoxFactoryModule>();
+builder.Services.AddSingleton<GameObjectComponentFactoryModule, SpawnAnchorFactiryModule>();
+builder.Services.AddSingleton<GameObjectComponentFactoryModule, UpperBodyFactoryModule>();
+
+builder.Services.AddSingleton<IncludedPrefabsRegistryBase, GeneralPrefabsRegester>();
+builder.Services.AddSingleton<ISessionStaticResources, SessionStaticResources>();
 
 builder.Services.AddSearchCompoents();
 
@@ -137,6 +147,7 @@ builder.Services.AddHitBoxServices();
 builder.Services.AddGameObjectSpawnerService();
 builder.Services.AddClentStateMachine();
 builder.Services.AddReplicationService();
+builder.Services.AddLightEntitySpawner();
 
 var app = builder.Build();
 

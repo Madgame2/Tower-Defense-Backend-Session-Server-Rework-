@@ -17,6 +17,8 @@ namespace GameServer.Domain.SessionWorld.Services.IndicesService.IndexesImplemen
             _keySelector = keySelector;
         }
 
+        public Type StoragedType => typeof(T);
+
         public void Add(T item)
         {
             Vector2 position = _keySelector(item);

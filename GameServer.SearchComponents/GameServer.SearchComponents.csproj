@@ -8,10 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GameServer.Domain\GameServer.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ExecutionSteps\CandidatesGenration\DataSourceModules\FullScanModule\MetaDatas\" />
+    <ProjectReference Include="..\GameServer.GameObjectComponents\GameServer.GameObjectComponentsAndServices.csproj" />
   </ItemGroup>
 
 </Project>

@@ -30,6 +30,7 @@ namespace GameServer.GameObjectComponentsAndServices.GameObjectsComponents.Chara
 
         public abstract void ProcessRotation(Quaternion inputRotation);
 
+        public abstract void ProcessPrimaryAction(PlayerActionState actionState, float delta);
 
         protected Action<ServerEvent> _onReplication;
     }

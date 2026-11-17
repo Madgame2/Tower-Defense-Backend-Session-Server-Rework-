@@ -10,6 +10,8 @@ namespace GameServer.Domain.UDP.Interfaces
     {
         ValueTask SendAsync(EndPoint endPoint, ReadOnlyMemory<byte> payload, CancellationToken cancellationToken = default);
 
+        ValueTask SendReliableAsync(EndPoint endPoint, ReadOnlyMemory<byte> payload, CancellationToken cancellationToken = default);
+
         ValueTask SendReliableAsync(EndPoint endPoint,ReadOnlyMemory<byte> payload, Action<PacketDeliveryResult> onAcknowledged, CancellationToken cancellationToken = default);
     }
 }

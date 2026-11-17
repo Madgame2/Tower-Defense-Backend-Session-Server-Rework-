@@ -8,10 +8,10 @@ using System.Text;
 namespace GameServer.Domain.Player.Components
 {
 
+
     public sealed class PlayerInputBuffer
     {
         private const int BUFFER_SIZE = 64;
-        private const uint MAX_PENDING_TICKS = 8;
 
         private readonly PlayerStateSnapShootClient[] _buffer =
             new PlayerStateSnapShootClient[BUFFER_SIZE];
@@ -20,97 +20,82 @@ namespace GameServer.Domain.Player.Components
             new bool[BUFFER_SIZE];
 
         private PlayerStateSnapShootClient _lastCommand;
-
-        private uint _nextExpectedTick;
-        private uint _lastReceivedTick;
+        private uint _lastProcessedTick;
 
         private bool _isInitialized;
+        private bool _hasProcessed;
 
         public void AddInput(in PlayerStateSnapShootClient input)
         {
             if (!_isInitialized)
             {
-                _nextExpectedTick = input.Tick;
-                _lastReceivedTick = input.Tick;
                 _isInitialized = true;
+                _lastCommand = input;
             }
 
-            // Отбрасываем уже обработанные команды.
-            if (IsOlder(input.Tick, _nextExpectedTick))
-                return;
-
-            // Не принимаем команды слишком далеко впереди.
-            if (input.Tick - _nextExpectedTick >= BUFFER_SIZE)
+            // Не принимаем уже обработанные snapshot.
+            if (_hasProcessed &&
+                !IsNewer(input.Tick, _lastProcessedTick))
                 return;
 
             int index = (int)(input.Tick % BUFFER_SIZE);
 
-            // Не перезаписываем существующую команду.
             if (_hasCommand[index])
             {
-                if (_buffer[index].Tick == input.Tick)
-                    return; // Дубликат пакета.
-
-                // Слот занят другой необработанной командой.
-                return;
+                // Не перезаписываем более новую команду старой.
+                if (!IsNewer(input.Tick, _buffer[index].Tick))
+                    return;
             }
 
             _buffer[index] = input;
             _hasCommand[index] = true;
-
-            if (IsNewer(input.Tick, _lastReceivedTick))
-                _lastReceivedTick = input.Tick;
         }
 
         public PlayerStateSnapShootClient FetchNextInput()
         {
-            if (!_isInitialized)
-                return default;
+            int newestIndex = -1;
+            uint newestTick = 0;
 
-            int index = (int)(_nextExpectedTick % BUFFER_SIZE);
-
-            if (_hasCommand[index] &&
-                _buffer[index].Tick == _nextExpectedTick)
+            for (int i = 0; i < BUFFER_SIZE; i++)
             {
-                _lastCommand = _buffer[index];
-                _hasCommand[index] = false;
+                if (!_hasCommand[i])
+                    continue;
 
-                _nextExpectedTick++;
+                uint tick = _buffer[i].Tick;
 
-                return _lastCommand;
-            }
-
-
-            _nextExpectedTick++;
-
-            return new PlayerStateSnapShootClient(
-                _nextExpectedTick - 1,
-                _lastCommand.MoveDirection,
-                _lastCommand.Rotation,
-                _lastCommand.LookAtPoint,
-                ActionFlags.None
-            );
-        }
-
-        private void SkipUntil(uint targetTick)
-        {
-            while (_nextExpectedTick != targetTick)
-            {
-                int index = (int)(_nextExpectedTick % BUFFER_SIZE);
-
-                if (_hasCommand[index] &&
-                    _buffer[index].Tick == _nextExpectedTick)
+                if (_hasProcessed && !IsNewer(tick, _lastProcessedTick))
                 {
-                    _hasCommand[index] = false;
+                    _hasCommand[i] = false;
+                    continue;
                 }
 
-                _nextExpectedTick++;
+                if (newestIndex == -1 || IsNewer(tick, newestTick))
+                {
+                    newestIndex = i;
+                    newestTick = tick;
+                }
             }
-        }
 
-        private static bool IsOlder(uint a, uint b)
-        {
-            return unchecked((int)(a - b)) < 0;
+            // Новых snapshot нет — сохраняем последнее состояние.
+            if (newestIndex == -1)
+            {
+                return new PlayerStateSnapShootClient(
+                    _lastProcessedTick,
+                    _lastCommand.MoveDirection,
+                    _lastCommand.Rotation,
+                    _lastCommand.LookAtPoint,
+                    _lastCommand.Actions
+                );
+            }
+
+            _lastCommand = _buffer[newestIndex];
+            _lastProcessedTick = newestTick;
+            _hasProcessed = true;
+
+            // Удаляем выбранный snapshot.
+            _hasCommand[newestIndex] = false;
+
+            return _lastCommand;
         }
 
         private static bool IsNewer(uint a, uint b)
@@ -118,5 +103,6 @@ namespace GameServer.Domain.Player.Components
             return unchecked((int)(a - b)) > 0;
         }
     }
+
 
 }

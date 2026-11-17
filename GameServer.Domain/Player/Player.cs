@@ -2,6 +2,7 @@
 using GameServer.Domain.Core.GameObjects;
 using GameServer.Domain.Player.Components;
 using GameServer.Domain.Player.Enums;
+using GameServer.Domain.SessionWorld;
 using GameServer.Domain.SessionWorld.Interfaces.ReplicationService;
 using GameServer.Domain.SessionWorld.Interfaces.ReplicationService.Models;
 using GameServer.Domain.ValueObjects;
@@ -17,6 +18,7 @@ namespace GameServer.Domain.Player
     {
         public uint PlayerId { get; private set; }
         public string UserId {  get; private set; }
+        public GameRoom LinkedRoom { get; set; }
         public MovementState MovementState { get; set; } = MovementState.Grounded;
         public ColliderShape Colider = new();
         public Vector3 Size {  get; set; }
@@ -38,6 +40,7 @@ namespace GameServer.Domain.Player
         public uint LastAcknowledgedTick => unchecked((uint)Volatile.Read(ref _lastAcknowledgedTick));
 
         public Vector3 LookAt { get; set; }
+        public Vector3 LookDirection { get; set;  }
         public CurrentClientActions CurrentStateSnapshot { get; set; }
 
         public void AcknowledgeTick(uint tick)

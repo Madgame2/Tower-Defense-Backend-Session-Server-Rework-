@@ -10,6 +10,8 @@ namespace GameServer.Application.Resources.PrefabsRegesters
         public override void Incleded()
         {
             Include("ObstaclesDescriptions/Tree_1.xml");
+            Include("PrefabsRegesters/Characters/Skadi_character.xml");
+            Include("PrefabsRegesters/Projectiles/Arrow_deffoult.xml");
         }
     }
 }

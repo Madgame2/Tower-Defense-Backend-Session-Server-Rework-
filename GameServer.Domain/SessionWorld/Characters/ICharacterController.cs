@@ -13,5 +13,7 @@ namespace GameServer.Domain.SessionWorld.Characters
         void ProcessRotation(Quaternion inputRotation);
         void ProcessJump();
         void ProcessAlternativeAction(PlayerActionState actionState, float delta);
+        void ProcessPrimaryAction(PlayerActionState actionState, float delta);
+
     }
 }

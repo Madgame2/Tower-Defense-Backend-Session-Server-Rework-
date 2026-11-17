@@ -74,7 +74,6 @@ namespace GameServer.GameLoop.Core.Systems.Replication
                     uint sentTick = tick;
                     uint playerId = player.PlayerId;
 
-                    Console.WriteLine($"Отправил! для connectOrder: {connectOrder} useID: {player.UserId}");
                     _ = _udpSender.SendReliableAsync(
                         connection.ConnectionEndPoint,
                         new ReadOnlyMemory<byte>(buffer, 0, length),
@@ -84,7 +83,6 @@ namespace GameServer.GameLoop.Core.Systems.Replication
                             {
                                 return;
                             }
-                            Console.WriteLine($"ПОДТВЕРДИЛ ПОЛУЧЕНИЕ  connectID: {player.UserId}");
 
                             player.AcknowledgeTick(sentTick);
                         });

@@ -17,6 +17,8 @@ namespace GameServer.Domain.SessionWorld.Services.ObjectRegister.Interfaces
         void Add(T newObject);
         void Change(T obj);
         void Remove(T obj);
+
+        ReadOnlySpan<T> GetAll();
     }
 
     public interface IObjectHandler<T, TSearch> : IObjectHandler<T>

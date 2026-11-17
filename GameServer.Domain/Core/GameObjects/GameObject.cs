@@ -46,14 +46,28 @@ namespace GameServer.Domain.Core.GameObjects
         {
             component = null;
 
-            if (!_components.TryGetValue(typeof(T), out var components))
-                return false;
+            // Сначала проверяем точное совпадение.
+            if (_components.TryGetValue(typeof(T), out var components) &&
+                components.Count > 0)
+            {
+                component = (T)components[0];
+                return true;
+            }
 
-            if (components.Count == 0)
-                return false;
+            // Затем ищем среди наследников.
+            foreach (var pair in _components)
+            {
+                if (!typeof(T).IsAssignableFrom(pair.Key))
+                    continue;
 
-            component = (T)components[0];
-            return true;
+                if (pair.Value.Count == 0)
+                    continue;
+
+                component = (T)pair.Value[0];
+                return true;
+            }
+
+            return false;
         }
 
         public bool TryGetComponents<T>(out List<T> outComponents) where T : ComponentBase

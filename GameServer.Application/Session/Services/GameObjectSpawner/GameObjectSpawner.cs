@@ -37,5 +37,45 @@ namespace GameServer.Application.Session.Services.GameObjectSpawner
 
             return gameObject;
         }
+
+        public T Spawn<T>(GameObject prefab) where T : GameObject
+        {
+            return Spawn<T>(prefab, Array.Empty<object>());
+
+        }
+
+        public T Spawn<T>(
+            GameObject prefab,
+            params object[] parameters)
+            where T : GameObject
+        {
+            var gameObject = ActivatorUtilities.CreateInstance<T>(
+                _serviceProvider,
+                parameters);
+
+            gameObject.AddComponent(new TransformComponent());
+
+            // Копируем компоненты префаба.
+            foreach (var component in prefab.Components)
+            {
+                try
+                {
+                    gameObject.AddComponent(component.Clone());
+                }
+                catch (NotSupportedException)
+                {
+
+                }
+            }
+
+            // Настраиваем созданный объект.
+            var modules = _serviceProvider
+                .GetServices<IGameObjectSpawnModule<T>>();
+
+            foreach (var module in modules)
+                module.Configure(gameObject);
+
+            return gameObject;
+        }
     }
 }

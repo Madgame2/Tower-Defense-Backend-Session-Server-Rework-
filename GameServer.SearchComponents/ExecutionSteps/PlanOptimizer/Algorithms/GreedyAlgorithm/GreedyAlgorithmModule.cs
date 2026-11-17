@@ -1,5 +1,6 @@
 ﻿using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Operators.Interfaces;
+using GameServer.SearchComponents.Enums;
 using GameServer.SearchComponents.ExecutionSteps.CandidatesGenration.Model;
 using GameServer.SearchComponents.ExecutionSteps.PlanOptimizer.Algorithms.Base;
 using GameServer.SearchComponents.ExecutionSteps.PlanOptimizer.CombineModules.Base;
@@ -12,7 +13,6 @@ namespace GameServer.SearchComponents.ExecutionSteps.PlanOptimizer.Algorithms.Gr
 {
     public class GreedyAlgorithmModule : IOptimizeStrategy
     {
-
         private readonly List<IPlanCombiner> _combineModules;
 
         public GreedyAlgorithmModule(IEnumerable<IPlanCombiner> combineModules)
@@ -22,13 +22,13 @@ namespace GameServer.SearchComponents.ExecutionSteps.PlanOptimizer.Algorithms.Gr
 
         public PhysicalPlanNode<T>? Resolve<T>(CandidatesMatrix availableOperationsMatrix)
         {
-            var leavs = BuildLeaveslayer<T>(availableOperationsMatrix);
-            var root = BuildExecutionTree<T>(leavs);
+            var leavs = BuildLeaveslayer<T>(availableOperationsMatrix, out var transformNodes);
+            var root = BuildExecutionTree<T>(leavs, transformNodes);
 
             return root;
         }
 
-        private PhysicalPlanNode<T>? BuildExecutionTree<T>(List<PhysicalPlanNode<T>> leaves)
+        private PhysicalPlanNode<T>? BuildExecutionTree<T>(List<PhysicalPlanNode<T>> leaves, List<PhysicalCandidate> transformCandidates)
         {
             if (leaves == null || leaves.Count == 0)
                 return null;
@@ -96,11 +96,29 @@ namespace GameServer.SearchComponents.ExecutionSteps.PlanOptimizer.Algorithms.Gr
                     if (current.Covers(leaf))
                         continue;
 
-                    foreach (var module in _combineModules)
+                    foreach(var candidate in transformCandidates)
                     {
-                        if (module.TryResolve(current, leaf, out var newRoot))
+                        var transformNode = CreateNode<T>(candidate);
+
+                        foreach (var module in _combineModules)
                         {
-                            queue.Enqueue(newRoot, newRoot.TotalCost);
+                            if (module.TryResolve(current, transformNode, out var newRoot))
+                            {
+                                queue.Enqueue(newRoot, newRoot.TotalCost);
+                            }
+                        }
+                    }
+                    foreach (var currentLeaf in leaves)
+                    {
+                        if (current.Covers(currentLeaf))
+                            continue;
+
+                        foreach (var module in _combineModules)
+                        {
+                            if (module.TryResolve(current, currentLeaf, out var newRoot))
+                            {
+                                queue.Enqueue(newRoot, newRoot.TotalCost);
+                            }
                         }
                     }
                 }
@@ -109,18 +127,36 @@ namespace GameServer.SearchComponents.ExecutionSteps.PlanOptimizer.Algorithms.Gr
             return null;
         }
 
+        private PhysicalPlanNode<T> CreateNode<T>(PhysicalCandidate candidate)
+        {
+            var newPhysicalNode = new PhysicalPlanNode<T>(candidate.EstimatedCost, candidate.StrategyType);
+            newPhysicalNode.UsedOperations.Add(candidate.Operation);
+            newPhysicalNode.MetaData = candidate.MetaData;
+            newPhysicalNode.QueryOperation = candidate.Operation;
+            newPhysicalNode.State = candidate.MetaData;
+
+            return newPhysicalNode;
+        }
+
         private bool IsComplete<T>(PhysicalPlanNode<T> current, HashSet<IQueryOperation> allOperations)
         {
             return current.UsedOperations.SetEquals(allOperations);
         }
 
-        private List<PhysicalPlanNode<T>> BuildLeaveslayer<T>(CandidatesMatrix availableOperationsMatrix)
+        private List<PhysicalPlanNode<T>> BuildLeaveslayer<T>(CandidatesMatrix availableOperationsMatrix, out List<PhysicalCandidate> transformsCandidates)
         {
+            transformsCandidates = new();
             var result = new List<PhysicalPlanNode<T>>();
             foreach(var operationsList in availableOperationsMatrix.OperationsMatrix.Values)
             {
                 foreach(var physicalCandidate in operationsList)
                 {
+                    if (physicalCandidate.Role != ExecutionStrategyRole.Source)
+                    {
+                        transformsCandidates.Add(physicalCandidate);
+                        continue;
+                    }
+
                     var newPhysicalNode = new PhysicalPlanNode<T>(physicalCandidate.EstimatedCost, physicalCandidate.StrategyType);
                     newPhysicalNode.UsedOperations.Add(physicalCandidate.Operation);
                     newPhysicalNode.MetaData = physicalCandidate.MetaData;

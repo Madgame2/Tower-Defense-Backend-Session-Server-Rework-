@@ -36,7 +36,7 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Build
 
         public QueryExecutePlan<T> Build(out QueryContext<T> context)
         {
-            context = new(_gameRoom.IndexStorage);
+            context = new(_gameRoom.IndexStorage, _gameRoom.ObjectRegistry);
 
             foreach (var operation in this.Operations)
             {

@@ -12,5 +12,8 @@ namespace GameServer.Domain.SessionWorld.Interfaces
         void Remove<T>(T obj);
         void Change<T>(T obj);
         TResult? Get<TResult, TSearch>(TSearch arg);
+
+        ReadOnlySpan<T> GetAll<T>();
+
     }
 }

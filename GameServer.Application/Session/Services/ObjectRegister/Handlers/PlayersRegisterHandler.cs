@@ -55,7 +55,7 @@ namespace GameServer.Domain.SessionWorld.Services.ObjectRegister.Handlers
                 {
                     playerPayload = new PlayerSpawnPayload
                     {
-                        Transforms = transform.GetShapShoot()
+                        Transforms = transform.GetShapShoot(),
                     }
                 };
 
@@ -82,6 +82,11 @@ namespace GameServer.Domain.SessionWorld.Services.ObjectRegister.Handlers
         public Player.Player? Get(string arg)
         {
             return _playerStorage.Get(arg);
+        }
+
+        public ReadOnlySpan<Player.Player> GetAll()
+        {
+            return _playerStorage.GetAll();
         }
     }
 }

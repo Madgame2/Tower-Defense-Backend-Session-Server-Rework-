@@ -5,6 +5,7 @@ using GameServer.GameLoop.Core.Simultaion.Steps.Interfaces;
 using GameServer.GameObjectComponentsAndServices.GameObjectsComponents.CharacterController;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace GameServer.GameLoop.Core.Systems.GamePlay
@@ -39,10 +40,12 @@ namespace GameServer.GameLoop.Core.Systems.GamePlay
                     WasReleased = !isPressed && wasPressed
                 };
 
-                _previousStates[player.ObjectId] = isPressed;
+                _previousStates[player.PlayerId] = isPressed;
 
-                if (alternativeActon)
-                    controller.ProcessAlternativeAction();
+                if (isPressed || wasPressed)
+                {
+                    controller.ProcessAlternativeAction(actionState, delta);
+                }
             }
         }
     }

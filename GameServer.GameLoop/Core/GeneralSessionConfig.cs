@@ -2,6 +2,8 @@
 using GameServer.GameLoop.Core.Systems;
 using GameServer.GameLoop.Core.Systems.GamePlay;
 using GameServer.GameLoop.Core.Systems.NetworkSystems;
+using GameServer.GameLoop.Core.Systems.Physical;
+using GameServer.GameLoop.Core.Systems.Projectiles;
 using GameServer.GameLoop.Core.Systems.Replication;
 using GameServer.GameLoop.Core.Systems.ResolveSystems;
 using System;
@@ -21,16 +23,26 @@ namespace GameServer.GameLoop.Core
             Register<RotatePlayerSystem>();
             Register<SetPlayerLookAtSystem>();
             Register<ProcessAlternativePlayerActionSystem>();
+            Register<ProcessPrimaryPlayerActionSystem>();
 
-            //Register<ProcessJumpSystem>();
+            Register<LightEntityGravitySystem>();
             Register<GravitySystem>();
             Register<VelocityToPositionSystem>();
+            
+            Register<PlayerUpperBodyResolveSystem>();
+            Register<SpawnPointAnchorResolveSystem>();
             Register<VertivalResolveSystem>();
             Register<HorizontalResolveSystem>();
             Register<PlayerMoveStateResolveSystem>();
 
-            Register<SaveEventsSystem>();
+            Register<ProjectileMoveSystem>();
+            Register<SyncProjectileRotationSystem>();
+            Register<ProjectileHitDetectionSystem>();
 
+            Register<SaveEventsSystem>();
+            Register<DeleteOldEventsSystem>();
+
+            RegisterNetwork<EntitystateBroadcastSystem>();
             RegisterNetwork<WorldReplicationBroadcastSystem>();
             RegisterNetwork<StateBroadcastSystem>();
         }

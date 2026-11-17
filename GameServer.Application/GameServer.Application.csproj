@@ -19,17 +19,27 @@
     <ProjectReference Include="..\GameServer.GameLoop\GameServer.GameLoop.csproj" />
     <ProjectReference Include="..\GameServer.GameObjectComponents\GameServer.GameObjectComponentsAndServices.csproj" />
     <ProjectReference Include="..\GameServer.SearchComponents\GameServer.SearchComponents.csproj" />
+    <ProjectReference Include="..\GameServer.СomponentsForLightweightEntities\GameServer.СomponentsForLightweightEntities.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="Resources\ObstaclesDescriptions\Tree_1.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\PrefabsRegesters\Characters\Skadi_character.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\PrefabsRegesters\Projectiles\Arrow_deffoult.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Characters\Skadi\Prefab\" />
+    <Folder Include="Resources\PrefabsRegesters\Projectiles\" />
     <Folder Include="Session\Ressources\" />
     <Folder Include="Session\Services\ReplicationService\Log\" />
+    <Folder Include="Session\Services\Новая папка\" />
     <Folder Include="Session\SessionWorld\" />
   </ItemGroup>
 

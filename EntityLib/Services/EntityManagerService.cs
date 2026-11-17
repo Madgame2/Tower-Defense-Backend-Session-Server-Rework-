@@ -68,11 +68,10 @@ namespace EntityLib.Services
             Dictionary<Type, IStash> stashesStorage,
             Filter filter)
         {
-            var smallestStashType =
-                GetSmalestSthash(stashesStorage, filter);
+            var smallestStash = GetSmallestStash(stashesStorage, filter);
 
-            var smallestStash =
-                stashesStorage[smallestStashType];
+            if (smallestStash == null)
+                return new EntityQuery(this, stashesStorage, filter, null);
 
             return new EntityQuery(
                 this,
@@ -81,24 +80,19 @@ namespace EntityLib.Services
                 smallestStash);
         }
 
-        private Type GetSmalestSthash(Dictionary<Type, IStash> stashesStorage, Filter scanner)
+        private IStash GetSmallestStash(
+            Dictionary<Type, IStash> stashesStorage,
+            Filter filter)
         {
-            int smallestSize = -1;
-            Type smallestStash = null;
+            IStash smallestStash = null;
 
-            foreach(var stashType in scanner.Include)
+            foreach (var stashType in filter.Include)
             {
-                var stash = stashesStorage[stashType];
-                if(smallestSize == -1)
-                {
-                    smallestStash = stashType;
-                    smallestSize = stash.Size;
-                }
-                else if (stash.Size< smallestSize)
-                {
-                    smallestStash = stashType;
-                    smallestSize = stash.Size;
-                }
+                if (!stashesStorage.TryGetValue(stashType, out var stash))
+                    return null;
+
+                if (smallestStash == null || stash.Size < smallestStash.Size)
+                    smallestStash = stash;
             }
 
             return smallestStash;

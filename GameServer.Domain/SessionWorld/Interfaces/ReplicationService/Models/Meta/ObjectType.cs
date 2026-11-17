@@ -6,6 +6,7 @@ namespace GameServer.Domain.SessionWorld.Interfaces.ReplicationService.Models.Me
 {
     public enum ObjectType: byte
     {
-        Player
+        Player,
+        Projectile
     }
 }

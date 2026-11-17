@@ -1,4 +1,6 @@
 ﻿using GameServer.Domain.ColliderSystem.Enum;
+using GameServer.Domain.Services.StaticData;
+using GameServer.Domain.SessionWorld.Interfaces;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.Interfaces;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Builder;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Interfaces;
@@ -15,6 +17,7 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery
         private GameRoom _gameRoom;
         private readonly IQueryPlanner _queryPlanner;
         private readonly IQueryExecutor _queryExecutor;
+        private readonly ISessionStaticResources _staticResources;
 
         public GameRoom GameRoom
         {
@@ -29,10 +32,12 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery
 
         public WorldQueryService(
             IQueryPlanner queryPlanner,
-            IQueryExecutor queryExecutor)
+            IQueryExecutor queryExecutor,
+            ISessionStaticResources staticRessources)
         {
             _queryPlanner = queryPlanner;
             _queryExecutor = queryExecutor;
+            _staticResources = staticRessources;
         }
 
         public async Task<float> GetHeightAt(float worldX, float worldZ)
@@ -117,7 +122,10 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery
 
             uint playerID = BitConverter.ToUInt32(bytes);
 
-            var player = _gameRoom.GameObjectSpawner.Spawn<Player.Player>(userID, playerID);
+            var playerPrefab = _staticResources.GetByName("Skadi_character");
+            var player = _gameRoom.GameObjectSpawner.Spawn<Player.Player>(playerPrefab,userID, playerID);
+
+            player.LinkedRoom = _gameRoom;
 
             var y = await GetHeightAt(0, 0);
 

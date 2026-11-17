@@ -14,12 +14,15 @@ namespace GameServer.Domain.SessionWorld.Interfaces.ReplicationService.Models.Sp
 
         [FieldOffset(0)]
         public PlayerSpawnPayload playerPayload;
+        [FieldOffset(0)]
+        public ProjectilePayload projectilePayload;
 
         public int WriteTo(Span<byte> destination, ObjectType objectType)
         {
             return objectType switch
             {
                 ObjectType.Player => playerPayload.WriteTo(destination),
+                ObjectType.Projectile => projectilePayload.WriteTo(destination),
                 _ => throw new NotSupportedException(
                     $"Unsupported object type: {objectType}")
             };

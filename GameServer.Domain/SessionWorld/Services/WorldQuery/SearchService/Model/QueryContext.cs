@@ -1,4 +1,5 @@
-﻿using GameServer.Domain.SessionWorld.Services.IndicesService.Interfaces;
+﻿using GameServer.Domain.SessionWorld.Interfaces;
+using GameServer.Domain.SessionWorld.Services.IndicesService.Interfaces;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model.Parameters;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model.Parameters.Base;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Operators.Interfaces;
@@ -12,15 +13,18 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model
     public class QueryContext<T>
     {
         private readonly IIndexStorage _indexStorage;
+        private readonly IObjectRegistry _objectRegistry;
         public IIndexStorage Indexes => _indexStorage;
+        public IObjectRegistry ObjectsRegistry => _objectRegistry;
 
         private Stack<List<T>> _evaluationStack = new Stack<List<T>>(capacity: 6);
 
         private Dictionary<string, IQueryParameter> _namedParameters = new();
 
-        public QueryContext(IIndexStorage indexStorage)
+        public QueryContext(IIndexStorage indexStorage, IObjectRegistry objectRegistry)
         {
             _indexStorage = indexStorage;
+            _objectRegistry = objectRegistry;
         }
 
         public void Set<T>(string argName, T Value)

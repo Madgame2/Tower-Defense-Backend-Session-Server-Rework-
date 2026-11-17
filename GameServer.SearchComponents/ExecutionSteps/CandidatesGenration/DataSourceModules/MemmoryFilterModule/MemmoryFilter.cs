@@ -20,6 +20,7 @@ namespace GameServer.SearchComponents.ExecutionSteps.CandidatesGenration.DataSou
             var candidate = new PhysicalCandidate(
                 operation: operation,
                 strategyType: ExecutionStrategyType.MemmoryFilter,
+                role: ExecutionStrategyRole.Transform,
                 estimatedCost: TEMP_COST);
 
             possibilities.Add(candidate);

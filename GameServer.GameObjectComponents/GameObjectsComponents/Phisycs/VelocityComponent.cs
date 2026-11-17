@@ -9,5 +9,13 @@ namespace GameServer.GameObjectComponentsAndServices.GameObjectsComponents.Phisy
     public class VelocityComponent :ComponentBase
     {
         public Vector3 Velocity;
+
+        public override ComponentBase Clone()
+        {
+            return new VelocityComponent
+            {
+                Velocity = Velocity
+            };
+        }
     }
 }

@@ -28,10 +28,13 @@ namespace EntityLib.Models
 
         public ref T Get(Entity entity)
         {
+            if (!Has(entity))
+                throw new NullReferenceException();
+
             return ref _components[entity.Id];
         }
 
-        public void Set(Entity entity, in T component)
+        public T Set(Entity entity, in T component)
         {
             EnsureCapacity(entity.Id);
 
@@ -45,6 +48,28 @@ namespace EntityLib.Models
 
             _components[entity.Id] = component;
             _generations[entity.Id] = entity.Version;
+
+            return component;
+        }
+
+        public T Set(Entity entity)
+        {
+            EnsureCapacity(entity.Id);
+
+            if (!Has(entity))
+            {
+                int index = _entityIds.Count;
+
+                _entityIds.Add(entity.Id);
+                _entityIndices[entity.Id] = index;
+            }
+
+            T result = new T();
+
+            _components[entity.Id] = result;
+            _generations[entity.Id] = entity.Version;
+
+            return result;
         }
 
         public void Remove(Entity entity)

@@ -12,12 +12,10 @@ namespace EntityLib.GameRoomExtentions
         public static Entity CreateEntity(this GameRoom gameRoom)
         {
 
-            var gameRoomData = ExtentinonStoredData.GetExternalData(gameRoom);
-            var service = gameRoomData.EntityManager;
-
-            var outEntity = service.CreateEntity();
-
-            return outEntity;
+            return ExtentinonStoredData
+                .GetExternalData(gameRoom)
+                .EntityManager
+                .CreateEntity();
         }
 
         public static void DeleteEntity(this GameRoom gameRoom, Entity entityForDeleating)

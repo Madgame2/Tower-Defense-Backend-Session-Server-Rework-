@@ -46,9 +46,13 @@ namespace GameServer.SearchComponents.ExecutionSteps.CandidatesGenration.DataSou
                 {
                     ref readonly var indexEntry = ref availableIndexes[j];
 
+                    if (indexEntry.Index.StoragedType != typeof(T))
+                        continue;
+
                     var candidate = new PhysicalCandidate(
                         operation: operation,
                         strategyType: ExecutionStrategyType.IndexScan,
+                        role: ExecutionStrategyRole.Source,
                         estimatedCost: TEMP_INDEX_COST,
                         metaData: new IndexMetaData<T>
                         {

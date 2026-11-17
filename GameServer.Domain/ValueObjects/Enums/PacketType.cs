@@ -11,6 +11,11 @@ namespace GameServer.Contracts.UDP.Enums
 
 
         PlayerWorldState,
-        ReplicationLog
+        ReplicationLog,
+        EntityStateSnapshot,
+
+
+        Acknowledge
+
     }
 }

@@ -7,8 +7,9 @@ namespace GameServer.Domain.SessionWorld.Interfaces.ReplicationService.Models.Ga
 {
     public struct PlayerGameplayEventPayload
     {
-        public const int ByteSize = 3;
+        public const int ByteSize = 7;
 
+        public uint PlayerId;
         public PlayerGameplayEventType EventType;
         public ushort ActionId;
 
@@ -17,10 +18,13 @@ namespace GameServer.Domain.SessionWorld.Interfaces.ReplicationService.Models.Ga
             if (destination.Length < ByteSize)
                 throw new ArgumentException("Destination buffer is too small.");
 
-            destination[0] = (byte)EventType;
+            BinaryPrimitives.WriteUInt32LittleEndian(
+                destination.Slice(0, 4), PlayerId);
+
+            destination[4] = (byte)EventType;
 
             BinaryPrimitives.WriteUInt16LittleEndian(
-                destination.Slice(1, 2), ActionId);
+                destination.Slice(5, 2), ActionId);
 
             return ByteSize;
         }

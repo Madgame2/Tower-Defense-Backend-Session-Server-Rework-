@@ -1,14 +1,14 @@
-﻿using GameServer.Application.Session.Services.QueryServices.Model;
-using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Adapters.Base;
+﻿using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Adapters.Base;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Interfaces;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Operators.Interfaces;
+using GameServer.SearchComponents.AdaptersRegistry.Index.Model;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace GameServer.Application.Session.Services.QueryServices
+namespace GameServer.SearchComponents.AdaptersRegistry.Index
 {
     public class QueryAdapterRegistry : IQueryAdapterRegistry
     {

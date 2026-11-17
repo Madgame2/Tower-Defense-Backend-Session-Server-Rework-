@@ -7,9 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EntityLib\EntityLib.csproj" />
     <ProjectReference Include="..\GameServer.Contracts\GameServer.Contracts.csproj" />
     <ProjectReference Include="..\GameServer.Domain\GameServer.Domain.csproj" />
     <ProjectReference Include="..\GameServer.GameObjectComponents\GameServer.GameObjectComponentsAndServices.csproj" />
+    <ProjectReference Include="..\GameServer.СomponentsForLightweightEntities\GameServer.СomponentsForLightweightEntities.csproj" />
   </ItemGroup>
 
   <ItemGroup>

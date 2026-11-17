@@ -10,6 +10,7 @@ namespace GameServer.SearchComponents.ExecutionSteps.CandidatesGenration.Model
     {
         public IQueryOperation Operation { get; }
         public ExecutionStrategyType StrategyType { get; }
+        public ExecutionStrategyRole Role { get; }
         public int EstimatedCost { get; }
         public object MetaData { get; }
 
@@ -17,11 +18,13 @@ namespace GameServer.SearchComponents.ExecutionSteps.CandidatesGenration.Model
         public PhysicalCandidate(
         IQueryOperation operation,
         ExecutionStrategyType strategyType,
+        ExecutionStrategyRole role,
         int estimatedCost,
         object metaData = null)
         {
             Operation = operation;
             StrategyType = strategyType;
+            Role = role;
             EstimatedCost = estimatedCost;
             MetaData = metaData;
         }

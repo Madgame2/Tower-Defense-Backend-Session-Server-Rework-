@@ -74,5 +74,19 @@ namespace GameServer.Domain.SessionWorld.Services.ObjectRegister
 
             return typedHandler.Get(arg);
         }
+
+        public ReadOnlySpan<T> GetAll<T>()
+        {
+            var handlerType = typeof(T);
+
+            if (!_handlers.TryGetValue(handlerType, out var handler))
+            {
+                throw new ArgumentException(
+                    $"Not found handler for type {handlerType}");
+            }
+
+
+            return ((IObjectHandler<T>)handler).GetAll();
+        }
     }
 }

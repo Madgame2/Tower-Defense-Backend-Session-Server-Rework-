@@ -27,10 +27,13 @@ namespace GameServer.Domain.SessionWorld.Services.IndicesService.Interfaces
 
     public interface IIndex : IDisposable
     {
+        public Type StoragedType { get; }
     }
 
     public interface IIndex<T> : IIndex
     {
+        public Type StoragedType => typeof(T);
+
         void Add(T item);
         void Remove(T item);
     }

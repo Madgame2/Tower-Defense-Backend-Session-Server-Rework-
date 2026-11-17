@@ -5,6 +5,7 @@ using GameServer.Domain.SessionWorld.ChunksService.ChunkStorage;
 using GameServer.Domain.SessionWorld.ChunksService.ChunkStorage.Interfaces;
 using GameServer.Domain.SessionWorld.Generators;
 using GameServer.Domain.SessionWorld.Interfaces;
+using GameServer.Domain.SessionWorld.Interfaces.LightEntitiesSpawnService;
 using GameServer.Domain.SessionWorld.Interfaces.ReplicationService;
 using GameServer.Domain.SessionWorld.Interfaces.ReplicationService.ReplicationLog;
 using GameServer.Domain.SessionWorld.Meta.Interfaces;
@@ -28,11 +29,11 @@ namespace GameServer.Domain.SessionWorld
     public class GameRoom
     {
         private SessionChunkGenerator _chunkGenerator;
-        private readonly ISessionStaticResources _statickResources;
         private readonly IChunkStorage _chunkStorage;
         private readonly IChunksSettings _chunksSettings;
         private readonly IPlayersStorage _playersStorage;
         private readonly IWorldQueryService _worldQueryService;
+        private readonly ILightEntitySpawner _lightEntitySpawner;
         private readonly IPacketRouter _packetRouter;
         private readonly IIndexStorage _indicesStorage;
         private readonly IGameObjectSpawner _gameObjectSpawner;
@@ -42,7 +43,6 @@ namespace GameServer.Domain.SessionWorld
         private ReplicationLog _logs;
 
         public IReplicationRegistry ReplicationRegistry { get => _replicationRegistry; }
-        public ISessionStaticResources StaticResources { get => _statickResources; }
         public IPacketRouter Router { get => _packetRouter; }
         public IObjectRegistry ObjectRegistry { get => _objectRegistry; }
         public IIndexStorage IndexStorage { get => _indicesStorage; }
@@ -67,8 +67,8 @@ namespace GameServer.Domain.SessionWorld
             IPacketRouter packetRouter,
             IQueryExecutor queryExecuteEngine,
             IQueryPlanner queryPlanner,
-            ISessionStaticResources staticResources,
             IGameObjectSpawner gameObjectSpawner,
+            ILightEntitySpawner lightEntitySpawner,
             IWorldQueryService worldQueryService,
             IObjectRegistry objectRegistry,
             IReplicationRegistry replicationRegistry,
@@ -79,11 +79,11 @@ namespace GameServer.Domain.SessionWorld
         {
             _chunksSettings = chunksSettings;
             _packetRouter = packetRouter;
-            _statickResources = staticResources;
             _gameObjectSpawner = gameObjectSpawner;
             _worldQueryService = worldQueryService;
             _objectRegistry = objectRegistry;
             _replicationRegistry = replicationRegistry;
+            _lightEntitySpawner = lightEntitySpawner;
 
             _chunkStorage = chunkStorage;
             _playersStorage = playersStorage;
@@ -92,6 +92,8 @@ namespace GameServer.Domain.SessionWorld
             _logs = new ReplicationLog();
 
             var contex = new GameRoomContext(_chunkStorage, chunksSettings, _playersStorage, _indicesStorage);
+
+            _lightEntitySpawner.Init(this);
 
             RegistHandlers(handlers);
         }
@@ -156,6 +158,7 @@ namespace GameServer.Domain.SessionWorld
 
             foreach (var input in inputs)
             {
+
                 player.InputBuffer.AddInput(input);
             }
         }

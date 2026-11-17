@@ -1,6 +1,5 @@
 ﻿using GameServer.Application.Session.Services.QueryServices;
 using GameServer.Application.Session.Services.QueryServices.Engine;
-using GameServer.Application.Session.Services.QueryServices.Model;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Interfaces;
 using GameServer.SearchComponents.ExecutionSteps.CandidatesGenration.DataSourceModules.Base;

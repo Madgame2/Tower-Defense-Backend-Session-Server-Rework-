@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
-namespace GameServer.SearchComponents.Adapters
+namespace GameServer.SearchComponents.Adapters.Indexes
 {
     public class RadiusToSpatialGridAdapter : QueryAdapter<RadiusOperation, SpatiialGridQuery>
     {

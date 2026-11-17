@@ -1,5 +1,6 @@
 ﻿using GameServer.Application.Components.GameObjectsComponents.HitBoxes.Meta;
 using GameServer.Application.Components.GameObjectsComponents.HitBoxes.Meta.Enums;
+using GameServer.Application.Components.GameObjectsComponents.HitBoxes.Meta.Model.Union;
 using GameServer.Domain.Core.GameObjects.Components;
 using System;
 using System.Collections.Generic;
@@ -36,6 +37,43 @@ namespace GameServer.Application.Components.GameObjectsComponents
         {
             return Matrix4x4.CreateFromQuaternion(rotation)
                  * Matrix4x4.CreateTranslation(center);
+        }
+
+        public override ComponentBase Clone()
+        {
+            return new HitBoxComponent
+            {
+                Data = new HitboxData
+                {
+                    ShapeType = Data.ShapeType,
+                    Shape = CloneShape(Data.Shape, Data.ShapeType)
+                }
+            };
+        }
+
+
+        private static HitboxShapeUnion CloneShape(HitboxShapeUnion source, HitboxShapeType shapeType)
+        {
+            return shapeType switch
+            {
+                HitboxShapeType.Box => new HitboxShapeUnion
+                {
+                    Box = source.Box
+                },
+
+                HitboxShapeType.Capsule => new HitboxShapeUnion
+                {
+                    Capsule = source.Capsule
+                },
+
+                HitboxShapeType.Sphere => new HitboxShapeUnion
+                {
+                    Sphere = source.Sphere
+                },
+
+                _ => throw new NotSupportedException(
+                    $"Unsupported hitbox type: {shapeType}")
+            };
         }
     }
 }

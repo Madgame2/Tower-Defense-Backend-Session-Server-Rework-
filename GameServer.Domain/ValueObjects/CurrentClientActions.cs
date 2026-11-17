@@ -23,5 +23,6 @@ namespace GameServer.Domain.ValueObjects
 
         public bool JumpFlag { get => (Actions & ActionFlags.JumpRequested) != 0; }
         public bool AlternativeActonFlag { get => (Actions & ActionFlags.AlternativeAction) != 0; }
+        public bool PrimaryActionFlag { get => (Actions & ActionFlags.PrimaryAction) != 0; }
     }
 }

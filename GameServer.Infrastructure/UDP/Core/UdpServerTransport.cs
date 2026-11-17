@@ -1,6 +1,7 @@
 ﻿using GameServer.Application.Interfaces;
 using GameServer.Application.Model;
 using GameServer.Contracts.UDP.Enums;
+using GameServer.Domain.Player;
 using GameServer.Domain.UDP.Interfaces;
 using GameServer.Domain.UDP.Meta;
 using GameServer.Infrastructure.UDP.Core.Storages;
@@ -81,6 +82,18 @@ namespace GameServer.Infrastructure.UDP.Core
             {
                 ArrayPool<byte>.Shared.Return(buffer);
             }
+        }
+
+        public ValueTask SendReliableAsync(
+            EndPoint endPoint,
+            ReadOnlyMemory<byte> payload,
+            CancellationToken cancellationToken = default)
+        {
+            return SendReliableAsync(
+                endPoint,
+                payload,
+                static _ => { },
+                cancellationToken);
         }
 
         public async ValueTask SendReliableAsync(
@@ -236,61 +249,6 @@ namespace GameServer.Infrastructure.UDP.Core
                     ex,
                     "UDP delivery callback failed. SequenceId: {SequenceId}",
                     result.SequenceId);
-            }
-        }
-
-        private async ValueTask DoSendAsync(
-            byte[] buffer,
-            int length,
-            EndPoint endPoint)
-        {
-            try
-            {
-                await _socket.SendToAsync(
-                    new ReadOnlyMemory<byte>(buffer, 0, length),
-                    SocketFlags.None,
-                    endPoint);
-            }
-            catch (ObjectDisposedException)
-            {
-            }
-            catch (SocketException ex)
-            {
-                _logger.LogWarning(ex, "UDP send failed.");
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
-            }
-        }
-
-
-        private async ValueTask SendReliableAsync(
-            PendingPacketStorage.PacketLease lease)
-        {
-            try
-            {
-                await _socket.SendToAsync(
-                    new ReadOnlyMemory<byte>(
-                        lease.Buffer,
-                        0,
-                        lease.Length),
-                    SocketFlags.None,
-                    lease.EndPoint);
-            }
-            catch (ObjectDisposedException)
-            {
-            }
-            catch (SocketException ex)
-            {
-                _logger.LogWarning(
-                    ex,
-                    "Reliable UDP send failed. SequenceId: {SequenceId}",
-                    lease.SequenceId);
-            }
-            finally
-            {
-                _pendingPacketStorage.CompleteSend(lease.SequenceId);
             }
         }
 
@@ -462,6 +420,7 @@ namespace GameServer.Infrastructure.UDP.Core
                         out var callback,
                         out var result))
                 {
+
                     InvokeCallback(callback, result);
                 }
 

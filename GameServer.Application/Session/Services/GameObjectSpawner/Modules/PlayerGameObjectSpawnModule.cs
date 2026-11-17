@@ -7,6 +7,7 @@ using GameServer.Application.Session.Services.GameObjectSpawner.Modules.Base;
 using GameServer.Domain.Player;
 using GameServer.GameObjectComponentsAndServices.GameObjectsComponents.CharacterController;
 using GameServer.GameObjectComponentsAndServices.GameObjectsComponents.Phisycs;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -16,6 +17,14 @@ namespace GameServer.Application.Session.Services.GameObjectSpawner.Modules
 {
     public class PlayerGameObjectSpawnModule : IGameObjectSpawnModule<Player>
     {
+
+        private readonly IServiceProvider serviceProvider;
+
+        public PlayerGameObjectSpawnModule(IServiceProvider serviceProvider)
+        {
+            this.serviceProvider = serviceProvider;
+        }
+
         public void Configure(Player gameObject)
         {
             HitBoxComponent hitBox = CreateHitBoxComponent();
@@ -27,17 +36,17 @@ namespace GameServer.Application.Session.Services.GameObjectSpawner.Modules
             gameObject.AddComponent(characterController);
         }
 
-        private static VelocityComponent CreateVelocityComponent()
+        private VelocityComponent CreateVelocityComponent()
         {
-            return new VelocityComponent();
+            return  new VelocityComponent();
         }
 
-        private static CharacterController CreateCharacterController(Player gameObject)
+        private CharacterController CreateCharacterController(Player gameObject)
         {
-            return new SkadiController();
+            return  ActivatorUtilities.CreateInstance<SkadiController>(serviceProvider);
         }
 
-        private static HitBoxComponent CreateHitBoxComponent()
+        private HitBoxComponent CreateHitBoxComponent()
         {
             var capsuleShapedata = new CapsuleHitboxData();
             capsuleShapedata.Height = 2;

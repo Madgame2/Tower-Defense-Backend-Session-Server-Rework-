@@ -33,6 +33,11 @@ namespace GameServer.Domain.SessionWorld.Services.ObjectRegister.Handlers
             throw new NotImplementedException();
         }
 
+        public ReadOnlySpan<Chank> GetAll()
+        {
+            throw new NotImplementedException();
+        }
+
         public void Remove(Chank obj)
         {
             throw new NotImplementedException();

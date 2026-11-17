@@ -1,6 +1,7 @@
 ﻿using GameServer.Application.Components.GameObjectsComponents;
 using GameServer.Domain.Core.GameObjects;
 using GameServer.Domain.SessionWorld;
+using GameServer.Domain.SessionWorld.Interfaces;
 using GameServer.Domain.SessionWorld.Model;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Builder;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Model;
@@ -28,14 +29,15 @@ namespace GameServer.GameLoop.Core.Systems.ResolveSystems
         private List<StaticTreeData> buffer = new(32);
 
         private IHitBoxCollisionService _hitBoxCollisionService;
-
+        private readonly ISessionStaticResources _staticResources;
 
 
         private HitBoxComponent _palyerHitBox;
 
-        public HorizontalResolveSystem(IHitBoxCollisionService hitBoxCollisionService)
+        public HorizontalResolveSystem(IHitBoxCollisionService hitBoxCollisionService, ISessionStaticResources sessionStaticResources)
         {
             _hitBoxCollisionService = hitBoxCollisionService;
+            _staticResources = sessionStaticResources;
         }
 
         public void OnAwake(GameRoom world)
@@ -56,7 +58,7 @@ namespace GameServer.GameLoop.Core.Systems.ResolveSystems
             queryContext = query1Context;
 
 
-            var obstacleGameObject = world.StaticResources.GetByName("Tree_1");
+            var obstacleGameObject = _staticResources.GetByName("Tree_1");
             if (obstacleGameObject != null)
             {
                 bool hasCompoent = obstacleGameObject.TryGetComponents<HitBoxComponent>(out List<HitBoxComponent> outCompoents);
