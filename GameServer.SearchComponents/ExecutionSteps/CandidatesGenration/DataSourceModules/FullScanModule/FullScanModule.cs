@@ -5,6 +5,8 @@ using GameServer.SearchComponents.Enums;
 using GameServer.SearchComponents.ExecutionSteps.CandidatesGenration.DataSourceModules.Base;
 using GameServer.SearchComponents.ExecutionSteps.CandidatesGenration.DataSourceModules.FullScanModule.MetaDatas;
 using GameServer.SearchComponents.ExecutionSteps.CandidatesGenration.Model;
+using GameServer.SearchComponents.TypesTranslator;
+using GameServer.SearchComponents.TypesTranslator.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,11 +18,14 @@ namespace GameServer.SearchComponents.ExecutionSteps.CandidatesGenration.DataSou
         private const int FULL_SCAN_COST = 100;
 
         private readonly IFullScanAdapterRegistry _adapterRegistry;
+        private readonly ITranslator _translator;
 
         public FullScanModule(
-            IFullScanAdapterRegistry adapterRegistry)
+            IFullScanAdapterRegistry adapterRegistry,
+            ITranslator translator)
         {
             _adapterRegistry = adapterRegistry;
+            _translator = translator;
         }
         public bool TryGetPossibilities<T>(
             IQueryOperation operation,
@@ -32,6 +37,16 @@ namespace GameServer.SearchComponents.ExecutionSteps.CandidatesGenration.DataSou
             if (!_adapterRegistry.TryResolve<T>(operation, out var adapter))
                 return false;
 
+            Translator translator = null;
+            try
+            {
+                translator = _translator.Create<T>(adapter.RequriredType);
+            }
+            catch
+            {
+                return false;
+            }
+
             possibilities.Add(new PhysicalCandidate(
                 operation: operation,
                 strategyType: ExecutionStrategyType.FullScan,
@@ -39,6 +54,7 @@ namespace GameServer.SearchComponents.ExecutionSteps.CandidatesGenration.DataSou
                 estimatedCost: FULL_SCAN_COST,
                 metaData: new FullScanMetaData<T>
                 {
+                    Translator = translator,
                     Adapter = adapter
                 }));
 

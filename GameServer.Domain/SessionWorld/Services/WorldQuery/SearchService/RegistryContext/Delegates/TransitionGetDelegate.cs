@@ -1,0 +1,10 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.RegistryContext.Delegates
+{
+    public delegate bool TransitionGetDelegate<TIn, TOut>(
+        in TIn source,
+        out TOut result);
+}

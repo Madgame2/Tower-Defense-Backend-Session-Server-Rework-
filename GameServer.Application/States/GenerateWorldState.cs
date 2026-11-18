@@ -2,6 +2,7 @@
 using GameServer.Application.Resources.PrefabsRegesters;
 using GameServer.Application.Services.LightEnityesSpawner;
 using GameServer.Application.Services.StaticResources;
+using GameServer.Application.Session.Services.ObjectRegister;
 using GameServer.Application.Session.Services.ReplicationService.Registry;
 using GameServer.Domain.ColliderSystem.Enum;
 using GameServer.Domain.Player;
@@ -104,7 +105,7 @@ namespace GameServer.Application.Sessions.States
             var worldQueryService = new WorldQueryService(_queryPlanner, _worldQueryService, _sessionStaticResources);
             var objectRegister = new InMemmoryObjectRegister();
             var replicationRegister = new ReplicationRegistry();
-
+            var deffoutlObjectRegester = new DeffoutlObjectRegester();
 
             var chunkStorage = new InMemmoryChunkStorage();
             var playersSorage = new InMemmoryPlayerStorage();
@@ -123,7 +124,8 @@ namespace GameServer.Application.Sessions.States
                 _gameObjectSpawner,
                 _lightEntitySpawner,
                 worldQueryService,
-                objectRegister, 
+                objectRegister,
+                deffoutlObjectRegester,
                 replicationRegister,
                 playersSorage,chunkStorage, indexStorage, handlers);
             

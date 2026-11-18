@@ -3,6 +3,7 @@ using GameServer.Domain.SessionWorld.Services.IndicesService.Interfaces;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model.Parameters;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model.Parameters.Base;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Operators.Interfaces;
+using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.RegistryContext.Intrerfaces;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -14,6 +15,9 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model
     {
         private readonly IIndexStorage _indexStorage;
         private readonly IObjectRegistry _objectRegistry;
+        private readonly IObjectRegesterContext _objectregisterContext;
+
+        private IObjectRegesterContext ObjectregisterContext=> _objectregisterContext;
         public IIndexStorage Indexes => _indexStorage;
         public IObjectRegistry ObjectsRegistry => _objectRegistry;
 
@@ -21,10 +25,11 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model
 
         private Dictionary<string, IQueryParameter> _namedParameters = new();
 
-        public QueryContext(IIndexStorage indexStorage, IObjectRegistry objectRegistry)
+        public QueryContext(IIndexStorage indexStorage, IObjectRegistry objectRegistry, IObjectRegesterContext regesterContext)
         {
             _indexStorage = indexStorage;
             _objectRegistry = objectRegistry;
+            _objectregisterContext = regesterContext;
         }
 
         public void Set<T>(string argName, T Value)

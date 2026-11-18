@@ -1,46 +1,23 @@
-﻿using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Adapters.Base;
-using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Delegates;
+﻿
+
+using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Adapters.Base;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Operators;
-using System;
-using System.Collections.Generic;
+using GameServer.SearchComponents.Data;
 using System.Numerics;
-using System.Text;
 
 namespace GameServer.SearchComponents.Adapters.FullScan
 {
-    public class RadiusFullScanAdapter<T>
-    : FullScanAdapter<RadiusOperation, T>
+    public class RadiusFullScanAdapter : FullScanAdapter<RadiusOperation, PositionQueryData>
     {
-        private readonly PositionGetter<T> _getPosition;
-
-        public RadiusFullScanAdapter(PositionGetter<T> getPosition)
+        public override ScanAdapterDelegate<T1, PositionQueryData> CreateExecutor<T1>()
         {
-            _getPosition = getPosition;
-        }
-
-        public override FullScanExecutorDelegate<T> CreateExecutor()
-        {
-            var getPosition = _getPosition;
-
-            return (operation, context, source, buffer) =>
+            return (checkedPosition, operation, context) =>
             {
                 var radiusOperation = (RadiusOperation)operation;
 
-                Vector3 center = radiusOperation.Center;
-                float radiusSquared =
-                    radiusOperation.Radius * radiusOperation.Radius;
+                var center = radiusOperation.Center;
 
-                for (int i = 0; i < source.Length; i++)
-                {
-                    ref readonly T item = ref source[i];
-
-                    Vector3 position = getPosition(in item);
-
-                    if (Vector3.DistanceSquared(position, center) <= radiusSquared)
-                    {
-                        buffer.Add(item);
-                    }
-                }
+                return Vector3.Distance(center, checkedPosition.Position) <= radiusOperation.Radius;
             };
         }
     }

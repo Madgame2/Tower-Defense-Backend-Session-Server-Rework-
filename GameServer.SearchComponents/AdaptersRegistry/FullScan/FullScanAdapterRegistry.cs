@@ -11,21 +11,19 @@ namespace GameServer.SearchComponents.AdaptersRegistry.FullScan
 {
     public class FullScanAdapterRegistry : IFullScanAdapterRegistry
     {
-        private readonly Dictionary<(Type Operation, Type Data), IFullScanAdapter>
+        private readonly Dictionary<Type, IFullScanAdapter>
             _adapters = new();
 
         public FullScanAdapterRegistry(IEnumerable<IFullScanAdapter> adapters)
         {
             foreach (var adapter in adapters)
             {
-                var key = (OperationType: adapter.OperationType,
-                            DataType: adapter.DataType);
+                var key = adapter.OperationType;
 
                 if (!_adapters.TryAdd(key, adapter))
                 {
                     throw new InvalidOperationException(
-                        $"FullScan adapter for '{key.OperationType.Name}' " +
-                        $"and '{key.DataType.Name}' is already registered.");
+                        $"FullScan adapter for '{key}' ");
                 }
             }
         }
@@ -35,7 +33,7 @@ namespace GameServer.SearchComponents.AdaptersRegistry.FullScan
             out IFullScanAdapter adapter)
         {
             return _adapters.TryGetValue(
-                (operation.GetType(), typeof(T)),
+                (operation.GetType()),
                 out adapter!);
         }
     }

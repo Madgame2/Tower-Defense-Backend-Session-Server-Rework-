@@ -19,6 +19,7 @@ using GameServer.Domain.SessionWorld.Services.ObjectRegister.Interfaces;
 using GameServer.Domain.SessionWorld.Services.WorldQuery;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.Interfaces;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Interfaces;
+using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.RegistryContext.Intrerfaces;
 using GameServer.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 using System.Numerics;
@@ -38,10 +39,12 @@ namespace GameServer.Domain.SessionWorld
         private readonly IIndexStorage _indicesStorage;
         private readonly IGameObjectSpawner _gameObjectSpawner;
         private readonly IObjectRegistry _objectRegistry;
+        private readonly IObjectRegesterContext _objectRegesterContext;
         private readonly IReplicationRegistry _replicationRegistry;
 
         private ReplicationLog _logs;
 
+        public IObjectRegesterContext ObjectRegesterContext { get => _objectRegesterContext; }
         public IReplicationRegistry ReplicationRegistry { get => _replicationRegistry; }
         public IPacketRouter Router { get => _packetRouter; }
         public IObjectRegistry ObjectRegistry { get => _objectRegistry; }
@@ -71,6 +74,7 @@ namespace GameServer.Domain.SessionWorld
             ILightEntitySpawner lightEntitySpawner,
             IWorldQueryService worldQueryService,
             IObjectRegistry objectRegistry,
+            IObjectRegesterContext regesterContext,
             IReplicationRegistry replicationRegistry,
             IPlayersStorage playersStorage,
             IChunkStorage chunkStorage,
@@ -84,6 +88,7 @@ namespace GameServer.Domain.SessionWorld
             _objectRegistry = objectRegistry;
             _replicationRegistry = replicationRegistry;
             _lightEntitySpawner = lightEntitySpawner;
+            _objectRegesterContext = regesterContext;
 
             _chunkStorage = chunkStorage;
             _playersStorage = playersStorage;

@@ -7,24 +7,18 @@ using System.Text;
 
 namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Adapters.Base
 {
-    public abstract class FullScanAdapter<TOperation, T> : IFullScanAdapter
-        where TOperation : IQueryOperation
+    public abstract class FullScanAdapter<T, TRequired> : IFullScanAdapter
+        where T : IQueryOperation
     {
-        public Type OperationType => typeof(TOperation);
+        public Type OperationType => typeof(T);
 
-        public Type DataType => typeof(T);
+        public Type RequriredType => typeof(TRequired);
 
-        public abstract FullScanExecutorDelegate<T> CreateExecutor();
+        public abstract ScanAdapterDelegate<T1, TRequired> CreateExecutor<T1>();
 
-        FullScanExecutorDelegate<TData> IFullScanAdapter.CreateExecutor<TData>()
+        public Delegate CreateExecutorUntyped<T1>()
         {
-            if (typeof(TData) != typeof(T))
-                throw new InvalidOperationException(
-                    $"Adapter supports {typeof(T)}, but received {typeof(TData)}");
-
-            return (FullScanExecutorDelegate<TData>)(object)CreateExecutor();
+            return CreateExecutor<T1>();
         }
     }
-
-    public delegate Vector3 PositionGetter<T>(in T item);
 }
