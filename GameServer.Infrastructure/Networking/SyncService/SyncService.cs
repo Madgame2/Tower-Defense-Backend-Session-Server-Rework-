@@ -86,7 +86,7 @@ namespace GameServer.Infrastructure.Networking.SyncService
 
             await clientConnectionObject.WaitClientActionAsync("ReadyToSync", token);
 
-            Console.WriteLine($"Client ready to Sync: {playerId}");
+            //Console.WriteLine($"Client ready to Sync: {playerId}");
 
             var worldObject = session.CurrentRoom;
 
@@ -120,7 +120,7 @@ namespace GameServer.Infrastructure.Networking.SyncService
             _sessionBroadcaster.SendToPlayer(clientConnection, message, MessageFormat.Json);
 
             await clientConnection.WaitClientActionAsync("Applied", token);
-            Console.WriteLine($"Player avatar metaData done: {clientConnection.UserId}");
+            //Console.WriteLine($"Player avatar metaData done: {clientConnection.UserId}");
         }
 
         private async Task SendMetaDatasDone(ClientConnection clientConnection, CancellationToken token)
@@ -156,7 +156,7 @@ namespace GameServer.Infrastructure.Networking.SyncService
             _sessionBroadcaster.SendToPlayer(clientConnection, message, MessageFormat.Json);
 
             await clientConnection.WaitClientActionAsync("Applied", token);
-            Console.WriteLine($"Player avatar metaData done: {clientConnection.UserId}");
+            //Console.WriteLine($"Player avatar metaData done: {clientConnection.UserId}");
         }
 
         private async Task SendWorldDecorationsDataAsync(ClientConnection clientConnection, CancellationToken token)
@@ -170,7 +170,7 @@ namespace GameServer.Infrastructure.Networking.SyncService
             _sessionBroadcaster.SendToPlayer(clientConnection, message, MessageFormat.Json);
 
             await clientConnection.WaitClientActionAsync("Applied", token);
-            Console.WriteLine($"World decoration metaData done: {clientConnection.UserId}");
+            //Console.WriteLine($"World decoration metaData done: {clientConnection.UserId}");
         }
 
         private async Task SendClinetToGlobalSyncState(ClientConnection clientConnection, CancellationToken token)
@@ -194,7 +194,7 @@ namespace GameServer.Infrastructure.Networking.SyncService
             _sessionBroadcaster.SendToPlayer(clientConnection, worldMetaGenerationMetaData, Contracts.MessageFormats.MessageFormat.Json);
 
             await clientConnection.WaitClientActionAsync("Applied", token);
-            Console.WriteLine($"World generation metaData done: {clientConnection.UserId}");
+            //Console.WriteLine($"World generation metaData done: {clientConnection.UserId}");
         }
 
         private async Task SendChunkMetaDataAsync(ClientConnection clientConnection, CancellationToken token)
@@ -209,7 +209,7 @@ namespace GameServer.Infrastructure.Networking.SyncService
 
 
             await clientConnection.WaitClientActionAsync("Applied", token);
-            Console.WriteLine($"chunks metaData done: {clientConnection.UserId}");
+            //Console.WriteLine($"chunks metaData done: {clientConnection.UserId}");
         }
 
 

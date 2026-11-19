@@ -39,14 +39,14 @@ namespace GameServer.Application.Sessions.States
 
             handlers.Register<PlayerConnected>(async (ctx, evt) =>
             {
-                Console.WriteLine($"Player join {evt.UserId}");
+                //Console.WriteLine($"Player join {evt.UserId}");
             });
 
         }
 
         public override async Task OnEnter(GameSession ctx)
         {
-            Console.WriteLine("ON Simulation State");
+            //Console.WriteLine("ON Simulation State");
 
             try
             {

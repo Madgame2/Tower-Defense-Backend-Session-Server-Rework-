@@ -89,7 +89,7 @@ namespace GameServer.GameLoop.Core.Systems.Replication
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
+                    //Console.WriteLine(ex);
                 }
                 finally
                 {

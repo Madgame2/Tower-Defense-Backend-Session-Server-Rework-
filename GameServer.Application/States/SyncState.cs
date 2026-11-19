@@ -25,20 +25,20 @@ namespace GameServer.Application.Sessions.States
 
             handlers.Register<PlayerConnected>(async (ctx, evt) =>
             {
-                Console.WriteLine($"Player join {evt.UserId}");
+                //Console.WriteLine($"Player join {evt.UserId}");
 
                 //await _syncService.SyncPlayerAsync(ctx.Id, evt.PlayerId);
             });
 
             handlers.Register<PlayerDisconnected>(async (ctx, evt) =>
             {
-                Console.WriteLine($"Player leave {evt.UserId}");
+                //Console.WriteLine($"Player leave {evt.UserId}");
             });
         }
 
         public override async Task OnEnter(GameSession ctx)
         {
-            Console.WriteLine("ON Sysnc State");
+            //Console.WriteLine("ON Sysnc State");
 
             var allClients = ctx.OnlinePlayersIDs;
 
@@ -48,7 +48,7 @@ namespace GameServer.Application.Sessions.States
 
             if (!completed)
             {
-                Console.WriteLine("Synchronization timeout!");
+                //Console.WriteLine("Synchronization timeout!");
             }
 
             await ctx.StateMachine.MoveTo<SimulationState>();

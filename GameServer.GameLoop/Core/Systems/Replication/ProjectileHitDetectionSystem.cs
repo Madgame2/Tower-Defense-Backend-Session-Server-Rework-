@@ -8,15 +8,10 @@ using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Engine.Mo
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Operators.Extentions;
 using GameServer.GameLoop.Core.Simultaion.Steps.Interfaces;
-using GameServer.GameObjectComponentsAndServices.GameObjectsComponents.Transform;
 using GameServer.GameObjectComponentsAndServices.Services.HitBoxesColitionService.Interfaces;
 using GameServer.СomponentsForLightweightEntities;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Numerics;
-using System.Text;
 
 namespace GameServer.GameLoop.Core.Systems.Replication
 {

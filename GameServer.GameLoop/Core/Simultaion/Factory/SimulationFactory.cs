@@ -3,6 +3,7 @@ using GameServer.GameLoop.Core.Simultaion.Factory.Interfaces;
 using GameServer.GameLoop.Core.Simultaion.Interfaces;
 using GameServer.GameLoop.Core.Simultaion.Meta.Base;
 using GameServer.GameLoop.Core.Simultaion.Steps.Interfaces;
+using GameServer.Profiling.Metrics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -44,8 +45,9 @@ namespace GameServer.GameLoop.Core.Simultaion.Factory
             }
 
             var logger = _serviceProvider.GetRequiredService<ILogger<Simulation>>();
+            var tickMetricks = _serviceProvider.GetRequiredService<TickMetricsCollector>();
 
-            return new Simulation(world, systems, networkTickables, logger);
+            return new Simulation(world, systems, networkTickables, logger, tickMetricks);
         }
     }
 }

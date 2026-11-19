@@ -30,7 +30,7 @@ namespace GameServer.Services.WS.WSMiddleware.Imp.ParcerMiddleware
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Parsing error: {ex.Message}");
+                //Console.WriteLine($"Parsing error: {ex.Message}");
 
                 message = new WsMessage
                 {

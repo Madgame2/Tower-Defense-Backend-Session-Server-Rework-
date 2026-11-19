@@ -6,6 +6,7 @@
   <Project Path="GameServer.GameLoop/GameServer.GameLoop.csproj" />
   <Project Path="GameServer.GameObjectComponents/GameServer.GameObjectComponentsAndServices.csproj" Id="6ba5f670-8edc-4777-999c-b76145ae8206" />
   <Project Path="GameServer.Infrastructure/GameServer.Infrastructure.csproj" />
+  <Project Path="GameServer.Profiling/GameServer.Profiling.csproj" Id="8b8d2529-b3b2-4ec0-9ad2-b95dfff9312b" />
   <Project Path="GameServer.SearchComponents/GameServer.SearchComponents.csproj" Id="b86a927a-01a6-4970-b7c8-ca7e812546ae" />
   <Project Path="GameServer.СomponentsForLightweightEntities/GameServer.СomponentsForLightweightEntities.csproj" Id="b79f9c56-63eb-455b-a7b9-ac47c8e54ccf" />
   <Project Path="WebApplication1/GameServer.csproj" />

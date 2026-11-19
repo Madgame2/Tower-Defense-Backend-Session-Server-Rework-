@@ -7,12 +7,12 @@ namespace GameServer.Services.WS.WSMiddleware.Imp.LoggingMiddleware
     {
         public async Task<WsMessageContext> InvokeAsync(WsMessageContext context, MiddlewareDelegate next)
         {
-            Console.WriteLine($"FROM {context.ConnectionContext.PlayerId}, sessionId: {context.ConnectionContext.SessionId}");
-            Console.WriteLine($"IN: {context.Text ?? "[binary]"}");
+            //Console.WriteLine($"FROM {context.ConnectionContext.PlayerId}, sessionId: {context.ConnectionContext.SessionId}");
+            //Console.WriteLine($"IN: {context.Text ?? "[binary]"}");
 
             context = await next(context);
 
-            Console.WriteLine($"OUT");
+            //Console.WriteLine($"OUT");
 
             return context;
         }

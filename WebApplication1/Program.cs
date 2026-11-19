@@ -49,6 +49,9 @@ using GameServer.Infrastructure.Sessions.Repository;
 using GameServer.Infrastructure.UDP.Core;
 using GameServer.Infrastructure.WSRouter;
 using GameServer.Middleware;
+using GameServer.Profiling.Logging;
+using GameServer.Profiling.Metrics;
+using GameServer.Profiling.Rendering;
 using GameServer.SearchComponents.Marker;
 using GameServer.Services.WS.WSMiddleware;
 using GameServer.Services.WS.WSMiddleware.Imp.LoggingMiddleware;
@@ -64,6 +67,10 @@ builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(port);
 });
+
+builder.Logging.ClearProviders();
+builder.Logging.AddDiagnosticsConsole(
+    logCapacity: 2000);
 
 builder.Services.Configure<WorldSettings>(
     builder.Configuration.GetSection("GameWorld")
@@ -151,9 +158,30 @@ builder.Services.AddLightEntitySpawner();
 
 var app = builder.Build();
 
+var provider = app.Services
+    .GetRequiredService<DiagnosticsLoggerProvider>();
+var tickMetrics = app.Services
+    .GetRequiredService<TickMetricsCollector>();
+
+var renderer = new ConsoleRenderer(
+    provider.Buffer,
+    tickMetrics);
+
+var renderTask = renderer.RunAsync(
+    app.Lifetime.ApplicationStopping);
+
+
+
 app.UseWebSockets();
 app.UseMiddleware<WebSocketAuthMiddleware>();
 
 app.MapSocketEndpoints();
 
-app.Run();
+try
+{
+    await app.RunAsync();
+}
+finally
+{
+    await renderTask;
+}

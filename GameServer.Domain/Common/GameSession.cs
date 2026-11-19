@@ -112,7 +112,7 @@ namespace GameServer.Application.Sessions
                     await Task.Delay(16);
                 }catch(Exception ex)
                 {
-                    Console.WriteLine($"[ERROR]: {ex.Message}");
+                    //Console.WriteLine($"[ERROR]: {ex.Message}");
                 }
             }
         }

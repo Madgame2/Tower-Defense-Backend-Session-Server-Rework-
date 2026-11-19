@@ -93,19 +93,19 @@ namespace GameServer.Application.Sessions.States
 
             handlers.Register<PlayerConnected>(async (ctx, evt) =>
             {
-                Console.WriteLine($"Player join {evt.UserId}");
+                ////Console.WriteLine($"Player join {evt.UserId}");
             });
 
             handlers.Register<PlayerDisconnected>(async (ctx, evt) =>
             {
-                Console.WriteLine($"Player leave {evt.UserId}");
+                ////Console.WriteLine($"Player leave {evt.UserId}");
             });
         }
 
 
         public override async Task OnEnter(GameSession ctx)
         {
-            Console.WriteLine("ON GenerateWorld");
+            ////Console.WriteLine("ON GenerateWorld");
 
             var middlewareDescription = GameRoomMiddlewareConfig.Create();
 

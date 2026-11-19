@@ -27,7 +27,7 @@ namespace GameServer.SearchComponents.AdaptersRegistry.Index
                 }
                 catch (InvalidOperationException ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    //Console.WriteLine(ex.Message);
                 }
             }
         }

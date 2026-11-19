@@ -131,14 +131,14 @@ namespace GameServer.Application.Model
             if (!_isPausedRead) return;
             _isPausedRead = false;
             _readSemaphore.Release();
-            Console.WriteLine("Поток чтения запущен.");
+            //Console.WriteLine("Поток чтения запущен.");
         }
 
         public void PauseReadingLoop()
         {
             if (_isPausedRead) return;
             _isPausedRead = true;
-            Console.WriteLine("Поток чтения на паузе.");
+            //Console.WriteLine("Поток чтения на паузе.");
         }
 
         public void StartWritingLoop()
@@ -146,14 +146,14 @@ namespace GameServer.Application.Model
             if (!_isPausedWrite) return;
             _isPausedWrite = false;
             _writeSemaphore.Release();
-            Console.WriteLine("Поток записи запущен.");
+            //Console.WriteLine("Поток записи запущен.");
         }
 
         public void PauseWritingLoop()
         {
             if (_isPausedWrite) return;
             _isPausedWrite = true;
-            Console.WriteLine("Поток записи на паузе.");
+            //Console.WriteLine("Поток записи на паузе.");
         }
 
         public void SendPooled(byte[] data, int length, MessageFormat messageFormat)
@@ -233,7 +233,7 @@ namespace GameServer.Application.Model
             }
             catch (WebSocketException ex)
             {
-                Console.WriteLine(ex.Message);
+                //Console.WriteLine(ex.Message);
             }
             catch (OperationCanceledException)
             {
@@ -241,7 +241,7 @@ namespace GameServer.Application.Model
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                //Console.WriteLine(ex.Message);
             }
             finally
             {
@@ -307,7 +307,7 @@ namespace GameServer.Application.Model
 
                     }catch(Exception ex)
                     {
-                        Console.WriteLine(ex.Message);
+                        //Console.WriteLine(ex.Message);
                     }
                     finally
                     {
@@ -324,7 +324,7 @@ namespace GameServer.Application.Model
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Ошибка отправки: {ex.Message}");
+                //Console.WriteLine($"Ошибка отправки: {ex.Message}");
             }
             finally
             {

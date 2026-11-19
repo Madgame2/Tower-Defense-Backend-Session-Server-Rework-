@@ -11,7 +11,7 @@ namespace GameServer.Application.Session.ClientStateMachine.States
     {
         public override async Task OnEnter(ClientConnection connection, GameSession session, CancellationToken cancellationToken)
         {
-            Console.WriteLine($"Client {connection.UserId} on state {this.GetType().Name}");
+            ////Console.WriteLine($"Client {connection.UserId} on state {this.GetType().Name}");
         }
 
         public override async Task WaitForTransitionAsync(ClientConnection connection, GameSession session, CancellationToken cancellationToken)
@@ -21,7 +21,7 @@ namespace GameServer.Application.Session.ClientStateMachine.States
 
         public override async Task OnExit(ClientConnection connection, GameSession session, CancellationToken cancellationToken)
         {
-            Console.WriteLine($"Client {connection.UserId} leave from state {this.GetType().Name}");
+           // //Console.WriteLine($"Client {connection.UserId} leave from state {this.GetType().Name}");
 
         }
     }

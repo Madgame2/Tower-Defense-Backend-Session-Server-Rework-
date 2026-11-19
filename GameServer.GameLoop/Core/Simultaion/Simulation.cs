@@ -2,6 +2,7 @@
 using GameServer.GameLoop.Core.Simultaion.Interfaces;
 using GameServer.GameLoop.Core.Simultaion.Meta.Base;
 using GameServer.GameLoop.Core.Simultaion.Steps.Interfaces;
+using GameServer.Profiling.Metrics;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -21,18 +22,21 @@ namespace GameServer.GameLoop.Core.Simultaion
         private CancellationTokenSource _cts;
 
         private readonly ILogger<Simulation> _logger;
+        private readonly TickMetricsCollector _tickMetrics;
 
         public uint CurrentTick { get; private set; }
 
         public Simulation(GameRoom simulatedWorld,
             List<ITickable> Systems,
             List<INetworkTickable> networkSystems,
-            ILogger<Simulation> logger)
+            ILogger<Simulation> logger,
+            TickMetricsCollector tickMetricsCollector)
         {
             _simulatedWorld = simulatedWorld;
             _systems = Systems;
             _networkSystems = networkSystems;
             _logger = logger;
+            _tickMetrics = tickMetricsCollector;
         }
 
         public void Start()
@@ -58,16 +62,20 @@ namespace GameServer.GameLoop.Core.Simultaion
         private async Task GameCycle(CancellationToken token)
         {
             const int simulationTPS = 60;
-            TimeSpan tickInterval = TimeSpan.FromMilliseconds(1000.0 / simulationTPS);
+
+            TimeSpan tickInterval =
+                TimeSpan.FromMilliseconds(1000.0 / simulationTPS);
 
             const float networkInterval = 1.0f / 20.0f;
+
             float networkAccumulator = 0f;
 
             using var timer = new PeriodicTimer(tickInterval);
+
             var stopwatch = Stopwatch.StartNew();
 
-
             uint gameTicks = 0;
+
             try
             {
                 CurrentTick = gameTicks;
@@ -77,40 +85,57 @@ namespace GameServer.GameLoop.Core.Simultaion
 
                 while (await timer.WaitForNextTickAsync(token))
                 {
-                    float deltaTime = (float)stopwatch.Elapsed.TotalSeconds;
-                    stopwatch.Restart();
+                    var measurement = _tickMetrics.BeginTick();
 
-                    if (deltaTime > 0.2f)
-                        deltaTime = 0.2f;
-
-                    for (int i = 0; i < _systems.Count; i++)
+                    try
                     {
-                        await _systems[i].Tick(deltaTime,gameTicks, _simulatedWorld);
-                    }
+                        float deltaTime = (float)stopwatch.Elapsed.TotalSeconds;
+                        stopwatch.Restart();
 
-                    networkAccumulator += deltaTime;
+                        if (deltaTime > 0.2f)
+                            deltaTime = 0.2f;
 
-                    if (networkAccumulator >= networkInterval)
-                    {
-                        float networkDelta = networkAccumulator;
-                        networkAccumulator -= networkInterval; 
-
-                        for (int i = 0; i < _networkSystems.Count; i++)
+                        // Simulation
+                        for (int i = 0; i < _systems.Count; i++)
                         {
-                            _networkSystems[i].NetworkTick(networkDelta, gameTicks, _simulatedWorld);
+                            await _systems[i].Tick(
+                                deltaTime,
+                                gameTicks,
+                                _simulatedWorld);
                         }
-                    }
 
-                    gameTicks++;
+                        // Network
+                        networkAccumulator += deltaTime;
+
+                        if (networkAccumulator >= networkInterval)
+                        {
+                            float networkDelta = networkAccumulator;
+                            networkAccumulator -= networkInterval;
+
+                            for (int i = 0; i < _networkSystems.Count; i++)
+                            {
+                                _networkSystems[i].NetworkTick(
+                                    networkDelta,
+                                    gameTicks,
+                                    _simulatedWorld);
+                            }
+                        }
+
+                        gameTicks++;
+                    }
+                    finally
+                    {
+                        _tickMetrics.EndTick(in measurement);
+                    }
                 }
             }
             catch (OperationCanceledException)
+                when (token.IsCancellationRequested)
             {
-
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _logger.LogCritical(ex.Message);
+                _logger.LogCritical(ex, "Game cycle failed");
             }
             finally
             {

@@ -94,7 +94,7 @@ namespace GameServer.GameLoop.Core.Systems.NetworkSystems
 
                 stopwatch.Stop();
 
-                //Console.WriteLine(
+                ////Console.WriteLine(
                 //    $"[NetworkTick] Entities: {entries.Length} | " +
                 //    $"Collect: {collectTime * 1000.0 / Stopwatch.Frequency:F3} ms | " +
                 //    $"Serialize: {serializeTime * 1000.0 / Stopwatch.Frequency:F3} ms | " +

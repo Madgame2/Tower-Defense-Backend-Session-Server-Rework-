@@ -19,9 +19,9 @@ namespace GameServer.Application.Sessions.States
 
             handlers.Register<PlayerConnected>(async (ctx, evt) =>
             {
-                Console.WriteLine($"Player join {evt.UserId}");
+                //Console.WriteLine($"Player join {evt.UserId}");
                 if (ctx.OnlinePlayersIDs.Count == ctx.ResurvatePlayersIDs.Count) {
-                    Console.WriteLine("AllPlayers connected");
+                    //Console.WriteLine("AllPlayers connected");
 
                     try
                     {
@@ -29,14 +29,14 @@ namespace GameServer.Application.Sessions.States
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine(ex.Message);
+                        ////Console.WriteLine(ex.Message);
                     }
                 }
             });
 
             handlers.Register<PlayerDisconnected>(async (ctx, evt) =>
             {
-                Console.WriteLine($"Player leave {evt.UserId}");
+                //Console.WriteLine($"Player leave {evt.UserId}");
             });
         }
         public override Task OnEnter(GameSession ctx)
