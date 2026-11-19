@@ -79,7 +79,7 @@ namespace GameServer.GameLoop.Core.Systems.Replication
 
             _dynamicObjectsQuery = world.worldQueryService
                 .Search<HitBoxComponent>()
-                .InRadius("projectilePosition", 1f)
+                .InRadius("projectilePosition", 5f)
                 .Build(out _dynmicObjectsQueryContext);
 
             var obstacleGameObject = _staticResources.GetByName("Tree_1");
@@ -138,6 +138,11 @@ namespace GameServer.GameLoop.Core.Systems.Replication
 
                 _dynmicObjectsQueryContext.Set("projectilePosition", possitionComponent.Position);
                 world.worldQueryService.ExecuteQuery(_dynamicObjectsQuery, _dynmicObjectsQueryContext, _dynamicObjectsBuffer);
+
+                foreach(var dnamicCandidate in _dynamicObjectsBuffer)
+                {
+                    _logger.LogInformation($"DYNAMIC CANDIDATE {dnamicCandidate.GameObject.ObjectId}");
+                }
             }
         }
     }

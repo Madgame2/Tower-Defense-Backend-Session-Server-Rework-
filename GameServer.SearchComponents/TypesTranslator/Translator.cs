@@ -54,6 +54,14 @@ namespace GameServer.SearchComponents.TypesTranslator
                 _transitions[key] = listOfExecutor;
             }
             listOfExecutor.Add(executor);
+
+            if (!_graph.TryGetValue(from, out var edges))
+            {
+                edges = new();
+                _graph[from] = edges;
+            }
+
+            edges.Add(transition);
         }
 
         public TranslatorDelegate<TIn, TOut> CreateExecutor()

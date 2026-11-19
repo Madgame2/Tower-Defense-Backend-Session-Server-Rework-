@@ -3,7 +3,12 @@ using GameServer.Application.Resources.PrefabsRegesters;
 using GameServer.Application.Services.LightEnityesSpawner;
 using GameServer.Application.Services.StaticResources;
 using GameServer.Application.Session.Services.ObjectRegister;
+using GameServer.Application.Session.Services.ObjectRegister.Handlers;
+using GameServer.Application.Session.Services.ObjectRegister.Midleware;
+using GameServer.Application.Session.Services.ObjectRegister.Midleware.Configs;
+using GameServer.Application.Session.Services.ObjectRegister.Midleware.Meta;
 using GameServer.Application.Session.Services.ReplicationService.Registry;
+using GameServer.Application.Session.Services.Repositories;
 using GameServer.Domain.ColliderSystem.Enum;
 using GameServer.Domain.Player;
 using GameServer.Domain.Services.StaticData;
@@ -19,6 +24,7 @@ using GameServer.Domain.SessionWorld.Graphs.LandscapeGraph.Interfaces;
 using GameServer.Domain.SessionWorld.Graphs.TreeGraph.Factory.Interfaces;
 using GameServer.Domain.SessionWorld.Interfaces;
 using GameServer.Domain.SessionWorld.Interfaces.LightEntitiesSpawnService;
+using GameServer.Domain.SessionWorld.Interfaces.ObjectRegester.Middleware.Meta;
 using GameServer.Domain.SessionWorld.Meta.Interfaces;
 using GameServer.Domain.SessionWorld.Model;
 using GameServer.Domain.SessionWorld.PlayerStorages;
@@ -101,20 +107,37 @@ namespace GameServer.Application.Sessions.States
         {
             Console.WriteLine("ON GenerateWorld");
 
+            var middlewareDescription = GameRoomMiddlewareConfig.Create();
+
             var router = new GeneralMathcRouter();
             var worldQueryService = new WorldQueryService(_queryPlanner, _worldQueryService, _sessionStaticResources);
-            var objectRegister = new InMemmoryObjectRegister();
             var replicationRegister = new ReplicationRegistry();
-            var deffoutlObjectRegester = new DefaultObjectRegister();
-
             var chunkStorage = new InMemmoryChunkStorage();
             var playersSorage = new InMemmoryPlayerStorage();
             var indexStorage = new InMemmoryIndexStorage();
+            var hitBoxRepository = new HitBoxRepository();
+
+
+            var services = new RoomServices()
+                .Add(replicationRegister)
+                .Add(chunkStorage)
+                .Add(playersSorage)
+                .Add(hitBoxRepository)
+                .Add(indexStorage);
+
+            var pipeline = middlewareDescription.Build(services);
+
+            var objectRegister = new InMemmoryObjectRegister(pipeline);
+            var deffoutlObjectRegester = new DefaultObjectRegister();
+            deffoutlObjectRegester.BuildContext();
+
+
 
             IObjectHandler[] handlers =
             {
                 new ChunkRegisterHandler(chunkStorage, indexStorage),
-                new PlayersRegisterHandler(playersSorage, replicationRegister)
+                new PlayersRegisterHandler(playersSorage, replicationRegister),
+                new HitBoxRegesterHandler(hitBoxRepository)
             };
 
             var newWorldObject = new GameRoom(_chunksSettings,

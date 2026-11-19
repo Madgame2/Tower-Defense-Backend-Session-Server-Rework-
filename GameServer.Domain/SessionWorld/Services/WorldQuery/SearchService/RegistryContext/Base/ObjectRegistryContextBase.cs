@@ -21,6 +21,11 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Regis
             _registrat = new TransitionRegistrat(_dataBase);
         }
 
+        public void BuildContext()
+        {
+            this.Configure(_registrat);
+        }
+
         public abstract void Configure(TransitionRegistrat registrat);
 
         public TransitionModel[][] GetWay(Type from, Type to)
@@ -53,21 +58,25 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Regis
 
             public void Get(TransitionGetDelegate<TIn, TOut> executor)
             {
-                _dataBase.Register(
-                new TranslationRule<TIn, TOut>(
+                TransitionGetDelegate<TIn, TOut> wrapped =
                     (in TIn source, out TOut result) =>
-                        executor(in source, out result)));
+                        executor(in source, out result);
+
+                _dataBase.Register(
+                    new TranslationRule<TIn, TOut>(wrapped));
             }
 
             public void Select(Func<TIn, TOut> executor)
             {
+                TransitionGetDelegate<TIn, TOut> wrapped =
+                    (in TIn source, out TOut result) =>
+                    {
+                        result = executor(source);
+                        return true;
+                    };
+
                 _dataBase.Register(
-                    new TranslationRule<TIn, TOut>(
-                        (in TIn source, out TOut result) =>
-                        {
-                            result = executor(source);
-                            return true;
-                        }));
+                    new TranslationRule<TIn, TOut>(wrapped));
             }
         }
     }

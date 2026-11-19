@@ -39,7 +39,6 @@
     <Folder Include="Resources\PrefabsRegesters\Projectiles\" />
     <Folder Include="Session\Ressources\" />
     <Folder Include="Session\Services\ReplicationService\Log\" />
-    <Folder Include="Session\Services\Новая папка\" />
     <Folder Include="Session\SessionWorld\" />
   </ItemGroup>
 

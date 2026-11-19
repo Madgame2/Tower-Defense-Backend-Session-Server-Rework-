@@ -6,6 +6,7 @@ using GameServer.Domain.SessionWorld.ChunksService.ChunkStorage.Interfaces;
 using GameServer.Domain.SessionWorld.Generators;
 using GameServer.Domain.SessionWorld.Interfaces;
 using GameServer.Domain.SessionWorld.Interfaces.LightEntitiesSpawnService;
+using GameServer.Domain.SessionWorld.Interfaces.ObjectRegester;
 using GameServer.Domain.SessionWorld.Interfaces.ReplicationService;
 using GameServer.Domain.SessionWorld.Interfaces.ReplicationService.ReplicationLog;
 using GameServer.Domain.SessionWorld.Meta.Interfaces;
@@ -93,7 +94,6 @@ namespace GameServer.Domain.SessionWorld
             _chunkStorage = chunkStorage;
             _playersStorage = playersStorage;
             _indicesStorage = indexStorage;
-            _objectRegistry = new InMemmoryObjectRegister();
             _logs = new ReplicationLog();
 
             var contex = new GameRoomContext(_chunkStorage, chunksSettings, _playersStorage, _indicesStorage);

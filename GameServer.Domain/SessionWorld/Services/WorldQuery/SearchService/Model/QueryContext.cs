@@ -1,4 +1,4 @@
-﻿using GameServer.Domain.SessionWorld.Interfaces;
+﻿using GameServer.Domain.SessionWorld.Interfaces.ObjectRegester;
 using GameServer.Domain.SessionWorld.Services.IndicesService.Interfaces;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model.Parameters;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model.Parameters.Base;
