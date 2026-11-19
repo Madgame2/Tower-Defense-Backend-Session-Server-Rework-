@@ -1,5 +1,6 @@
 ﻿using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.RegistryContext.DataBase;
+using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.RegistryContext.DataBase.Models;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.RegistryContext.Delegates;
 using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.RegistryContext.Intrerfaces;
 using System;
@@ -21,6 +22,11 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Regis
         }
 
         public abstract void Configure(TransitionRegistrat registrat);
+
+        public TransitionModel[][] GetWay(Type from, Type to)
+        {
+            return _dataBase.GetTransactions(from, to);
+        }
 
         public class TransitionRegistrat
         {

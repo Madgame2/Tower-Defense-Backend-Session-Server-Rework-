@@ -105,7 +105,7 @@ namespace GameServer.Application.Sessions.States
             var worldQueryService = new WorldQueryService(_queryPlanner, _worldQueryService, _sessionStaticResources);
             var objectRegister = new InMemmoryObjectRegister();
             var replicationRegister = new ReplicationRegistry();
-            var deffoutlObjectRegester = new DeffoutlObjectRegester();
+            var deffoutlObjectRegester = new DefaultObjectRegister();
 
             var chunkStorage = new InMemmoryChunkStorage();
             var playersSorage = new InMemmoryPlayerStorage();

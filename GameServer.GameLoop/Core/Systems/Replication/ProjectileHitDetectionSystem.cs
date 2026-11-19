@@ -136,8 +136,8 @@ namespace GameServer.GameLoop.Core.Systems.Replication
                 }
 
 
-                //_dynmicObjectsQueryContext.Set("projectilePosition", possitionComponent.Position);
-                //world.worldQueryService.ExecuteQuery(_dynamicObjectsQuery, _dynmicObjectsQueryContext, _dynamicObjectsBuffer);
+                _dynmicObjectsQueryContext.Set("projectilePosition", possitionComponent.Position);
+                world.worldQueryService.ExecuteQuery(_dynamicObjectsQuery, _dynmicObjectsQueryContext, _dynamicObjectsBuffer);
             }
         }
     }

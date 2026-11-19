@@ -1,4 +1,5 @@
-﻿using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.RegistryContext.Intrerfaces;
+﻿using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.RegistryContext.DataBase.Models;
+using GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.RegistryContext.Intrerfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,6 +8,7 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Regis
 {
     public class TransitonsDataBase : ITransitionsDataBase
     {
+        private readonly Dictionary<(Type form, Type to), TransitionModel> _dataBaseStorage = new();
         private readonly Dictionary<(Type form, Type to), Delegate> _executions = new();
         private readonly Dictionary<Type, List<Type>> _links = new();
 
@@ -18,8 +20,17 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Regis
                 _links[rule.InputType] = outputs;
             }
 
+            var newObject = new TransitionModel
+            {
+                From = rule.InputType,
+                To = rule.OutputType,
+                transitionDelegate = rule.executor
+            };
+
             outputs.Add(rule.OutputType);
             _executions.Add((rule.InputType, rule.OutputType), rule.executor);
+
+            _dataBaseStorage.Add((rule.InputType, rule.OutputType), newObject);
         }
 
         public List<List<Type>> GetAllPaths(Type from, Type to, int maxDepth = int.MaxValue)
@@ -131,6 +142,31 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Regis
 
             path.Reverse();
             return path;
+        }
+
+        public TransitionModel[][] GetTransactions(Type from, Type to)
+        {
+            if (from == null) throw new ArgumentNullException(nameof(from));
+            if (to == null) throw new ArgumentNullException(nameof(to));
+
+            var paths = GetAllPaths(from, to);
+
+            var result = new TransitionModel[paths.Count][];
+
+            for (int p = 0; p < paths.Count; p++)
+            {
+                var path = paths[p];
+
+                // from == to -> путь из одного узла, переходов нет
+                var chain = new TransitionModel[Math.Max(0, path.Count - 1)];
+
+                for (int i = 0; i < chain.Length; i++)
+                    chain[i] = _dataBaseStorage[(path[i], path[i + 1])];
+
+                result[p] = chain;
+            }
+
+            return result;
         }
     }
 }

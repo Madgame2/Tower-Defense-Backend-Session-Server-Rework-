@@ -23,6 +23,8 @@ using GameServer.SearchComponents.ExecutionSteps.PlanOptimizer.Algorithms.Base;
 using GameServer.SearchComponents.ExecutionSteps.PlanOptimizer.Algorithms.GreedyAlgorithm;
 using GameServer.SearchComponents.ExecutionSteps.PlanOptimizer.CombineModules.Base;
 using GameServer.SearchComponents.ExecutionSteps.PlanOptimizer.Implementation;
+using GameServer.SearchComponents.TypesTranslator.Builder.Implementation;
+using GameServer.SearchComponents.TypesTranslator.Builder.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -39,43 +41,14 @@ namespace GameServer.SearchComponents.Marker
     {
         public static IServiceCollection AddSearchCompoents(this IServiceCollection services)
         {
+            services.AddSingleton<IFullScanAdapter, RadiusFullScanAdapter>();
 
-            services.AddSingleton<IFullScanAdapter>(
-                _ => new RadiusFullScanAdapter<StaticTreeData>(
-                    static (in StaticTreeData item) => new Vector3(item.LocalPosition.X,0, item.LocalPosition.Y)));
-
-            services.AddSingleton<IFullScanAdapter>(
-                _ => new RadiusFullScanAdapter<TransformComponent>(
-                static (in TransformComponent item) => item.Position));
-
-            services.AddSingleton<IFullScanAdapter>(
-            _ => new RadiusFullScanAdapter<HitBoxComponent>(
-            static (in HitBoxComponent item) =>
-            {
-                var gameObject = item.GameObject;
-                if(!gameObject.TryGetComponent<TransformComponent>(out var component))
-                {
-                    throw new ArgumentException();
-                }
-
-                return component.Position;
-            }));
-
-            services.AddSingleton<IFullScanAdapter>(
-                _ => new RadiusFullScanAdapter<GameObject>(
-                    static (in GameObject item) =>{
-                        if (!item.TryGetComponent<TransformComponent>(out var component))
-                            throw new ArgumentException();
-
-                        return component.Position;
-                    }));
+            services.AddSingleton<ITranslatorBuilder, TranslatorBuilder>();
 
             services.AddSingleton<FullScanAdapterRegistry>();
 
             services.AddSingleton<IFullScanAdapterRegistry>(
                 sp => sp.GetRequiredService<FullScanAdapterRegistry>());
-
-
 
             services.AddSingleton<IPossibilitySoureseModuel, FullScanModule>();
             services.AddSingleton<IPossibilitySoureseModuel, IndexSearchModule>();

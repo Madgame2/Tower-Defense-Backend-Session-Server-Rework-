@@ -17,7 +17,7 @@ namespace GameServer.Domain.SessionWorld.Services.WorldQuery.SearchService.Model
         private readonly IObjectRegistry _objectRegistry;
         private readonly IObjectRegesterContext _objectregisterContext;
 
-        private IObjectRegesterContext ObjectregisterContext=> _objectregisterContext;
+        public IObjectRegesterContext ObjectregisterContext=> _objectregisterContext;
         public IIndexStorage Indexes => _indexStorage;
         public IObjectRegistry ObjectsRegistry => _objectRegistry;
 

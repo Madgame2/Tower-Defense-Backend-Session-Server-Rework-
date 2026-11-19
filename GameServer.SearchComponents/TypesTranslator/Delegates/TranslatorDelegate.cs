@@ -4,5 +4,5 @@ using System.Text;
 
 namespace GameServer.SearchComponents.TypesTranslator.Delegates
 {
-    public delegate void TranslatorDelegate<TIn, TOut>(in TIn input, out TOut output);
+    public delegate bool TranslatorDelegate<TIn, TOut>(in TIn input, out TOut output);
 }

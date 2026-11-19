@@ -6,7 +6,7 @@ using GameServer.SearchComponents.ExecutionSteps.CandidatesGenration.DataSourceM
 using GameServer.SearchComponents.ExecutionSteps.CandidatesGenration.DataSourceModules.FullScanModule.MetaDatas;
 using GameServer.SearchComponents.ExecutionSteps.CandidatesGenration.Model;
 using GameServer.SearchComponents.TypesTranslator;
-using GameServer.SearchComponents.TypesTranslator.Interfaces;
+using GameServer.SearchComponents.TypesTranslator.Builder.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,11 +18,11 @@ namespace GameServer.SearchComponents.ExecutionSteps.CandidatesGenration.DataSou
         private const int FULL_SCAN_COST = 100;
 
         private readonly IFullScanAdapterRegistry _adapterRegistry;
-        private readonly ITranslator _translator;
+        private readonly ITranslatorBuilder _translator;
 
         public FullScanModule(
             IFullScanAdapterRegistry adapterRegistry,
-            ITranslator translator)
+            ITranslatorBuilder translator)
         {
             _adapterRegistry = adapterRegistry;
             _translator = translator;
@@ -40,7 +40,7 @@ namespace GameServer.SearchComponents.ExecutionSteps.CandidatesGenration.DataSou
             Translator translator = null;
             try
             {
-                translator = _translator.Create<T>(adapter.RequriredType);
+                translator = _translator.Create<T>(queryContext.ObjectregisterContext, adapter.RequriredType);
             }
             catch
             {
